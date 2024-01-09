@@ -19,6 +19,7 @@ import com.example.baby.screen.MainScreen
 import com.example.baby.screen.WriteScreen
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.*
+import com.jakewharton.threetenabp.AndroidThreeTen
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -27,16 +28,10 @@ class MainActivity : ComponentActivity() {
 
     val todoViewModel by viewModels<TodoViewModel>()
 
-
-
-    val dateViewModel by viewModels<DateViewModel>()
+    val calendarViewModel by viewModels<CalendarViewModel>()
 
     val loadingViewModel by viewModels<LoadingViewModel>()
 
-//    val dateViewModel = ViewModelProvider(
-//        this,
-//        DateViewModelFactory()
-//    ).get(DateViewModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +49,7 @@ class MainActivity : ComponentActivity() {
                         LoadingScreen(viewModel = loadingViewModel, navController = navController)
                     }
                     composable("mainScreen") {
-                        MainScreen(navController = navController)
+                        MainScreen(viewModel = calendarViewModel, navController = navController)
                     }
                     composable("secondScreen") {
                         WriteScreen(todoViewModel = todoViewModel, navController = navController)

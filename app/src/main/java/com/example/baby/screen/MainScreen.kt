@@ -21,14 +21,16 @@ import androidx.navigation.NavController
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.TodoViewModel
 import com.example.baby.R
+import com.example.baby.viewModel.CalendarViewModel
 
 @Composable
 fun MainScreen(
+    viewModel: CalendarViewModel,
     navController: NavController
 ) {
     Box(
         modifier = Modifier.background(Color.White).fillMaxSize()
     ) {
-        Text("메인입니다")
+        CustomCalendarView(viewModel = viewModel)
     }
 }
