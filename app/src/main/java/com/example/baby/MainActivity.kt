@@ -14,25 +14,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.dao.TodoDao
 import com.example.baby.network.TodoDatabase
+import com.example.baby.screen.LoadingScreen
 import com.example.baby.screen.MainScreen
 import com.example.baby.screen.WriteScreen
 import com.example.baby.ui.theme.BabyTheme
-import com.example.baby.viewModel.DateViewModel
-import com.example.baby.viewModel.DateViewModelFactory
-import com.example.baby.viewModel.TodoViewModel
-import com.example.baby.viewModel.TodoViewModelFactory
+import com.example.baby.viewModel.*
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var todoDao: TodoDao
 
-    val todoViewModel = ViewModelProvider(
-        this,
-        TodoViewModelFactory(todoDao)
-    ).get(TodoViewModel::class.java)
+    val todoViewModel by viewModels<TodoViewModel>()
+
+
 
     val dateViewModel by viewModels<DateViewModel>()
+
+    val loadingViewModel by viewModels<LoadingViewModel>()
 
 //    val dateViewModel = ViewModelProvider(
 //        this,
@@ -50,9 +49,12 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 // NavHost 설정
-                NavHost(navController = navController, startDestination = "mainScreen") {
+                NavHost(navController = navController, startDestination = "loadingScreen") {
+                    composable("loadingScreen") {
+                        LoadingScreen(viewModel = loadingViewModel, navController = navController)
+                    }
                     composable("mainScreen") {
-                        MainScreen(todoViewModel = todoViewModel, dateViewModel = dateViewModel, navController = navController)
+                        MainScreen(navController = navController)
                     }
                     composable("secondScreen") {
                         WriteScreen(todoViewModel = todoViewModel, navController = navController)

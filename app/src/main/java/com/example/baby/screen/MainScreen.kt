@@ -24,50 +24,11 @@ import com.example.baby.R
 
 @Composable
 fun MainScreen(
-    todoViewModel: TodoViewModel,
-    dateViewModel: DateViewModel,
     navController: NavController
 ) {
     Box(
         modifier = Modifier.background(Color.White).fillMaxSize()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.teddy_bear),
-            contentDescription = "Teddy Baer",
-            modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.Center)
-        )
-        Column(
-        ) {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Todo List",
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                backgroundColor = Color.White,
-                elevation = 0.dp,
-                actions = {
-
-                    IconButton(onClick = {
-                        navController.navigate("secondScreen")
-                    }) {
-                        Icon(Icons.Default.Add, contentDescription = "추가하깅")
-                    }
-                }
-            )
-            Box(
-                modifier = Modifier.padding(bottom = 20.dp, start = 20.dp, end = 20.dp)
-            ) {
-                Column() {
-                    TodayDateText(today = dateViewModel.getDateNow())
-                    Spacer(modifier = Modifier.padding(bottom = 15.dp))
-                    TodoItem(viewModel = todoViewModel)
-                }
-            }
-        }
+        Text("메인입니다")
     }
 }
