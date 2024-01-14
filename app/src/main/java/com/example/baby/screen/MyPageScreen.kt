@@ -1,33 +1,31 @@
 package com.example.baby.screen
 
-import androidx.compose.foundation.Image
+import android.os.Looper
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.baby.viewModel.DateViewModel
+import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.TodoViewModel
-import com.example.baby.R
-import com.example.baby.viewModel.CalendarViewModel
+import java.util.Timer
+import java.util.logging.Handler
 
 @Composable
-fun MainScreen(
-    viewModel: CalendarViewModel,
-    navController: NavController
-) {
+fun MyPageScreen(viewModel: LoadingViewModel, navController: NavController) {
+    val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -69,15 +67,15 @@ fun MainScreen(
                 )
             }
         }
-    ) { innerPadding ->
+    ) {
         Box(
             modifier = Modifier
                 .background(Color.White)
-                .fillMaxSize()
-                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+
         ) {
-            CustomCalendarView(viewModel = viewModel)
+            Text("MyPage")
         }
     }
 }
-

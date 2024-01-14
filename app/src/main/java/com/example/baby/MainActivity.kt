@@ -14,9 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.dao.TodoDao
 import com.example.baby.network.TodoDatabase
-import com.example.baby.screen.LoadingScreen
-import com.example.baby.screen.MainScreen
-import com.example.baby.screen.WriteScreen
+import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.*
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -51,8 +49,14 @@ class MainActivity : ComponentActivity() {
                     composable("mainScreen") {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
                     }
-                    composable("secondScreen") {
-                        WriteScreen(todoViewModel = todoViewModel, navController = navController)
+                    composable("guideScreen") {
+                        GuideScreen(viewModel = loadingViewModel, navController = navController)
+                    }
+                    composable("policyScreen") {
+                        PolicyScreen(viewModel = loadingViewModel, navController = navController)
+                    }
+                    composable("myPageScreen") {
+                        MyPageScreen(viewModel = loadingViewModel, navController = navController)
                     }
                 }
             }
