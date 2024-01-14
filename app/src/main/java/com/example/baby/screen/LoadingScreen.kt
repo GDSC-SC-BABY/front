@@ -28,13 +28,12 @@ fun LoadingScreen(viewModel: LoadingViewModel, navController: NavController) {
             .background(Color.White)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
-
     ) {
         Text("BABY")
 
         LaunchedEffect(navigateToMainScreen) {
             if (navigateToMainScreen == true) {
-                navController.navigate("mainScreen")
+                navController.navigate("registerPage")
             }
         }
     }

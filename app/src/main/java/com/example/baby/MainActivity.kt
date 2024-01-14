@@ -46,6 +46,9 @@ class MainActivity : ComponentActivity() {
                     composable("loadingScreen") {
                         LoadingScreen(viewModel = loadingViewModel, navController = navController)
                     }
+                    composable("registerPage") {
+                        RegisterPage(viewModel = loadingViewModel, navController = navController)
+                    }
                     composable("mainScreen") {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
                     }
