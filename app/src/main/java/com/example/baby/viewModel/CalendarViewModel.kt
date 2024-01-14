@@ -1,27 +1,40 @@
 package com.example.baby.viewModel
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.baby.data.CalendarDate
 import java.util.*
 
 class CalendarViewModel : ViewModel() {
-    val calendarDayList: List<CalendarDate> by lazy {
-        generateCalendarDays()
+    private val _calendarDays = MutableLiveData<List<CalendarDate>>()
+    val calendarDays: LiveData<List<CalendarDate>> = _calendarDays
+
+    private val calendar = Calendar.getInstance()
+
+    init {
+        // 초기 날짜 데이터를 로드합니다.
+        updateCalendarDays()
     }
 
-    // 함수 이름은 그대로 유지합니다.
+    private fun updateCalendarDays() {
+        _calendarDays.value = generateCalendarDays()
+    }
+
     private fun generateCalendarDays(): List<CalendarDate> {
         val dates = mutableListOf<CalendarDate>()
 
-        val calendar = Calendar.getInstance().apply {
+        calendar.apply {
             firstDayOfWeek = Calendar.SUNDAY
             set(Calendar.DAY_OF_MONTH, 1)
         }
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
+
         val firstDayOfMonthWeekday = calendar.get(Calendar.DAY_OF_WEEK)
         val daysToAddFromPreviousMonth = firstDayOfMonthWeekday - Calendar.SUNDAY
 
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
         // 이전 달의 날짜를 추가합니다.
         if (daysToAddFromPreviousMonth > 0) {
             val previousMonth = if (month == Calendar.JANUARY) Calendar.DECEMBER else month - 1
@@ -58,4 +71,24 @@ class CalendarViewModel : ViewModel() {
 
         return dates
     }
+
+    // 현재 연도와 월을 문자열로 반환하는 함수
+    fun getCurrentYearAndMonth(): String {
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        return String.format(Locale.getDefault(), "%d년 %02d월", year, month)
+    }
+
+    fun previousMonth() {
+        calendar.add(Calendar.MONTH, -1)
+        updateCalendarDays()
+    }
+
+    fun nextMonth() {
+        calendar.add(Calendar.MONTH, 1)
+        updateCalendarDays()
+    }
+
+
 }
+

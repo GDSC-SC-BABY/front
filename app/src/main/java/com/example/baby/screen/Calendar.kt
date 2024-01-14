@@ -1,15 +1,28 @@
 package com.example.baby.screen
 
 import android.util.Log
+import android.widget.Button
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.baby.data.CalendarDate
 import com.example.baby.viewModel.CalendarViewModel
 import java.text.SimpleDateFormat
@@ -51,15 +64,52 @@ fun CustomCalendarLayout(
 
 @Composable
 fun CustomCalendarView(viewModel: CalendarViewModel, textHeight: Int = 50) {
-    val daysInMonth = viewModel.calendarDayList
-    Log.d("와이라노", daysInMonth.toString())
+    val daysInMonth by viewModel.calendarDays.observeAsState(emptyList())
+
     val dateFormatter = SimpleDateFormat("dd", Locale.getDefault())
 
     Column() {
+        MonthWidget(viewModel = viewModel)
         WeekDayHeaders()
-        CustomCalendarLayout(textHeight = textHeight, ) {
+        CustomCalendarLayout(textHeight = textHeight) {
             daysInMonth.forEach { calendarDay ->
                 DateCell(calendarDay, dateFormatter)
+            }
+        }
+    }
+}
+
+@Composable
+fun MonthWidget(viewModel: CalendarViewModel) {
+    val info = viewModel.getCurrentYearAndMonth()
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Row() {
+            IconButton(onClick = { viewModel.previousMonth() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    tint = MaterialTheme.colors.secondary,
+                    contentDescription = "달 -1"
+                )
+            }
+
+            Text(
+                text = info,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            IconButton(onClick = { viewModel.nextMonth() }) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    tint = MaterialTheme.colors.secondary,
+                    contentDescription = "달 +1"
+                )
+
             }
         }
     }
@@ -85,9 +135,11 @@ fun WeekDayHeaders() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         daysOfWeek.forEach { day ->
+            val textColor = if (day == "Sun") Color.Red else Color.Black
             Text(
                 text = day,
                 style = MaterialTheme.typography.subtitle2,
+                color = textColor,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
