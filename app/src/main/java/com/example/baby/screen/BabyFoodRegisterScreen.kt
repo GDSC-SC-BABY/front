@@ -8,15 +8,12 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,8 +41,10 @@ fun BabyFoodRegisterScreen(viewModel: DateViewModel, navController: NavControlle
                 BabyFoodRegisterInfo(viewModel = viewModel)
                 Spacer(modifier = Modifier.height(25.dp))
                 BaseMealSelectWidget(height = height)
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 ToppingSelectWidget(height = height)
+                Spacer(modifier = Modifier.height(10.dp))
+                WriteSignificant()
             }
         }
     }
@@ -134,7 +133,7 @@ fun ToppingSelectWidget(height: Dp) {
     val dataList = (0..7).map { baseMealList[it] }
     val selectedMeal = remember { mutableStateOf<String?>(null) }
 
-    Column() {
+    Column {
         Text(text = "토핑", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
         Box(
@@ -175,6 +174,43 @@ fun ToppingGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
             border = BorderStroke(1.dp, borderColor)
         ) {
             Text(item, color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+fun WriteSignificant() {
+    var text by remember { mutableStateOf("") }
+    Column {
+        Text(text = "특이사항", fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(10.dp))
+        Box(
+            modifier = Modifier
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(15.dp)
+                )
+                .fillMaxWidth()
+                .height(150.dp)
+        ) {
+            TextField(
+                value = text,
+                onValueChange = { newText ->
+                    text = newText
+                },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text("이유식을 먹일 때 특이사항이 있었나요?", fontSize = 14.sp)
+                },
+                textStyle = TextStyle(fontSize = 14.sp),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
+                ),
+                singleLine = false,
+                maxLines = 6,
+            )
         }
     }
 }
