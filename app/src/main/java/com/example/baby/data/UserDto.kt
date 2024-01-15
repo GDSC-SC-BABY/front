@@ -6,6 +6,8 @@ import java.util.*
 data class UserDto(
     val id: Long,
     val nickname: String,
-    val location: String,
-    val mobile: String
+    val residence: String,
+    val email: String,
+    val mobile: String,
+    val bId: Long?
 )

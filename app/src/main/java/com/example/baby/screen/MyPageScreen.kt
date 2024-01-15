@@ -1,8 +1,6 @@
 package com.example.baby.screen
 
-import android.os.Looper
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
@@ -11,7 +9,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -19,9 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.baby.viewModel.LoadingViewModel
-import com.example.baby.viewModel.TodoViewModel
-import java.util.Timer
-import java.util.logging.Handler
 
 @Composable
 fun MyPageScreen(viewModel: LoadingViewModel, navController: NavController) {

@@ -5,6 +5,7 @@ import java.util.*
 
 data class User(
     val nickname: String,
-    val location: String,
+    val residence: String,
+    val email: String,
     val mobile: String
 )
