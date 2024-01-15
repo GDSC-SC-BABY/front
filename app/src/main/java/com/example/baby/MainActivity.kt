@@ -11,17 +11,19 @@ import com.example.baby.dao.TodoDao
 import com.example.baby.network.TodoDatabase
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
-import com.example.baby.viewModel.*
+import com.example.baby.viewModel.CalendarViewModel
+import com.example.baby.viewModel.DateViewModel
+import com.example.baby.viewModel.LoadingViewModel
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var todoDao: TodoDao
 
-    val todoViewModel by viewModels<TodoViewModel>()
+    private val dateViewModel by viewModels<DateViewModel>()
 
-    val calendarViewModel by viewModels<CalendarViewModel>()
+    private val calendarViewModel by viewModels<CalendarViewModel>()
 
-    val loadingViewModel by viewModels<LoadingViewModel>()
+    private val loadingViewModel by viewModels<LoadingViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +60,7 @@ class MainActivity : ComponentActivity() {
                         BabyRegisterPage(viewModel = loadingViewModel, navController = navController)
                     }
                     composable("foodRegisterScreen") {
-                        BabyFoodRegisterScreen(viewModel = loadingViewModel, navController = navController)
+                        BabyFoodRegisterScreen(viewModel = dateViewModel, navController = navController)
                     }
                 }
             }

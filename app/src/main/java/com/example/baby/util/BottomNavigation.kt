@@ -1,5 +1,6 @@
 package com.example.baby.util
 
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -10,14 +11,17 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.baby.util.FoodSelectDialog
 
 @Composable
-fun CustomBottomNavigation(navController: NavController){
-    val showDialog = remember { mutableStateOf(false)}
+fun CustomBottomNavigation(navController: NavController) {
+    val showDialog = remember { mutableStateOf(false) }
 
-    androidx.compose.material.BottomNavigation {
+    androidx.compose.material.BottomNavigation(
+        modifier = Modifier.wrapContentHeight()
+    ) {
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Default.DateRange, contentDescription = null) },
             selected = navController.currentDestination?.route == "mainScreen",
@@ -56,7 +60,7 @@ fun CustomBottomNavigation(navController: NavController){
             }
         )
     }
-    if(showDialog.value){
+    if (showDialog.value) {
         FoodSelectDialog(navController = navController, onDismiss = { showDialog.value = false })
     }
 }
