@@ -19,7 +19,7 @@ import androidx.navigation.NavController
 import com.example.baby.viewModel.LoadingViewModel
 
 @Composable
-fun RegisterPage(viewModel: LoadingViewModel, navController: NavController) {
+fun UserRegisterPage(viewModel: LoadingViewModel, navController: NavController) {
     val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()
 
     Column(
@@ -34,7 +34,7 @@ fun RegisterPage(viewModel: LoadingViewModel, navController: NavController) {
         NicknameRegisterField()
         Spacer(modifier = Modifier.height(20.dp))
         RelationshipRegisterFiled()
-        RegisterButton(navController = navController)
+        RegisterButton(text= "가입하기", route = "babyRegisterScreen", navController = navController)
     }
 }
 
@@ -123,15 +123,15 @@ fun RelationshipRegisterFiled() {
 }
 
 @Composable
-fun RegisterButton(navController : NavController){
+fun RegisterButton(text : String, route: String, navController : NavController){
     Box(
         contentAlignment = Alignment.BottomEnd
     ){
     Button(onClick = {
-        navController.navigate("mainScreen")
+        navController.navigate(route)
     },
         ){
-        Text("가입하기")
+        Text(text)
     }
     }
 }
