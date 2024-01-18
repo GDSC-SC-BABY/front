@@ -1,3 +1,4 @@
+/*
 package com.example.baby.screen
 
 import androidx.compose.foundation.Image
@@ -63,4 +64,4 @@ fun WriteScreen(todoViewModel: TodoViewModel, navController: NavController) {
             WriteTodo(viewModel = todoViewModel, navController)
         }
     }
-}
+}*/

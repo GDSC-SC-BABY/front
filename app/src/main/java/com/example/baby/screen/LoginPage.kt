@@ -36,6 +36,7 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
         Text("로그인", fontWeight = FontWeight.Bold, fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
         LoginField()
+        Spacer(modifier = Modifier.height(20.dp))
         SignInGoogleButton { content() }
         Spacer(modifier = Modifier.height(20.dp))
         RegisterButton(text= "로그인", route = "babyRegisterScreen", navController = navController)

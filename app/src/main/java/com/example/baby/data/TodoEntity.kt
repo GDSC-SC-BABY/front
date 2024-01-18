@@ -1,3 +1,4 @@
+/*
 package com.example.baby.data
 
 import androidx.room.ColumnInfo
@@ -9,4 +10,4 @@ data class TodoEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "is_completed") val isCompleted: Boolean
-)
+)*/

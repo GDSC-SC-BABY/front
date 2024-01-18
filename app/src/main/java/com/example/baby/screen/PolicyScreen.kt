@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.viewModel.LoadingViewModel
-import com.example.baby.viewModel.TodoViewModel
 import java.util.Timer
 import java.util.logging.Handler
 

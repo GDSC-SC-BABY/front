@@ -8,8 +8,6 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.baby.dao.TodoDao
-import com.example.baby.network.TodoDatabase
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.CalendarViewModel
@@ -18,8 +16,6 @@ import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.LoginViewModel
 
 class MainActivity : ComponentActivity() {
-
-    private lateinit var todoDao: TodoDao
 
     private val dateViewModel by viewModels<DateViewModel>()
 
@@ -32,8 +28,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        todoDao = TodoDatabase.getDatabase(applicationContext).todoDao()
 
         setContent {
             BabyTheme {

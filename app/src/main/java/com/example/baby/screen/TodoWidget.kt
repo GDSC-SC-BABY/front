@@ -1,3 +1,4 @@
+/*
 package com.example.baby.screen
 
 import androidx.compose.foundation.BorderStroke
@@ -16,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.baby.data.TodoEntity
 import com.example.baby.ui.theme.mainColor
 import com.example.baby.ui.theme.todoListColor
 import com.example.baby.viewModel.TodoViewModel
@@ -133,3 +133,4 @@ fun TodoItem(viewModel: TodoViewModel) {
         }
     }
 }
+*/
