@@ -34,7 +34,7 @@ fun BabyRegisterPage(viewModel: LoadingViewModel, navController: NavController) 
         BabyNameRegisterField()
         Spacer(modifier = Modifier.height(20.dp))
         BirthdayRegisterField()
-        RegisterButton(text = "등록하기", route = "mainScreen", navController = navController)
+        RegisterButton(text = "로그인", route = "loginScreen", navController = navController)
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.baby
 
+import LoginPage
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.CalendarViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.LoadingViewModel
+import com.example.baby.viewModel.LoginViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -24,6 +26,8 @@ class MainActivity : ComponentActivity() {
     private val calendarViewModel by viewModels<CalendarViewModel>()
 
     private val loadingViewModel by viewModels<LoadingViewModel>()
+
+    private val loginViewModel by viewModels<LoginViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +46,17 @@ class MainActivity : ComponentActivity() {
                         LoadingScreen(viewModel = loadingViewModel, navController = navController)
                     }
                     composable("registerScreen") {
-                        UserRegisterPage(viewModel = loadingViewModel, navController = navController)
+                        UserRegisterPage(
+                            viewModel = loadingViewModel,
+                            navController = navController
+                        )
+                    }
+                    composable("loginScreen") {
+                        LoginPage(
+                            viewModel = loginViewModel,
+                            navController = navController,
+                            {}
+                        )
                     }
                     composable("mainScreen") {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
@@ -57,10 +71,16 @@ class MainActivity : ComponentActivity() {
                         MyPageScreen(viewModel = loadingViewModel, navController = navController)
                     }
                     composable("babyRegisterScreen") {
-                        BabyRegisterPage(viewModel = loadingViewModel, navController = navController)
+                        BabyRegisterPage(
+                            viewModel = loadingViewModel,
+                            navController = navController
+                        )
                     }
                     composable("foodRegisterScreen") {
-                        BabyFoodRegisterScreen(viewModel = dateViewModel, navController = navController)
+                        BabyFoodRegisterScreen(
+                            viewModel = dateViewModel,
+                            navController = navController
+                        )
                     }
                 }
             }
