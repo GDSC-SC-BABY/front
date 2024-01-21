@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FirebaseAuth
 //import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +19,7 @@ class LoginViewModel : ViewModel() {
     val navigateToMainScreen: LiveData<Boolean> = _navigateToMainScreen
 
     private lateinit var googleSignInClient: GoogleSignInClient
-    //private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+//    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val RC_SIGN_IN = 1313
 
     // 로그인 결과 반환 변수

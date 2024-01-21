@@ -42,6 +42,7 @@ fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavControl
             route = "babyRegisterScreen",
             navController = navController
         )
+        PhoneAuthWidget(route = "authScreen", navController =navController )
     }
 }
 
@@ -147,6 +148,21 @@ fun RegisterButton(isNotNull: Boolean, text: String, route: String, navControlle
             enabled = isNotNull
         ) {
             Text(text)
+        }
+    }
+}
+
+@Composable
+fun PhoneAuthWidget(route: String, navController: NavController) {
+    Box(
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Button(
+            onClick = {
+                navController.navigate(route)
+            }
+        ) {
+            Text("휴대폰 인증")
         }
     }
 }

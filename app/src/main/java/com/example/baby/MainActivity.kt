@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.baby.network.AuthRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.*
@@ -23,6 +24,10 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<LoginViewModel>()
 
     private val userRegisterViewModel by viewModels<UserRegisterViewModel>()
+
+    private val authViewModel by viewModels<AuthViewModel> {
+        AuthViewModelFactory(AuthRepository(this@MainActivity))
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +77,18 @@ class MainActivity : ComponentActivity() {
                     composable("foodRegisterScreen") {
                         BabyFoodRegisterScreen(
                             viewModel = dateViewModel,
+                            navController = navController
+                        )
+                    }
+                    composable("snackRegisterScreen") {
+                        BabySnackRegisterScreen(
+                            viewModel = dateViewModel,
+                            navController = navController
+                        )
+                    }
+                    composable("authScreen") {
+                        AuthScreen(
+                            viewModel = authViewModel,
                             navController = navController
                         )
                     }

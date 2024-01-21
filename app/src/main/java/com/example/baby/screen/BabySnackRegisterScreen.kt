@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +28,7 @@ import com.example.baby.viewModel.DateViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BabyFoodRegisterScreen(viewModel: DateViewModel, navController: NavController) {
+fun BabySnackRegisterScreen(viewModel: DateViewModel, navController: NavController) {
     Scaffold(bottomBar = { CustomBottomNavigation(navController = navController) }
     )
     {
@@ -38,13 +40,13 @@ fun BabyFoodRegisterScreen(viewModel: DateViewModel, navController: NavControlle
                     .fillMaxSize()
                     .padding(start = 20.dp, end = 20.dp, top = 20.dp)
             ) {
-                Text(text = "통통이 초기 이유식", fontSize = 23.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = "통통이 간식", fontSize = 23.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(20.dp))
-                BabyFoodRegisterInfo(viewModel = viewModel)
+                BabySnackRegisterInfo(viewModel = viewModel)
                 Spacer(modifier = Modifier.height(25.dp))
-                BaseMealSelectWidget(height = height)
+                SnackSelectWidget(height = height)
                 Spacer(modifier = Modifier.height(10.dp))
-                ToppingSelectWidget(height = height)
+                DrinkSelectWidget(height = height)
                 Spacer(modifier = Modifier.height(10.dp))
                 WriteSignificant()
             }
@@ -53,7 +55,9 @@ fun BabyFoodRegisterScreen(viewModel: DateViewModel, navController: NavControlle
 }
 
 @Composable
-fun BabyFoodRegisterInfo(viewModel: DateViewModel) {
+fun BabySnackRegisterInfo(viewModel: DateViewModel) {
+    var text by remember { mutableStateOf("") }
+
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -71,20 +75,30 @@ fun BabyFoodRegisterInfo(viewModel: DateViewModel) {
         Column {
             Text(viewModel.getDateNow())
             Spacer(modifier = Modifier.height(5.dp))
-            Text("16시")
+            Text(viewModel.getTimeNow())
             Spacer(modifier = Modifier.height(5.dp))
-            Text("25g")
+//            OutlinedTextField(
+//                value = text,
+//                onValueChange = { gram ->
+//                    if (gram.all { it.isDigit()}) {
+//                        text = gram
+//                    }},
+//                label = { Text("간식 (g)") },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 30.dp)
+//            )
         }
     }
 }
 
 @Composable
-fun BaseMealSelectWidget(height: Dp) {
+fun SnackSelectWidget(height: Dp) {
     val dataList = (0..7).map { baseMealList[it] }
     val selectedMeal = remember { mutableStateOf<String?>(null) }
 
     Column() {
-        Text(text = "베이스 죽", fontWeight = FontWeight.SemiBold)
+        Text(text = "간식", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
         Box(
             modifier = Modifier
@@ -98,7 +112,7 @@ fun BaseMealSelectWidget(height: Dp) {
                 modifier = Modifier.align(Alignment.Center)
             ) {
                 items(dataList) { item ->
-                    BaseMealGridItem(item, selectedMeal.value == item) {
+                    SnackGridItem(item, selectedMeal.value == item) {
                         selectedMeal.value = item
                     }
                 }
@@ -108,7 +122,7 @@ fun BaseMealSelectWidget(height: Dp) {
 }
 
 @Composable
-fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
+fun SnackGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
     val borderColor = if (isSelected) Color.Cyan else Color.Transparent
 
     Box(
@@ -130,12 +144,12 @@ fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ToppingSelectWidget(height: Dp) {
+fun DrinkSelectWidget(height: Dp) {
     val dataList = (0..7).map { baseMealList[it] }
     val selectedMeal = remember { mutableStateOf<String?>(null) }
 
     Column {
-        Text(text = "토핑", fontWeight = FontWeight.SemiBold)
+        Text(text = "음료", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
         Box(
             modifier = Modifier
@@ -149,7 +163,7 @@ fun ToppingSelectWidget(height: Dp) {
                 modifier = Modifier.align(Alignment.Center)
             ) {
                 items(dataList) { item ->
-                    ToppingGridItem(item, selectedMeal.value == item) {
+                    DrinkGridItem(item, selectedMeal.value == item) {
                         selectedMeal.value = item
                     }
                 }
@@ -159,7 +173,7 @@ fun ToppingSelectWidget(height: Dp) {
 }
 
 @Composable
-fun ToppingGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
+fun DrinkGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
     val borderColor = if (isSelected) Color.Cyan else Color.Transparent
 
     Box(
@@ -179,39 +193,39 @@ fun ToppingGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
     }
 }
 
-@Composable
-fun WriteSignificant() {
-    var text by remember { mutableStateOf("") }
-    Column {
-        Text(text = "특이사항", fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(10.dp))
-        Box(
-            modifier = Modifier
-                .background(
-                    Color.LightGray,
-                    shape = RoundedCornerShape(15.dp)
-                )
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            TextField(
-                value = text,
-                onValueChange = { newText ->
-                    text = newText
-                },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = {
-                    Text("이유식을 먹일 때 특이사항이 있었나요?", fontSize = 14.sp)
-                },
-                textStyle = TextStyle(fontSize = 14.sp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
-                singleLine = false,
-                maxLines = 6,
-            )
-        }
-    }
-}
+//@Composable
+//fun WriteSignificant() {
+//    var text by remember { mutableStateOf("") }
+//    Column {
+//        Text(text = "특이사항", fontWeight = FontWeight.SemiBold)
+//        Spacer(modifier = Modifier.height(10.dp))
+//        Box(
+//            modifier = Modifier
+//                .background(
+//                    Color.LightGray,
+//                    shape = RoundedCornerShape(15.dp)
+//                )
+//                .fillMaxWidth()
+//                .height(150.dp)
+//        ) {
+//            TextField(
+//                value = text,
+//                onValueChange = { newText ->
+//                    text = newText
+//                },
+//                modifier = Modifier.fillMaxWidth(),
+//                placeholder = {
+//                    Text("이유식을 먹일 때 특이사항이 있었나요?", fontSize = 14.sp)
+//                },
+//                textStyle = TextStyle(fontSize = 14.sp),
+//                colors = TextFieldDefaults.textFieldColors(
+//                    backgroundColor = Color.Transparent,
+//                    unfocusedIndicatorColor = Color.Transparent,
+//                    focusedIndicatorColor = Color.Transparent
+//                ),
+//                singleLine = false,
+//                maxLines = 6,
+//            )
+//        }
+//    }
+//}

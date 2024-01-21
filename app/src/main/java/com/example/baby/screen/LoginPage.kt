@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -39,9 +38,14 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
 //            if(viewModel.loginResult){
 //
 //            }
-             }
+        }
         Spacer(modifier = Modifier.height(20.dp))
-//         RegisterButton(isNotNull = true, text= "로그인", route = "mainScreen", navController = navController)
+        RegisterButton(
+            isNotNull = true,
+            text = "로그인",
+            route = "mainScreen",
+            navController = navController
+        )
     }
 }
 
@@ -92,9 +96,20 @@ fun SignInGoogleButton(onClick: () -> Unit) {
                 bottom = 11.dp
             )
         ) {
-            Icon(painter = painterResource(id = R.drawable.icon_google), contentDescription = "Google sign button", tint = Color.Unspecified, modifier = Modifier.size(35.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.icon_google),
+                contentDescription = "Google sign button",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(35.dp)
+            )
             Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "Sign in with Google", style = MaterialTheme.typography.overline, color = Color.Gray, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = "Sign in with Google",
+                style = MaterialTheme.typography.overline,
+                color = Color.Gray,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

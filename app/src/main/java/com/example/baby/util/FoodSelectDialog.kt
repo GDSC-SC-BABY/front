@@ -35,7 +35,7 @@ fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit){
                 }.padding(16.dp))
                 Divider()
                 Text("간식 기록", modifier = Modifier.clickable {
-                    navController.navigate("foodRegisterScreen")
+                    navController.navigate("snackRegisterScreen")
                     onDismiss()
                 }.padding(16.dp))
             }

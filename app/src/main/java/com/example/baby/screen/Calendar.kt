@@ -1,7 +1,5 @@
 package com.example.baby.screen
 
-import android.util.Log
-import android.widget.Button
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -17,8 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -98,7 +94,7 @@ fun MonthWidget(viewModel: CalendarViewModel) {
             }
 
             Text(
-                text = info,
+                text = "2024년 01월",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -109,7 +105,6 @@ fun MonthWidget(viewModel: CalendarViewModel) {
                     tint = MaterialTheme.colors.secondary,
                     contentDescription = "달 +1"
                 )
-
             }
         }
     }
