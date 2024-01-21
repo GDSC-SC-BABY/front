@@ -17,10 +17,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.viewModel.LoadingViewModel
+import com.example.baby.viewModel.UserRegisterViewModel
 
 @Composable
-fun UserRegisterPage(viewModel: LoadingViewModel, navController: NavController) {
-    val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()
+fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavController) {
+
+    val isFormValid by viewModel.isFormValid.collectAsState()
 
     Column(
         modifier = Modifier
@@ -31,20 +33,28 @@ fun UserRegisterPage(viewModel: LoadingViewModel, navController: NavController) 
     ) {
         Text("회원가입", fontWeight = FontWeight.Bold, fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
-        NicknameRegisterField()
+        NicknameRegisterField(viewModel)
         Spacer(modifier = Modifier.height(20.dp))
-        RelationshipRegisterFiled()
-        RegisterButton(text= "가입하기", route = "babyRegisterScreen", navController = navController)
+        RelationshipRegisterFiled(viewModel)
+        RegisterButton(
+            isNotNull = isFormValid,
+            text = "가입하기",
+            route = "babyRegisterScreen",
+            navController = navController
+        )
     }
 }
 
 @Composable
-fun NicknameRegisterField() {
-    var text by remember { mutableStateOf("") }
+fun NicknameRegisterField(viewModel: UserRegisterViewModel) {
+
+    val nickname by viewModel.nickname.collectAsState()
 
     OutlinedTextField(
-        value = text,
-        onValueChange = { text = it },
+        value = nickname,
+        onValueChange = { updatedNickname ->
+            viewModel.nickname.value = updatedNickname
+        },
         label = { Text("닉네임") },
         modifier = Modifier
             .fillMaxWidth()
@@ -54,15 +64,18 @@ fun NicknameRegisterField() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun RelationshipRegisterFiled() {
+fun RelationshipRegisterFiled(viewModel: UserRegisterViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val items = listOf("엄마", "아빠", "베이비시터")
-    var selectedIndex by remember { mutableStateOf(0) }
-    val selectedText = items[selectedIndex]
+    val relationship by viewModel.relationship.collectAsState() // StateFlow를 State로 변환
+    val selectedIndex = items.indexOf(relationship) // 현재 relationship을 기반으로 selectedIndex를 결정
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
         Text(
             text = "아기와의 관계",
             modifier = Modifier.padding(start = 16.dp, top = 16.dp),
@@ -80,7 +93,7 @@ fun RelationshipRegisterFiled() {
                 .padding(16.dp)
         ) {
             TextField(
-                value = selectedText,
+                value = items.getOrElse(selectedIndex) { "엄마" },
                 onValueChange = { },
                 readOnly = true, // This makes the TextField not editable
                 trailingIcon = {
@@ -110,7 +123,7 @@ fun RelationshipRegisterFiled() {
                 items.forEachIndexed { index, text ->
                     DropdownMenuItem(
                         onClick = {
-                            selectedIndex = index
+                            viewModel.relationship.value = items[index]
                             expanded = false
                         }
                     ) {
@@ -123,15 +136,17 @@ fun RelationshipRegisterFiled() {
 }
 
 @Composable
-fun RegisterButton(text : String, route: String, navController : NavController){
+fun RegisterButton(isNotNull: Boolean, text: String, route: String, navController: NavController) {
     Box(
         contentAlignment = Alignment.BottomEnd
-    ){
-    Button(onClick = {
-        navController.navigate(route)
-    },
-        ){
-        Text(text)
-    }
+    ) {
+        Button(
+            onClick = {
+                navController.navigate(route)
+            },
+            enabled = isNotNull
+        ) {
+            Text(text)
+        }
     }
 }
