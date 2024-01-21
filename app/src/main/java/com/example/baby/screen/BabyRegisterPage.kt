@@ -4,7 +4,10 @@ import android.app.DatePickerDialog
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -12,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -34,7 +38,14 @@ fun BabyRegisterPage(viewModel: LoadingViewModel, navController: NavController) 
         BabyNameRegisterField()
         Spacer(modifier = Modifier.height(20.dp))
         BirthdayRegisterField()
-        RegisterButton(text = "로그인", route = "loginScreen", navController = navController)
+        Spacer(modifier = Modifier.height(20.dp))
+        BabyInfoRegisterWidget()
+        RegisterButton(
+            isNotNull = true,
+            text = "로그인",
+            route = "mainScreen",
+            navController = navController
+        )
     }
 }
 
@@ -54,20 +65,23 @@ fun BabyNameRegisterField() {
 
 @Composable
 fun BirthdayRegisterField() {
-    var text by remember { mutableStateOf("생일을 선택하세요") }
+    var text by remember { mutableStateOf("생일을 선택하세요.") }
     val context = LocalContext.current // Composable 함수 내부에서 사용
 
     TextButton(onClick = {
         showDatePicker(context) { year, month, dayOfMonth ->
             // 사용자가 날짜를 선택하면 텍스트 업데이트
-            text = "$year-${month + 1}-$dayOfMonth"
+            text = "${year}년 ${month + 1}월 ${dayOfMonth}일"
         }
     }) {
-        Text(text)
+        Text(text, fontSize = 15.sp)
     }
 }
 
-fun showDatePicker(context: Context, onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
+fun showDatePicker(
+    context: Context,
+    onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit
+) {
     // 현재 날짜를 기본값으로 설정
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
@@ -82,4 +96,42 @@ fun showDatePicker(context: Context, onDateSelected: (year: Int, month: Int, day
         }, year, month, day
     )
     datePickerDialog.show()
+}
+
+@Composable
+fun BabyInfoRegisterWidget() {
+    var heightText by remember { mutableStateOf("") }
+    var weightText by remember { mutableStateOf("") }
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        OutlinedTextField(
+            value = heightText,
+            onValueChange = { height ->
+                if (height.all { it.isDigit() || it == '.' } && height.count { it == '.' } <= 1) {
+                    heightText = height
+                }
+            },
+            label = { Text("키 (cm)") },
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .padding(horizontal = 30.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        )
+
+        OutlinedTextField(
+            value = weightText,
+            onValueChange = { weight ->
+                if (weight.all { it.isDigit() || it == '.' } && weight.count { it == '.' } <= 1) {
+                    weightText = weight
+                }
+            },
+            label = { Text("몸무게 (kg)") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+        )
+    }
 }
