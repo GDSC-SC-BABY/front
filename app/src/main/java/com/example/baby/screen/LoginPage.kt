@@ -4,27 +4,23 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.R
-import com.example.baby.screen.NicknameRegisterField
 import com.example.baby.screen.RegisterButton
-import com.example.baby.screen.RelationshipRegisterFiled
-import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.LoginViewModel
-
 
 
 @Composable
 fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: () -> Unit) {
-    val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -37,9 +33,15 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
         Spacer(modifier = Modifier.height(30.dp))
         LoginField()
         Spacer(modifier = Modifier.height(20.dp))
-        SignInGoogleButton { content() }
+        SignInGoogleButton {
+            navController.navigate("registerScreen")
+//            viewModel.tryLogin(context)
+//            if(viewModel.loginResult){
+//
+//            }
+             }
         Spacer(modifier = Modifier.height(20.dp))
-        RegisterButton(text= "로그인", route = "babyRegisterScreen", navController = navController)
+//         RegisterButton(isNotNull = true, text= "로그인", route = "mainScreen", navController = navController)
     }
 }
 

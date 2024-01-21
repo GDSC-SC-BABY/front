@@ -10,10 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
-import com.example.baby.viewModel.CalendarViewModel
-import com.example.baby.viewModel.DateViewModel
-import com.example.baby.viewModel.LoadingViewModel
-import com.example.baby.viewModel.LoginViewModel
+import com.example.baby.viewModel.*
 
 class MainActivity : ComponentActivity() {
 
@@ -24,6 +21,8 @@ class MainActivity : ComponentActivity() {
     private val loadingViewModel by viewModels<LoadingViewModel>()
 
     private val loginViewModel by viewModels<LoginViewModel>()
+
+    private val userRegisterViewModel by viewModels<UserRegisterViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("registerScreen") {
                         UserRegisterPage(
-                            viewModel = loadingViewModel,
+                            viewModel = userRegisterViewModel,
                             navController = navController
                         )
                     }

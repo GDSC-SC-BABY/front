@@ -32,7 +32,7 @@ fun LoadingScreen(viewModel: LoadingViewModel, navController: NavController) {
 
         LaunchedEffect(navigateToMainScreen) {
             if (navigateToMainScreen == true) {
-                navController.navigate("registerScreen")
+                navController.navigate("loginScreen")
             }
         }
     }
