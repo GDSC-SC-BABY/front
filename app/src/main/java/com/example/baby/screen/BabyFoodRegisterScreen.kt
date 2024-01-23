@@ -1,6 +1,9 @@
 package com.example.baby.screen
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,11 +12,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -21,13 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.baseMealList
 import com.example.baby.util.mealTimeList
 import com.example.baby.viewModel.BabyFoodRegisterViewModel
 import com.example.baby.viewModel.DateViewModel
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun BabyFoodRegisterScreen(
     viewModel: DateViewModel,
@@ -81,6 +87,7 @@ fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodRegist
                 )
                 .size(100.dp)
         ) {
+            ImagePickerBox(viewModel = foodViewModel)
         }
         Spacer(modifier = Modifier.width(20.dp))
         Column {
@@ -105,13 +112,43 @@ fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodRegist
     }
 }
 
+@Composable
+fun ImagePickerBox(viewModel: BabyFoodRegisterViewModel) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        viewModel.onImagePicked(uri)
+    }
+
+    Box(
+        modifier = Modifier
+            .background(
+                color = Color.LightGray,
+                shape = RoundedCornerShape(15.dp)
+            )
+            .size(100.dp)
+            .clickable {
+                launcher.launch("image/*")
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(imageVector = Icons.Default.Add, contentDescription = "Add Image")
+    }
+
+    val selectedImageUri by viewModel.selectedImage.observeAsState()
+    selectedImageUri?.let { uri ->
+        Image(painter = rememberAsyncImagePainter(uri), contentDescription = null)
+    }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MealTimeSelectDropDownMenu(viewModel: BabyFoodRegisterViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val items = mealTimeList
-    val relationship by viewModel.mealTime.collectAsState() // StateFlow를 State로 변환
-    val selectedIndex = items.indexOf(relationship) // 현재 relationship을 기반으로 selectedIndex를 결정
+    val relationship by viewModel.mealTime.collectAsState()
+    val selectedIndex = items.indexOf(relationship)
 
 
     Column(
@@ -316,7 +353,7 @@ fun AddMealButton(navController: NavController) {
         contentAlignment = Alignment.BottomEnd
     ) {
         Button(
-            onClick = { navController.navigate("mainScreen") }
+            onClick = { navController.popBackStack() }
         ) {
             Text("등록")
         }

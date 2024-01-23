@@ -1,6 +1,7 @@
 package com.example.baby.viewModel
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +25,13 @@ class BabyFoodRegisterViewModel() : ViewModel() {
 
     private val _toppings = mutableStateListOf<String>()
     val toppings: List<String> = _toppings
+
+    private val _selectedImage = MutableLiveData<Uri?>()
+    val selectedImage: LiveData<Uri?> = _selectedImage
+
+    fun onImagePicked(uri: Uri?) {
+        _selectedImage.value = uri
+    }
 
     // 토핑 추가 함수
     fun addTopping() {
