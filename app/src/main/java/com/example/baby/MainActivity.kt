@@ -10,19 +10,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
+import com.example.baby.network.FirebaseAuthRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.*
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+
 
     private val dateViewModel by viewModels<DateViewModel>()
 
     private val calendarViewModel by viewModels<CalendarViewModel>()
 
     private val loadingViewModel by viewModels<LoadingViewModel>()
-
-    private val loginViewModel by viewModels<LoginViewModel>()
 
     private val userRegisterViewModel by viewModels<UserRegisterViewModel>()
 
@@ -32,9 +33,15 @@ class MainActivity : ComponentActivity() {
         AuthViewModelFactory(AuthRepository(this@MainActivity))
     }
 
+    private val loginViewModel by viewModels<LoginViewModel> {
+        FirebaseAuthViewModelFactory(FirebaseAuthRepository(this@MainActivity))
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this);
+
 
         setContent {
             BabyTheme {
@@ -53,7 +60,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(NavigationRoutes.LoginScreen.route) {
-                        LoginPage(viewModel = loginViewModel, navController = navController, {})
+                        LoginPage(viewModel = loginViewModel, navController = navController) {}
                     }
                     composable(NavigationRoutes.MainScreen.route) {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
