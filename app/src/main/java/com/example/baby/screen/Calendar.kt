@@ -12,6 +12,8 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.data.CalendarDate
+import com.example.baby.util.FoodSelectDialog
+import com.example.baby.util.RecordSelectDialog
 import com.example.baby.viewModel.CalendarViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,11 +39,11 @@ fun CustomCalendarLayout(
     Layout(
         content = content,
         modifier = modifier
-    ) { measurables, constraints ->
+    ) { measurable, constraints ->
         val cellWidth = constraints.maxWidth / 7
         val cellHeight = constraints.maxHeight / 6
 
-        val placeables = measurables.map { measurable ->
+        val placeable = measurable.map { measurable ->
             measurable.measure(Constraints.fixed(cellWidth, cellHeight))
         }
 
@@ -47,7 +51,7 @@ fun CustomCalendarLayout(
             var xPosition = 0
             var yPosition = 0
 
-            placeables.forEachIndexed { index, placeable ->
+            placeable.forEachIndexed { index, placeable ->
                 placeable.placeRelative(x = xPosition, y = yPosition)
 
                 xPosition += cellWidth
@@ -61,7 +65,12 @@ fun CustomCalendarLayout(
 }
 
 @Composable
-fun CustomCalendarView(viewModel: CalendarViewModel, textHeight: Int = 50, navController: NavController) {
+fun CustomCalendarView(
+    viewModel: CalendarViewModel,
+    textHeight: Int = 50,
+    navController: NavController
+) {
+    val showDialog = remember { mutableStateOf(false) }
     val daysInMonth by viewModel.calendarDays.observeAsState(emptyList())
 
     val dateFormatter = SimpleDateFormat("dd", Locale.getDefault())
@@ -71,11 +80,15 @@ fun CustomCalendarView(viewModel: CalendarViewModel, textHeight: Int = 50, navCo
         WeekDayHeaders()
         CustomCalendarLayout(textHeight = textHeight) {
             daysInMonth.forEach { calendarDay ->
-                DateCell(calendarDay, dateFormatter){
-                    navController.navigate("foodRegisterScreen")
+                DateCell(calendarDay, dateFormatter) {
+                    showDialog.value = true
                 }
             }
         }
+    }
+
+    if (showDialog.value) {
+        RecordSelectDialog(navController = navController, onDismiss = { showDialog.value = false })
     }
 }
 

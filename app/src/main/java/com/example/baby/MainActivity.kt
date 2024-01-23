@@ -95,6 +95,14 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+
+                    composable("foodDetailScreen") {
+                        BabyFoodDetailScreen(
+                            viewModel = dateViewModel,
+                            babyFoodViewModel = babyFoodRegisterViewModel,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }

@@ -19,6 +19,12 @@ import com.example.baby.util.FoodSelectDialog
 fun CustomBottomNavigation(navController: NavController) {
     val showDialog = remember { mutableStateOf(false) }
 
+
+    if (showDialog.value) {
+        FoodSelectDialog(navController = navController, onDismiss = { showDialog.value = false })
+    }
+
+
     androidx.compose.material.BottomNavigation(
         modifier = Modifier.wrapContentHeight()
     ) {
