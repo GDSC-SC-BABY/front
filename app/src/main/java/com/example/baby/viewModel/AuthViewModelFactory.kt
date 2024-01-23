@@ -1,9 +1,8 @@
-package com.example.baby.screen
+package com.example.baby.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.baby.network.AuthRepository
-import com.example.baby.viewModel.AuthViewModel
 
 class AuthViewModelFactory(private val repository: AuthRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

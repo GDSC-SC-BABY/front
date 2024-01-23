@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.navigation.NavController
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.viewModel.LoadingViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyPageScreen(viewModel: LoadingViewModel, navController: NavController) {
     val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()

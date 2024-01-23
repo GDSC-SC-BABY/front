@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.util.FoodSelectDialog
 
 @Composable
@@ -33,7 +34,7 @@ fun CustomBottomNavigation(navController: NavController) {
             selected = navController.currentDestination?.route == "mainScreen",
             onClick = {
                 // Handle navigation to Calendar screen
-                navController.navigate("mainScreen")
+                navController.navigate(NavigationRoutes.MainScreen.route)
             }
         )
         BottomNavigationItem(
@@ -41,19 +42,19 @@ fun CustomBottomNavigation(navController: NavController) {
             selected = navController.currentDestination?.route == "guideScreen",
             onClick = {
                 // Handle navigation to Guide screen
-                navController.navigate("GuideScreen")
+                navController.navigate(NavigationRoutes.GuideScreen.route)
             }
         )
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
             selected = navController.currentDestination?.route == "policyScreen",
             onClick = {
-                navController.navigate("PolicyScreen")
+                navController.navigate(NavigationRoutes.PolicyScreen.route)
             }
         )
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-            selected = navController.currentDestination?.route == "foodRegisterScreen" || navController.currentDestination?.route == "TreatRegisterScreen",
+            selected = navController.currentDestination?.route == NavigationRoutes.FoodRegisterScreen.route || navController.currentDestination?.route == NavigationRoutes.SnackRegisterScreen.route,
             onClick = {
                 showDialog.value = true;
             }
@@ -62,7 +63,7 @@ fun CustomBottomNavigation(navController: NavController) {
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
             selected = navController.currentDestination?.route == "myPageScreen",
             onClick = {
-                navController.navigate("myPageScreen")
+                navController.navigate(NavigationRoutes.MyPageScreen.route)
             }
         )
     }

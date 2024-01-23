@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
@@ -42,61 +43,53 @@ class MainActivity : ComponentActivity() {
 
                 // NavHost 설정
                 NavHost(navController = navController, startDestination = "loadingScreen") {
-                    composable("loadingScreen") {
+                    composable(NavigationRoutes.LoadingScreen.route) {
                         LoadingScreen(viewModel = loadingViewModel, navController = navController)
                     }
-                    composable("registerScreen") {
+                    composable(NavigationRoutes.RegisterScreen.route) {
                         UserRegisterPage(
                             viewModel = userRegisterViewModel,
                             navController = navController
                         )
                     }
-                    composable("loginScreen") {
-                        LoginPage(
-                            viewModel = loginViewModel,
-                            navController = navController,
-                            {}
-                        )
+                    composable(NavigationRoutes.LoginScreen.route) {
+                        LoginPage(viewModel = loginViewModel, navController = navController, {})
                     }
-                    composable("mainScreen") {
+                    composable(NavigationRoutes.MainScreen.route) {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
                     }
-                    composable("guideScreen") {
+                    composable(NavigationRoutes.GuideScreen.route) {
                         GuideScreen(viewModel = loadingViewModel, navController = navController)
                     }
-                    composable("policyScreen") {
+                    composable(NavigationRoutes.PolicyScreen.route) {
                         PolicyScreen(viewModel = loadingViewModel, navController = navController)
                     }
-                    composable("myPageScreen") {
+                    composable(NavigationRoutes.MyPageScreen.route) {
                         MyPageScreen(viewModel = loadingViewModel, navController = navController)
                     }
-                    composable("babyRegisterScreen") {
+                    composable(NavigationRoutes.BabyRegisterScreen.route) {
                         BabyRegisterPage(
                             viewModel = loadingViewModel,
                             navController = navController
                         )
                     }
-                    composable("foodRegisterScreen") {
+                    composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(
                             viewModel = dateViewModel,
                             babyFoodViewModel = babyFoodRegisterViewModel,
                             navController = navController
                         )
                     }
-                    composable("snackRegisterScreen") {
+                    composable(NavigationRoutes.SnackRegisterScreen.route) {
                         BabySnackRegisterScreen(
                             viewModel = dateViewModel,
                             navController = navController
                         )
                     }
-                    composable("authScreen") {
-                        AuthScreen(
-                            viewModel = authViewModel,
-                            navController = navController
-                        )
+                    composable(NavigationRoutes.AuthScreen.route) {
+                        AuthScreen(viewModel = authViewModel, navController = navController)
                     }
-
-                    composable("foodDetailScreen") {
+                    composable(NavigationRoutes.FoodDetailScreen.route) {
                         BabyFoodDetailScreen(
                             viewModel = dateViewModel,
                             babyFoodViewModel = babyFoodRegisterViewModel,

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
 
@@ -39,10 +40,10 @@ fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavControl
         RegisterButton(
             isNotNull = isFormValid,
             text = "가입하기",
-            route = "babyRegisterScreen",
+            route = NavigationRoutes.BabyRegisterScreen.route,
             navController = navController
         )
-        PhoneAuthWidget(route = "authScreen", navController =navController )
+        PhoneAuthWidget(route = NavigationRoutes.AuthScreen.route, navController =navController )
     }
 }
 

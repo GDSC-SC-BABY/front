@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.annotation.SuppressLint
 import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import com.example.baby.viewModel.LoadingViewModel
 import java.util.Timer
 import java.util.logging.Handler
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun GuideScreen(viewModel: LoadingViewModel, navController: NavController) {
     val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.example.baby.data.NavigationRoutes
 
 @Composable
 fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit){
@@ -53,17 +54,17 @@ fun RecordSelectDialog(navController: NavController, onDismiss: () -> Unit){
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Text("이유식 기록", modifier = Modifier.clickable {
-                    navController.navigate("foodDetailScreen")
+                    navController.navigate(NavigationRoutes.FoodDetailScreen.route)
                     onDismiss()
                 }.padding(16.dp))
                 Divider()
                 Text("성장일지 기록", modifier = Modifier.clickable {
-                    navController.navigate("snackRegisterScreen")
+                    navController.navigate(NavigationRoutes.SnackRegisterScreen.route)
                     onDismiss()
                 }.padding(16.dp))
                 Divider()
                 Text("육아일지 기록", modifier = Modifier.clickable {
-                    navController.navigate("snackRegisterScreen")
+                    navController.navigate(NavigationRoutes.SnackRegisterScreen.route)
                     onDismiss()
                 }.padding(16.dp))
             }

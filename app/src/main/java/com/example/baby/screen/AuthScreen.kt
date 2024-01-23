@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.viewModel.AuthViewModel
 
 @Composable
@@ -24,7 +25,7 @@ fun AuthScreen(viewModel: AuthViewModel, navController: NavController) {
 
     LaunchedEffect(isAuthSuccessful) {
         if (isAuthSuccessful == true) {
-            navController.navigate("mainScreen")
+            navController.navigate(NavigationRoutes.MainScreen.route)
         }
     }
 
