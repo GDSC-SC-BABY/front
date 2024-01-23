@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.baby.data.CalendarDate
 import com.example.baby.viewModel.CalendarViewModel
 import java.text.SimpleDateFormat
@@ -59,7 +61,7 @@ fun CustomCalendarLayout(
 }
 
 @Composable
-fun CustomCalendarView(viewModel: CalendarViewModel, textHeight: Int = 50) {
+fun CustomCalendarView(viewModel: CalendarViewModel, textHeight: Int = 50, navController: NavController) {
     val daysInMonth by viewModel.calendarDays.observeAsState(emptyList())
 
     val dateFormatter = SimpleDateFormat("dd", Locale.getDefault())
@@ -69,7 +71,9 @@ fun CustomCalendarView(viewModel: CalendarViewModel, textHeight: Int = 50) {
         WeekDayHeaders()
         CustomCalendarLayout(textHeight = textHeight) {
             daysInMonth.forEach { calendarDay ->
-                DateCell(calendarDay, dateFormatter)
+                DateCell(calendarDay, dateFormatter){
+                    navController.navigate("foodRegisterScreen")
+                }
             }
         }
     }
@@ -111,12 +115,14 @@ fun MonthWidget(viewModel: CalendarViewModel) {
 }
 
 @Composable
-fun DateCell(calendarDay: CalendarDate, dateFormatter: SimpleDateFormat) {
+fun DateCell(calendarDay: CalendarDate, dateFormatter: SimpleDateFormat, onClick: () -> Unit) {
     val textColor = if (calendarDay.isCurrentMonth) Color.Black else Color.Gray
     Text(
         text = dateFormatter.format(calendarDay.date),
         color = textColor,
-        modifier = Modifier.padding(4.dp)
+        modifier = Modifier
+            .padding(4.dp)
+            .clickable(onClick = onClick)
     )
 }
 

@@ -38,7 +38,7 @@ fun MainScreen(
 //                    // 날짜 클릭 시 액션 처리
 //                }
 //            )
-            CustomCalendarView(viewModel = viewModel)
+            CustomCalendarView(viewModel = viewModel, navController = navController)
         }
     }
 }
