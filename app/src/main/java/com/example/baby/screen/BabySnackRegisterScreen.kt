@@ -77,17 +77,17 @@ fun BabySnackRegisterInfo(viewModel: DateViewModel) {
             Spacer(modifier = Modifier.height(5.dp))
             Text(viewModel.getTimeNow())
             Spacer(modifier = Modifier.height(5.dp))
-//            OutlinedTextField(
-//                value = text,
-//                onValueChange = { gram ->
-//                    if (gram.all { it.isDigit()}) {
-//                        text = gram
-//                    }},
-//                label = { Text("간식 (g)") },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 30.dp)
-//            )
+            OutlinedTextField(
+                value = text,
+                onValueChange = { gram ->
+                    if (gram.all { it.isDigit()}) {
+                        text = gram
+                    }},
+                label = { Text("간식 (g)") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 30.dp)
+            )
         }
     }
 }

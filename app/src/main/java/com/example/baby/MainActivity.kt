@@ -25,6 +25,8 @@ class MainActivity : ComponentActivity() {
 
     private val userRegisterViewModel by viewModels<UserRegisterViewModel>()
 
+    private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
+
     private val authViewModel by viewModels<AuthViewModel> {
         AuthViewModelFactory(AuthRepository(this@MainActivity))
     }
@@ -77,6 +79,7 @@ class MainActivity : ComponentActivity() {
                     composable("foodRegisterScreen") {
                         BabyFoodRegisterScreen(
                             viewModel = dateViewModel,
+                            babyFoodViewModel = babyFoodRegisterViewModel,
                             navController = navController
                         )
                     }

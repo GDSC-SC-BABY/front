@@ -1,15 +1,15 @@
 package com.example.baby.screen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,41 +19,56 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.baseMealList
+import com.example.baby.util.mealTimeList
+import com.example.baby.viewModel.BabyFoodRegisterViewModel
 import com.example.baby.viewModel.DateViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BabyFoodRegisterScreen(viewModel: DateViewModel, navController: NavController) {
-    Scaffold(bottomBar = { CustomBottomNavigation(navController = navController) }
-    )
-    {
+fun BabyFoodRegisterScreen(
+    viewModel: DateViewModel,
+    babyFoodViewModel: BabyFoodRegisterViewModel,
+    navController: NavController
+) {
+    Scaffold(
+        bottomBar = { CustomBottomNavigation(navController = navController) }
+    ) { innerPadding ->
         BoxWithConstraints {
             val height = maxHeight.times(0.13f)
             Column(
                 modifier = Modifier
                     .background(Color.White)
                     .fillMaxSize()
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+                    .padding(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = 20.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 20.dp
+                    )
+                    .verticalScroll(rememberScrollState())
             ) {
-                Text(text = "통통이 초기 이유식", fontSize = 23.sp, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(20.dp))
-                BabyFoodRegisterInfo(viewModel = viewModel)
+                BabyFoodRegisterInfo(viewModel = viewModel, foodViewModel = babyFoodViewModel)
                 Spacer(modifier = Modifier.height(25.dp))
                 BaseMealSelectWidget(height = height)
                 Spacer(modifier = Modifier.height(10.dp))
-                ToppingSelectWidget(height = height)
+                ToppingSelectWidget(viewModel = babyFoodViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
                 WriteSignificant()
+                Spacer(modifier = Modifier.height(10.dp))
+                AddMealButton(navController)
             }
         }
     }
 }
 
 @Composable
-fun BabyFoodRegisterInfo(viewModel: DateViewModel) {
+fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodRegisterViewModel) {
+    var text by remember { mutableStateOf("") }
+
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -69,11 +84,91 @@ fun BabyFoodRegisterInfo(viewModel: DateViewModel) {
         }
         Spacer(modifier = Modifier.width(20.dp))
         Column {
-            Text(viewModel.getDateNow())
+            Text(viewModel.getDateNow(), fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(5.dp))
-            Text("16시")
+            MealTimeSelectDropDownMenu(foodViewModel)
             Spacer(modifier = Modifier.height(5.dp))
-            Text("25g")
+            OutlinedTextField(
+                value = text,
+                onValueChange = { gram ->
+                    if (gram.all { it.isDigit() }) {
+                        text = gram
+                    }
+                },
+                label = { Text("베이스 죽 (g)") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.2f)
+                    .padding(horizontal = 30.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun MealTimeSelectDropDownMenu(viewModel: BabyFoodRegisterViewModel) {
+    var expanded by remember { mutableStateOf(false) }
+    val items = mealTimeList
+    val relationship by viewModel.mealTime.collectAsState() // StateFlow를 State로 변환
+    val selectedIndex = items.indexOf(relationship) // 현재 relationship을 기반으로 selectedIndex를 결정
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            TextField(
+                value = items.getOrElse(selectedIndex) { "00시" },
+                onValueChange = { },
+                readOnly = true,
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Dropdown arrow",
+                        Modifier.clickable { expanded = true }
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = MaterialTheme.colors.surface,
+                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledIndicatorColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
+                    disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.small)
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth(0.2f)
+                    .fillMaxHeight(0.2f),
+                properties = PopupProperties(focusable = false)
+            ) {
+                items.forEachIndexed { index, text ->
+                    DropdownMenuItem(
+                        onClick = {
+                            viewModel.mealTime.value = items[index]
+                            expanded = false
+                        }
+                    ) {
+                        Text(text = text)
+                    }
+                }
+            }
         }
     }
 }
@@ -128,54 +223,53 @@ fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ToppingSelectWidget(height: Dp) {
-    val dataList = (0..7).map { baseMealList[it] }
-    val selectedMeal = remember { mutableStateOf<String?>(null) }
-
+fun ToppingSelectWidget(viewModel: BabyFoodRegisterViewModel) {
     Column {
-        Text(text = "토핑", fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(10.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(height)
-                .background(color = Color.LightGray, shape = RoundedCornerShape(15.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            LazyVerticalGrid(
-                GridCells.Fixed(4),
-                contentPadding = PaddingValues(4.dp),
-                modifier = Modifier.align(Alignment.Center)
-            ) {
-                items(dataList) { item ->
-                    ToppingGridItem(item, selectedMeal.value == item) {
-                        selectedMeal.value = item
-                    }
-                }
+            Text(text = "토핑", fontWeight = FontWeight.SemiBold)
+
+            // 토핑 추가 버튼
+            Button(onClick = { viewModel.addTopping() }) {
+                Text(text = "+")
             }
+
+        }
+
+        // 동적으로 생성된 토핑 필드들
+        viewModel.toppings.forEachIndexed { index, topping ->
+            ToppingField(index, topping, viewModel)
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
 
 @Composable
-fun ToppingGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
-    val borderColor = if (isSelected) Color.Cyan else Color.Transparent
-
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-            .size(width = 90.dp, height = 30.dp),
-        contentAlignment = Alignment.Center,
+fun ToppingField(index: Int, topping: String, viewModel: BabyFoodRegisterViewModel) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = Modifier
-                .fillMaxSize(),
-            border = BorderStroke(1.dp, borderColor)
-        ) {
-            Text(item, color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
-        }
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(0.6f),
+            value = topping,
+            onValueChange = { updatedTopping -> viewModel.updateTopping(index, updatedTopping) },
+            label = { Text("재료") }
+        )
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(0.7f),
+            value = topping,
+            onValueChange = { updatedTopping -> viewModel.updateTopping(index, updatedTopping) },
+            label = { Text("용량 (g)") }
+        )
     }
 }
 
@@ -192,7 +286,7 @@ fun WriteSignificant() {
                     shape = RoundedCornerShape(15.dp)
                 )
                 .fillMaxWidth()
-                .height(150.dp)
+                .height(300.dp)
         ) {
             TextField(
                 value = text,
@@ -212,6 +306,19 @@ fun WriteSignificant() {
                 singleLine = false,
                 maxLines = 6,
             )
+        }
+    }
+}
+
+@Composable
+fun AddMealButton(navController: NavController) {
+    Box(
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Button(
+            onClick = { navController.navigate("mainScreen") }
+        ) {
+            Text("등록")
         }
     }
 }
