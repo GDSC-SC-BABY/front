@@ -28,12 +28,12 @@ fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit){
             modifier = Modifier.fillMaxWidth(0.8f)
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
-                Text("이유식 기록", modifier = Modifier.clickable {
+                Text("이유식 기록", modifier = Modifier.fillMaxWidth().clickable {
                     navController.navigate("foodRegisterScreen")
                     onDismiss()
                 }.padding(16.dp))
                 Divider()
-                Text("간식 기록", modifier = Modifier.clickable {
+                Text("간식 기록", modifier = Modifier.fillMaxWidth().clickable {
                     navController.navigate("snackRegisterScreen")
                     onDismiss()
                 }.padding(16.dp))
@@ -53,17 +53,17 @@ fun RecordSelectDialog(navController: NavController, onDismiss: () -> Unit){
             modifier = Modifier.fillMaxWidth(0.8f)
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
-                Text("이유식 기록", modifier = Modifier.clickable {
+                Text("이유식 기록", modifier = Modifier.fillMaxWidth().clickable {
                     navController.navigate(NavigationRoutes.FoodDetailScreen.route)
                     onDismiss()
                 }.padding(16.dp))
                 Divider()
-                Text("성장일지 기록", modifier = Modifier.clickable {
+                Text("성장일지 기록", modifier = Modifier.fillMaxWidth().clickable {
                     navController.navigate(NavigationRoutes.SnackRegisterScreen.route)
                     onDismiss()
                 }.padding(16.dp))
                 Divider()
-                Text("육아일지 기록", modifier = Modifier.clickable {
+                Text("육아일지 기록", modifier = Modifier.fillMaxWidth().clickable {
                     navController.navigate(NavigationRoutes.SnackRegisterScreen.route)
                     onDismiss()
                 }.padding(16.dp))

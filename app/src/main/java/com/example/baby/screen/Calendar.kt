@@ -130,12 +130,14 @@ fun MonthWidget(viewModel: CalendarViewModel) {
 @Composable
 fun DateCell(calendarDay: CalendarDate, dateFormatter: SimpleDateFormat, onClick: () -> Unit) {
     val textColor = if (calendarDay.isCurrentMonth) Color.Black else Color.Gray
+
     Text(
         text = dateFormatter.format(calendarDay.date),
         color = textColor,
         modifier = Modifier
-            .padding(4.dp)
+            .padding(4.dp) // 요일 헤더와 같은 가로 패딩을 적용합니다.
             .clickable(onClick = onClick)
+            .padding(horizontal = 15.dp) // 추가된 코드
     )
 }
 
@@ -145,7 +147,7 @@ fun WeekDayHeaders() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp, horizontal = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         daysOfWeek.forEach { day ->
