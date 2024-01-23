@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.R
+import com.example.baby.data.NavigationRoutes.FoodDetailScreen.route
 import com.example.baby.screen.RegisterButton
 import com.example.baby.viewModel.LoginViewModel
 
@@ -33,7 +34,8 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
         LoginField()
         Spacer(modifier = Modifier.height(20.dp))
         SignInGoogleButton {
-            navController.navigate("registerScreen")
+            content()
+//            navController.navigate("registerScreen")
 //            viewModel.tryLogin(context)
 //            if(viewModel.loginResult){
 //
@@ -43,9 +45,14 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
         RegisterButton(
             isNotNull = true,
             text = "로그인",
-            route = "mainScreen",
-            navController = navController
-        )
+            route = "mainScreen"
+        ) {
+            /*viewModel.signInUser(){
+                navController.navigate(route)
+            }*/
+
+
+        }
     }
 }
 
@@ -74,6 +81,19 @@ fun LoginField() {
     }
 }
 
+@Composable
+fun RegisterButton(isNotNull: Boolean, text: String, route: String, content: () -> Unit) {
+    Box(
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Button(
+            onClick = content,
+            enabled = isNotNull
+        ) {
+            Text(text)
+        }
+    }
+}
 
 @Composable
 fun SignInGoogleButton(onClick: () -> Unit) {
