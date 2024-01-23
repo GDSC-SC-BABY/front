@@ -1,16 +1,11 @@
 package com.example.baby.network
 
-//import android.telecom.Call
-//import retrofit2.http.GET
+import com.example.baby.data.User
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
 
-//interface RetrofitAPI {
-//    // as we are making get request so we are displaying
-//    // GET as annotation.
-//    // and inside we are passing last parameter for our url.
-//    @GET("T7R2")
-//    fun
-//    // as we are calling data from array so we are calling
-//    // it with array list and naming that method as getAllCourses();
-//            getLanguages(): Call<ArrayList<ListModal>>
-//
-//}
+interface ApiService {
+    @POST("user")
+    suspend fun registerUser(@Body user: User): Response<User>
+}
