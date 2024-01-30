@@ -110,6 +110,12 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+                    composable(NavigationRoutes.BabyPatternRecordScreen.route) {
+                        BabyPatternRecordPage(
+                            viewModel = loadingViewModel,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
