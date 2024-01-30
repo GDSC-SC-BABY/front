@@ -11,6 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
 import com.example.baby.network.FirebaseAuthRepository
+import com.example.baby.network.RetrofitClient
+import com.example.baby.network.UserRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.viewModel.*
@@ -25,7 +27,9 @@ class MainActivity : ComponentActivity() {
 
     private val loadingViewModel by viewModels<LoadingViewModel>()
 
-    private val userRegisterViewModel by viewModels<UserRegisterViewModel>()
+    private val userRegisterViewModel: UserRegisterViewModel by viewModels {
+        UserViewModelFactory(UserRepository())
+    }
 
     private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
 
@@ -35,9 +39,9 @@ class MainActivity : ComponentActivity() {
         AuthViewModelFactory(AuthRepository(this@MainActivity))
     }
 
-    private val loginViewModel by viewModels<LoginViewModel> {
-        FirebaseAuthViewModelFactory(FirebaseAuthRepository(this@MainActivity))
-    }
+//    private val loginViewModel by viewModels<LoginViewModel> {
+//        FirebaseAuthViewModelFactory(FirebaseAuthRepository(this@MainActivity))
+//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +66,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(NavigationRoutes.LoginScreen.route) {
-                        LoginPage(viewModel = loginViewModel, navController = navController) {}
+                        LoginPage(viewModel = loadingViewModel, navController = navController) {}
                     }
                     composable(NavigationRoutes.MainScreen.route) {
                         MainScreen(viewModel = calendarViewModel, navController = navController)

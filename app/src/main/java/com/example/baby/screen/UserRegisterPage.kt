@@ -1,5 +1,7 @@
 package com.example.baby.screen
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,12 +13,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.data.NavigationRoutes
+import com.example.baby.data.User
+import com.example.baby.network.Resource
 import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
 
@@ -39,11 +44,13 @@ fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavControl
         RelationshipRegisterFiled(viewModel)
         RegisterButton(
             isNotNull = isFormValid,
+            viewModel = viewModel,
+            user = User(viewModel.nickname.toString(), residence = "노원구"),
             text = "가입하기",
             route = NavigationRoutes.BabyRegisterScreen.route,
             navController = navController
         )
-        PhoneAuthWidget(route = NavigationRoutes.AuthScreen.route, navController =navController )
+        PhoneAuthWidget(route = NavigationRoutes.AuthScreen.route, navController = navController)
     }
 }
 
@@ -138,17 +145,45 @@ fun RelationshipRegisterFiled(viewModel: UserRegisterViewModel) {
 }
 
 @Composable
-fun RegisterButton(isNotNull: Boolean, text: String, route: String, navController: NavController) {
+fun RegisterButton(
+    isNotNull: Boolean,
+    viewModel: UserRegisterViewModel,
+    user: User,
+    text: String,
+    route: String,
+    navController: NavController
+) {
+
     Box(
         contentAlignment = Alignment.BottomEnd
     ) {
+        val userRegistrationState = viewModel.userRegistrationState.collectAsState().value
+
         Button(
             onClick = {
-                navController.navigate(route)
+                if (isNotNull) { // 조건 검사가 여기에 포함되어야 합니다.
+                    viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
+                }
             },
             enabled = isNotNull
         ) {
             Text(text)
+        }
+
+        LaunchedEffect(userRegistrationState) {
+            when (userRegistrationState) {
+                is Resource.Success -> {
+                    navController.navigate(route)
+                }
+                is Resource.Error -> {
+                    // 오류가 발생한 경우 로그 출력
+                    Log.d("RegisterButton", "API 오류: ${userRegistrationState.message}")
+                    navController.navigate(route)
+                }
+                is Resource.Loading -> {
+                    // 필요한 경우 로딩 상태 처리
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -19,7 +20,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.baby.data.User
 import com.example.baby.viewModel.LoadingViewModel
+import com.example.baby.viewModel.UserRegisterViewModel
 import java.util.*
 
 @Composable
@@ -40,7 +43,7 @@ fun BabyRegisterPage(viewModel: LoadingViewModel, navController: NavController) 
         BirthdayRegisterField()
         Spacer(modifier = Modifier.height(20.dp))
         BabyInfoRegisterWidget()
-        RegisterButton(
+        BabyRegisterButton(
             isNotNull = true,
             text = "로그인",
             route = "mainScreen",
@@ -133,5 +136,23 @@ fun BabyInfoRegisterWidget() {
                 .padding(horizontal = 30.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
         )
+    }
+}
+
+@Composable
+fun BabyRegisterButton(isNotNull: Boolean, text: String, route: String, navController: NavController) {
+
+    Box(
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Button(
+            onClick = {
+//                viewModel.registerUser(user)
+                navController.navigate(route)
+            },
+            enabled = isNotNull
+        ) {
+            Text(text)
+        }
     }
 }

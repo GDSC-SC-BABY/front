@@ -15,11 +15,12 @@ import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.NavigationRoutes.FoodDetailScreen.route
 import com.example.baby.screen.RegisterButton
+import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.LoginViewModel
 
 
 @Composable
-fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: () -> Unit) {
+fun LoginPage(viewModel: LoadingViewModel, navController: NavController, content: () -> Unit) {
     val context = LocalContext.current
 
     Column(
@@ -35,7 +36,7 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
         Spacer(modifier = Modifier.height(20.dp))
         SignInGoogleButton {
             content()
-//            navController.navigate("registerScreen")
+            navController.navigate("registerScreen")
 //            viewModel.tryLogin(context)
 //            if(viewModel.loginResult){
 //
@@ -50,6 +51,8 @@ fun LoginPage(viewModel: LoginViewModel, navController: NavController, content: 
             /*viewModel.signInUser(){
                 navController.navigate(route)
             }*/
+
+            navController.navigate(route)
 
 
         }

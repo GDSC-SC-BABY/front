@@ -7,6 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.baby.data.User
+import com.example.baby.network.Resource
+import com.example.baby.network.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,13 +19,32 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class UserRegisterViewModel() : ViewModel() {
+class UserRegisterViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     val nickname = MutableStateFlow("")
     val relationship = MutableStateFlow("")
 
-    // isFormValid는 nickname과 relationship으로부터 계산된 StateFlow입니다.
     val isFormValid: StateFlow<Boolean> = combine(nickname, relationship) { nickname, relationship ->
         nickname.isNotBlank() && relationship.isNotBlank()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    private val _userRegistrationState = MutableStateFlow<Resource<User>>(Resource.loading(null))
+    val userRegistrationState: StateFlow<Resource<User>> = _userRegistrationState
+
+
+    fun registerUser(user: User) {
+        viewModelScope.launch {
+            _userRegistrationState.value = Resource.loading(null)
+            try {
+                val response = userRepository.registerUser(user)
+                if (response.isSuccessful && response.body() != null) {
+                    _userRegistrationState.value = Resource.success(response.body())
+                } else {
+                    _userRegistrationState.value = Resource.error(response.errorBody().toString(), null)
+                }
+            } catch(e: Exception) {
+                _userRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
+            }
+        }
+    }
 }
