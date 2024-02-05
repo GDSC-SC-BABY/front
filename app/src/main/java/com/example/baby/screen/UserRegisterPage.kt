@@ -29,6 +29,7 @@ import com.example.baby.viewModel.UserRegisterViewModel
 fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavController) {
 
     val isFormValid by viewModel.isFormValid.collectAsState()
+    val relation by viewModel.relationship.collectAsState()
 
     Column(
         modifier = Modifier
@@ -45,7 +46,7 @@ fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavControl
         RegisterButton(
             isNotNull = isFormValid,
             viewModel = viewModel,
-            user = User(viewModel.nickname.toString(), residence = "노원구"),
+            user = User(viewModel.nickname.toString(), residence = "노원구", relation = relation),
             text = "가입하기",
             route = NavigationRoutes.BabyRegisterScreen.route,
             navController = navController
@@ -158,11 +159,13 @@ fun RegisterButton(
         contentAlignment = Alignment.BottomEnd
     ) {
         val userRegistrationState = viewModel.userRegistrationState.collectAsState().value
-
+        val context = LocalContext.current
         Button(
             onClick = {
-                if (isNotNull) { // 조건 검사가 여기에 포함되어야 합니다.
-                    viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
+                if (isNotNull) {
+                    viewModel.setUserInfoToSP(context, user.nickname, user.relation)
+                    navController.navigate(route)
+//                    viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }
             },
             enabled = isNotNull
@@ -170,21 +173,21 @@ fun RegisterButton(
             Text(text)
         }
 
-        LaunchedEffect(userRegistrationState) {
-            when (userRegistrationState) {
-                is Resource.Success -> {
-                    navController.navigate(route)
-                }
-                is Resource.Error -> {
-                    // 오류가 발생한 경우 로그 출력
-                    Log.d("RegisterButton", "API 오류: ${userRegistrationState.message}")
-                    navController.navigate(route)
-                }
-                is Resource.Loading -> {
-                    // 필요한 경우 로딩 상태 처리
-                }
-            }
-        }
+//        LaunchedEffect(userRegistrationState) {
+//            when (userRegistrationState) {
+//                is Resource.Success -> {
+//                    navController.navigate(route)
+//                }
+//                is Resource.Error -> {
+//                    // 오류가 발생한 경우 로그 출력
+//                    Log.d("RegisterButton", "API 오류: ${userRegistrationState.message}")
+//                    navController.navigate(route)
+//                }
+//                is Resource.Loading -> {
+//                    // 필요한 경우 로딩 상태 처리
+//                }
+//            }
+//        }
     }
 }
 

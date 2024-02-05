@@ -120,6 +120,7 @@ fun babyInfoCard() {
 
 @Composable
 fun userInfo(viewModel: BabyRegisterViewModel) {
+    val context = LocalContext.current
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -128,7 +129,8 @@ fun userInfo(viewModel: BabyRegisterViewModel) {
         ) {
             Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
             IconButton(onClick = {
-                viewModel.deleteAllCoParentRelation()
+                SharedPreferenceUtil(context).setString("relation", "아빠")
+//                viewModel.deleteAllCoParentRelation()
             }) {
                 Icon(imageVector = Icons.Default.Create, contentDescription = "updateUserIcon")
             }
@@ -144,8 +146,8 @@ fun userInfo(viewModel: BabyRegisterViewModel) {
             }
             Spacer(Modifier.width(45.dp))
             Column() {
-                Text("통통맘")
-                Text("엄마")
+                Text(SharedPreferenceUtil(context).getString("nickname", "").toString())
+                Text(SharedPreferenceUtil(context).getString("relation", "").toString())
                 Text("시흥시")
             }
         }
