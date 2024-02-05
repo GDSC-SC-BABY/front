@@ -56,7 +56,7 @@ fun BabySnackRegisterScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 DrinkSelectWidget(viewModel = babySnackViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-                WriteSignificant("간식")
+                WriteSignificant()
                 Spacer(modifier = Modifier.height(10.dp))
                 AddMealButton(navController)
             }

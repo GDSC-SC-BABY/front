@@ -62,7 +62,7 @@ fun BabyFoodRegisterScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 ToppingSelectWidget(viewModel = babyFoodViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-                WriteSignificant("이유식")
+                WriteSignificant()
                 Spacer(modifier = Modifier.height(10.dp))
                 AddMealButton(navController)
             }
@@ -310,7 +310,7 @@ fun ToppingField(index: Int, topping: String, viewModel: BabyFoodRegisterViewMod
 }
 
 @Composable
-fun WriteSignificant(menu: String) {
+fun WriteSignificant() {
     var text by remember { mutableStateOf("") }
     Column {
         Text(text = "특이사항", fontWeight = FontWeight.SemiBold)
@@ -331,7 +331,7 @@ fun WriteSignificant(menu: String) {
                 },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
-                    Text("${menu}을 먹일 때 특이사항이 있었나요?", fontSize = 14.sp)
+                    Text("특이사항이 있었나요?", fontSize = 14.sp)
                 },
                 textStyle = TextStyle(fontSize = 14.sp),
                 colors = TextFieldDefaults.textFieldColors(

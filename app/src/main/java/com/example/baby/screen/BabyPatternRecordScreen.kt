@@ -50,7 +50,7 @@ fun BabyPatternRecordPage(viewModel: LoadingViewModel, navController: NavControl
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                WriteSignificant(menu = selectedTab.title)
+                WriteSignificant()
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
