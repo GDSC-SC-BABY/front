@@ -1,38 +1,39 @@
 package com.example.baby.screen
 
 import android.annotation.SuppressLint
-import android.graphics.Paint.Align
-import android.widget.Space
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.SharedPreferenceUtil
-import com.example.baby.viewModel.LoadingViewModel
+import com.example.baby.viewModel.BabyRegisterViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MyPageScreen(viewModel: LoadingViewModel, navController: NavController) {
-    val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()
+fun MyPageScreen(viewModel: BabyRegisterViewModel, navController: NavController) {
     Scaffold(
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) { innerPadding ->
@@ -51,7 +52,7 @@ fun MyPageScreen(viewModel: LoadingViewModel, navController: NavController) {
             ) {
                 babyInfoCard()
                 Spacer(modifier = Modifier.height(20.dp))
-                userInfo()
+                userInfo(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 Divider(thickness = 1.dp, color = Color.Black)
                 Spacer(modifier = Modifier.height(10.dp))
@@ -59,7 +60,7 @@ fun MyPageScreen(viewModel: LoadingViewModel, navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Divider(thickness = 1.dp, color = Color.Black)
                 Spacer(modifier = Modifier.height(10.dp))
-                Co_parentInfo()
+                Co_parentInfo(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 Divider(thickness = 1.dp, color = Color.Black)
                 Spacer(modifier = Modifier.height(20.dp))
@@ -118,7 +119,7 @@ fun babyInfoCard() {
 }
 
 @Composable
-fun userInfo() {
+fun userInfo(viewModel: BabyRegisterViewModel) {
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -126,7 +127,9 @@ fun userInfo() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {
+                viewModel.deleteAllCoParentRelation()
+            }) {
                 Icon(imageVector = Icons.Default.Create, contentDescription = "updateUserIcon")
             }
         }
@@ -159,7 +162,37 @@ fun userCodeInfo() {
 }
 
 @Composable
-fun Co_parentInfo() {
+fun Co_parentInfo(viewModel: BabyRegisterViewModel) {
+    var relationDialogOpen by remember {
+        mutableStateOf(false)
+    }
+
+    var nicknameDialogOpen by remember {
+        mutableStateOf(false)
+    }
+
+    val index = viewModel.coParentRelations.size
+
+    if (relationDialogOpen) {
+        Co_parentRelationDialog(viewModel, {
+            relationDialogOpen = false
+        }) {
+            relationDialogOpen = false
+            nicknameDialogOpen = true
+            Log.d("coparent", "추가하고는: ${viewModel.coParentRelations.size}")
+        }
+    }
+
+    if (nicknameDialogOpen) {
+        Co_parentNicknameDialog(viewModel, {
+            viewModel.deleteCoParentRelation(index)
+            Log.d("coparent", "취소하고는: ${viewModel.coParentRelations.size}")
+            nicknameDialogOpen = false
+        }) {
+            nicknameDialogOpen = false
+        }
+    }
+
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -167,23 +200,19 @@ fun Co_parentInfo() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("공동양육자", fontWeight = FontWeight.Bold, fontSize = 23.sp)
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { relationDialogOpen = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
             }
         }
         Spacer(modifier = Modifier.height(5.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column() {
-                Text("아빠", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
-                Text("시터", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
-            }
-            Spacer(Modifier.width(45.dp))
-            Column() {
-                Text("통통짱사랑대디")
-                Text("간지작살노련시터")
-            }
+
+        if (viewModel.coParentNicknames.isEmpty()) {
+            Text("공동 양육자가 없어요!")
+        }
+
+        viewModel.coParentNicknames.forEachIndexed { index, _ ->
+            Co_parentField(index, viewModel)
+            Spacer(modifier = Modifier.height(5.dp))
         }
     }
 }
@@ -206,4 +235,147 @@ fun DarkModeSelect() {
             )
         }
     }
+}
+
+
+@Composable
+fun Co_parentField(index: Int, viewModel: BabyRegisterViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row {
+            Text(
+                viewModel.coParentRelations[index],
+                fontWeight = FontWeight.SemiBold,
+                color = Color.DarkGray
+            )
+            Spacer(Modifier.width(45.dp))
+            Text(viewModel.coParentNicknames[index])
+        }
+        IconButton(onClick = {
+            viewModel.deleteCoParentRelation(index)
+            viewModel.deleteCoParentNickname(index)
+        }) {
+            Icon(imageVector = Icons.Default.Delete, contentDescription = "delete Co-Parent")
+        }
+    }
+}
+
+
+@Composable
+fun Co_parentRelationDialog(
+    viewModel: BabyRegisterViewModel,
+    onDismissRequest: () -> Unit,
+    onConfirmRequest: () -> Unit
+) {
+
+    val relations = listOf("엄마", "아빠", "시터")
+    val selectedValue = remember { mutableStateOf("") } // 선택된 라디오 버튼에 해당하는 내용
+    val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
+    val onChangeState: (String) -> Unit = { selectedValue.value = it }
+
+    AlertDialog(
+
+        // 다이얼로그 뷰 밖의 화면 클릭시, 인자로 받은 함수 실행하며 다이얼로그 상태 변경
+        onDismissRequest = { onDismissRequest() },
+        title = {
+            Text(
+                text = "공동양육자",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Column {
+                Text(text = "아기와의 관계", modifier = Modifier.padding(bottom = 5.dp))
+                Column(modifier = Modifier.padding(top = 10.dp)) {
+                    relations.forEach { item ->
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .selectable( // 선택 가능한 상태
+                                        selected = isSelectedItem(item),
+                                        onClick = { onChangeState(item) },
+                                        role = Role.RadioButton
+                                    )
+                                    .padding(bottom = 3.dp)
+                            ) {
+                                RadioButton(
+                                    selected = isSelectedItem(item),
+                                    onClick = null,
+                                    modifier = Modifier.padding(end = 5.dp)
+                                )
+                                Text(text = item)
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(text = "취소", color = Color.Black)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    viewModel.addCoParentRelation(selectedValue.value)
+                    onConfirmRequest()
+                }) {
+                Text(text = "다음", color = Color.Black)
+            }
+        }
+    )
+
+}
+
+@Composable
+fun Co_parentNicknameDialog(
+    viewModel: BabyRegisterViewModel,
+    onDismissRequest: () -> Unit,
+    onConfirmRequest: () -> Unit
+) {
+
+    val selectedValue = remember { mutableStateOf("") }
+
+    AlertDialog(
+
+        // 다이얼로그 뷰 밖의 화면 클릭시, 인자로 받은 함수 실행하며 다이얼로그 상태 변경
+        onDismissRequest = { onDismissRequest() },
+        title = {
+            Text(
+                text = "공동양육자",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Column {
+                Text(text = "닉네임", modifier = Modifier.padding(bottom = 5.dp))
+                TextField(
+                    value = selectedValue.value,
+                    onValueChange = { selectedValue.value = it },
+                    modifier = Modifier.height(30.dp)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(text = "취소", color = Color.Black)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    viewModel.addCoParentNickname(selectedValue.value)
+                    onConfirmRequest()
+                }) {
+                Text(text = "추가", color = Color.Black)
+            }
+        }
+    )
+
 }

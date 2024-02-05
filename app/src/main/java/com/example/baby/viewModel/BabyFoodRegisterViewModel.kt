@@ -45,6 +45,10 @@ class BabyFoodRegisterViewModel() : ViewModel() {
         }
     }
 
+    fun deleteTopping(idx: Int) {
+        _toppings.removeAt(idx)
+    }
+
     val isFormValid: StateFlow<Boolean> = combine(nickname, mealTime) { nickname, relationship ->
         nickname.isNotBlank() && relationship.isNotBlank()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)

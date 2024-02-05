@@ -2,11 +2,10 @@ package com.example.baby.viewModel
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.baby.R
-import com.example.baby.data.Baby
 import com.example.baby.data.User
 import com.example.baby.network.Resource
 import com.example.baby.network.UserRepository
@@ -29,6 +28,35 @@ class BabyRegisterViewModel(private val userRepository: UserRepository) : ViewMo
 
     private val _userRegistrationState = MutableStateFlow<Resource<User>>(Resource.loading(null))
     val userRegistrationState: StateFlow<Resource<User>> = _userRegistrationState
+
+    private val _coParentRelations = mutableStateListOf<String>()
+    val coParentRelations: List<String> = _coParentRelations
+
+    private val _coParentNicknames = mutableStateListOf<String>()
+    val coParentNicknames: List<String> = _coParentNicknames
+
+
+    fun addCoParentRelation(relation: String) {
+        _coParentRelations.add(relation)
+    }
+
+    fun deleteCoParentRelation(idx: Int) {
+        if (idx >= 0 && idx < _coParentRelations.size) {
+            _coParentRelations.removeLast()
+        }
+    }
+
+    fun deleteAllCoParentRelation() {
+        _coParentRelations.clear()
+    }
+
+    fun addCoParentNickname(nickname: String) {
+        _coParentNicknames.add(nickname)
+    }
+
+    fun deleteCoParentNickname(idx: Int) {
+        _coParentNicknames.removeAt(idx)
+    }
 
     fun setBabyInfoToSP(context: Context, name: String, birth: String, gender: String, height: String, weight: String){
         viewModelScope.launch {

@@ -271,10 +271,9 @@ fun ToppingSelectWidget(viewModel: BabyFoodRegisterViewModel) {
             Text(text = "토핑", fontWeight = FontWeight.SemiBold)
 
             // 토핑 추가 버튼
-            Button(onClick = { viewModel.addTopping() }) {
-                Text(text = "+")
+            IconButton(onClick = { viewModel.addTopping() }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
             }
-
         }
 
         // 동적으로 생성된 토핑 필드들
