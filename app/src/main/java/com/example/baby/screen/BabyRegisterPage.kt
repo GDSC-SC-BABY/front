@@ -5,10 +5,7 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -20,14 +17,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.baby.data.Baby
 import com.example.baby.data.User
+import com.example.baby.viewModel.BabyRegisterViewModel
 import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
 import java.util.*
 
 @Composable
-fun BabyRegisterPage(viewModel: LoadingViewModel, navController: NavController) {
-    val navigateToMainScreen by viewModel.navigateToMainScreen.observeAsState()
+fun BabyRegisterPage(viewModel: BabyRegisterViewModel, navController: NavController) {
+    val isFormValid by viewModel.isFormValid.collectAsState()
 
     Column(
         modifier = Modifier
@@ -38,13 +37,16 @@ fun BabyRegisterPage(viewModel: LoadingViewModel, navController: NavController) 
     ) {
         Text("자녀 등록", fontWeight = FontWeight.Bold, fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
-        BabyNameRegisterField()
+        BabyNameRegisterField(viewModel)
         Spacer(modifier = Modifier.height(20.dp))
-        BirthdayRegisterField()
+        BirthdayRegisterField(viewModel)
         Spacer(modifier = Modifier.height(20.dp))
-        BabyInfoRegisterWidget()
+        BabyInfoRegisterWidget(viewModel)
+        Spacer(modifier = Modifier.height(20.dp))
+        BabyGenderRegisterWidget(viewModel)
         BabyRegisterButton(
-            isNotNull = true,
+            viewModel = viewModel,
+            isNotNull = isFormValid,
             text = "로그인",
             route = "mainScreen",
             navController = navController
@@ -53,12 +55,14 @@ fun BabyRegisterPage(viewModel: LoadingViewModel, navController: NavController) 
 }
 
 @Composable
-fun BabyNameRegisterField() {
-    var text by remember { mutableStateOf("") }
+fun BabyNameRegisterField(viewModel: BabyRegisterViewModel) {
+    val text by viewModel.babyName.collectAsState()
 
     OutlinedTextField(
         value = text,
-        onValueChange = { text = it },
+        onValueChange = { updatedName ->
+            viewModel.babyName.value = updatedName
+        },
         label = { Text("이름") },
         modifier = Modifier
             .fillMaxWidth()
@@ -67,7 +71,7 @@ fun BabyNameRegisterField() {
 }
 
 @Composable
-fun BirthdayRegisterField() {
+fun BirthdayRegisterField(viewModel: BabyRegisterViewModel) {
     var text by remember { mutableStateOf("생일을 선택하세요.") }
     val context = LocalContext.current // Composable 함수 내부에서 사용
 
@@ -75,7 +79,9 @@ fun BirthdayRegisterField() {
         showDatePicker(context) { year, month, dayOfMonth ->
             // 사용자가 날짜를 선택하면 텍스트 업데이트
             text = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+            viewModel.birth.value = text
         }
+
     }) {
         Text(text, fontSize = 15.sp)
     }
@@ -102,9 +108,24 @@ fun showDatePicker(
 }
 
 @Composable
-fun BabyInfoRegisterWidget() {
-    var heightText by remember { mutableStateOf("") }
-    var weightText by remember { mutableStateOf("") }
+fun BabyGenderRegisterWidget(viewModel: BabyRegisterViewModel) {
+    val selectedOption by viewModel.gender.collectAsState()
+    Column() {
+        RadioButton(selected = selectedOption == "남자", onClick = {
+            viewModel.gender.value = "남자"
+        })
+        Text("남자")
+        RadioButton(selected = selectedOption == "여자", onClick = {
+            viewModel.gender.value = "여자"
+        })
+        Text("여자")
+    }
+}
+
+@Composable
+fun BabyInfoRegisterWidget(viewModel: BabyRegisterViewModel) {
+    val heightText by viewModel.height.collectAsState()
+    val weightText by viewModel.weight.collectAsState()
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween
@@ -113,7 +134,7 @@ fun BabyInfoRegisterWidget() {
             value = heightText,
             onValueChange = { height ->
                 if (height.all { it.isDigit() || it == '.' } && height.count { it == '.' } <= 1) {
-                    heightText = height
+                    viewModel.height.value = height
                 }
             },
             label = { Text("키 (cm)") },
@@ -127,7 +148,7 @@ fun BabyInfoRegisterWidget() {
             value = weightText,
             onValueChange = { weight ->
                 if (weight.all { it.isDigit() || it == '.' } && weight.count { it == '.' } <= 1) {
-                    weightText = weight
+                    viewModel.weight.value = weight
                 }
             },
             label = { Text("몸무게 (kg)") },
@@ -140,7 +161,20 @@ fun BabyInfoRegisterWidget() {
 }
 
 @Composable
-fun BabyRegisterButton(isNotNull: Boolean, text: String, route: String, navController: NavController) {
+fun BabyRegisterButton(
+    viewModel: BabyRegisterViewModel,
+    isNotNull: Boolean,
+    text: String,
+    route: String,
+    navController: NavController
+) {
+    val name by viewModel.babyName.collectAsState()
+    val birth by viewModel.birth.collectAsState()
+    val gender by viewModel.gender.collectAsState()
+    val weight by viewModel.weight.collectAsState()
+    val height by viewModel.height.collectAsState()
+
+    val context = LocalContext.current
 
     Box(
         contentAlignment = Alignment.BottomEnd
@@ -148,6 +182,7 @@ fun BabyRegisterButton(isNotNull: Boolean, text: String, route: String, navContr
         Button(
             onClick = {
 //                viewModel.registerUser(user)
+                viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height)
                 navController.navigate(route)
             },
             enabled = isNotNull

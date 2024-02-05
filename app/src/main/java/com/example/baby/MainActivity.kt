@@ -32,6 +32,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
+    private val babyRegisterViewModel by viewModels<BabyRegisterViewModel>{
+        BabyRegisterViewModelFactory(UserRepository())
+    }
 
     private val babySnackRegisterViewModel by viewModels<BabySnackRegisterViewModel>()
 
@@ -82,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(NavigationRoutes.BabyRegisterScreen.route) {
                         BabyRegisterPage(
-                            viewModel = loadingViewModel,
+                            viewModel = babyRegisterViewModel,
                             navController = navController
                         )
                     }
