@@ -58,7 +58,6 @@ class StartActivity : ComponentActivity() {
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
         BabyRegisterViewModelFactory(UserRepository())
     }
-    private val pref = SharedPreferenceUtil(context = this)
         override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
