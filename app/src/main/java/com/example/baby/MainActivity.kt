@@ -10,8 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
-import com.example.baby.network.FirebaseAuthRepository
-import com.example.baby.network.RetrofitClient
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
@@ -63,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         LoadingScreen(viewModel = loadingViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.RegisterScreen.route) {
-                        UserRegisterPage(
+                        UserRegisterScreen(
                             viewModel = userRegisterViewModel,
                             navController = navController
                         )
@@ -84,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         MyPageScreen(viewModel = babyRegisterViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.BabyRegisterScreen.route) {
-                        BabyRegisterPage(
+                        BabyRegisterScreen(
                             viewModel = babyRegisterViewModel,
                             navController = navController
                         )

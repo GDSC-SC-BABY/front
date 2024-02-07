@@ -341,11 +341,9 @@ fun Co_parentNicknameDialog(
     onConfirmRequest: () -> Unit
 ) {
 
-    val selectedValue = remember { mutableStateOf("") }
+    var selectedValue by remember { mutableStateOf("") }
 
     AlertDialog(
-
-        // 다이얼로그 뷰 밖의 화면 클릭시, 인자로 받은 함수 실행하며 다이얼로그 상태 변경
         onDismissRequest = { onDismissRequest() },
         title = {
             Text(
@@ -357,10 +355,11 @@ fun Co_parentNicknameDialog(
         text = {
             Column {
                 Text(text = "닉네임", modifier = Modifier.padding(bottom = 5.dp))
+
                 TextField(
-                    value = selectedValue.value,
-                    onValueChange = { selectedValue.value = it },
-                    modifier = Modifier.height(30.dp)
+                    value = selectedValue,
+                    onValueChange = {
+                        selectedValue = it }
                 )
             }
         },
@@ -372,12 +371,11 @@ fun Co_parentNicknameDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    viewModel.addCoParentNickname(selectedValue.value)
+                    viewModel.addCoParentNickname(selectedValue)
                     onConfirmRequest()
                 }) {
                 Text(text = "추가", color = Color.Black)
             }
         }
     )
-
 }

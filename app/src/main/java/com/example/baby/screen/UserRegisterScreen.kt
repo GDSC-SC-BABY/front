@@ -1,7 +1,5 @@
 package com.example.baby.screen
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,7 +7,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,12 +18,10 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.data.User
-import com.example.baby.network.Resource
-import com.example.baby.viewModel.LoadingViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
 
 @Composable
-fun UserRegisterPage(viewModel: UserRegisterViewModel, navController: NavController) {
+fun UserRegisterScreen(viewModel: UserRegisterViewModel, navController: NavController) {
 
     val isFormValid by viewModel.isFormValid.collectAsState()
     val relation by viewModel.relationship.collectAsState()

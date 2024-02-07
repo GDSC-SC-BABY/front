@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,15 +16,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.baby.data.Baby
-import com.example.baby.data.User
 import com.example.baby.viewModel.BabyRegisterViewModel
-import com.example.baby.viewModel.LoadingViewModel
-import com.example.baby.viewModel.UserRegisterViewModel
 import java.util.*
 
 @Composable
-fun BabyRegisterPage(viewModel: BabyRegisterViewModel, navController: NavController) {
+fun BabyRegisterScreen(viewModel: BabyRegisterViewModel, navController: NavController) {
     val isFormValid by viewModel.isFormValid.collectAsState()
 
     Column(
