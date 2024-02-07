@@ -1,5 +1,7 @@
 package com.example.baby.network
 
+import com.example.baby.data.PatternResponse
+import com.example.baby.data.SleepPattern
 import com.example.baby.data.User
 import com.example.baby.data.UserResponse
 import retrofit2.Response
@@ -13,5 +15,8 @@ interface ApiService {
     suspend fun registerUser(@Body user: User): Response<User>
 
     @GET("user/{userId}")
-    suspend fun checkUserId(@Path("userId") userId: String): UserResponse
+    suspend fun checkUserId(@Path("userId") userId: String): Response<UserResponse>
+
+    @POST("sleep")
+    suspend fun registerSleepPattern(@Body sleepPattern: SleepPattern):Response<PatternResponse>
 }

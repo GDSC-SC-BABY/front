@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
    // private val dbAccessModule = DBAccessModule()
     private lateinit var googleSignInClient : GoogleSignInClient
 
@@ -36,7 +36,8 @@ class LoginViewModel : ViewModel() {
 
         viewModelScope.launch {
             val userResponse = "abc"
-            //val userResponse = UserRepository().checkUserId(user.uid)
+            //val userResponse = userRepository.checkUserId(user.uid)
+            // composable, activity 간의 이동 고민(베이비 등록 페이지 후 메인 페이지)
             if (userResponse != null) {
                 SharedPreferenceUtil(App.context()).setString("uid", user.uid)
                 hasId = true

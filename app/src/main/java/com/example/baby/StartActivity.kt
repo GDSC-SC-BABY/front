@@ -51,7 +51,9 @@ class StartActivity : ComponentActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 1313
-    private val viewModel by viewModels<LoginViewModel>()
+    private val loginViewModel:LoginViewModel by viewModels {
+        LoginViewModelFactory(UserRepository())
+    }
     private val userRegisterViewModel: UserRegisterViewModel by viewModels {
         UserViewModelFactory(UserRepository())
     }
@@ -74,16 +76,16 @@ class StartActivity : ComponentActivity() {
             }
         }
         // 로그인 시도
-        viewModel.tryLogin(this)
+            loginViewModel.tryLogin(this)
 
         lifecycleScope.launchWhenCreated {
             launch {
-                viewModel.loginResult.collect { isLogin ->
+                loginViewModel.loginResult.collect { isLogin ->
                     if (isLogin) {
                         Log.d("로그인 되어있음", auth.currentUser.toString())
                         if (auth.currentUser != null) {
                             Log.d("token", auth.currentUser!!.getIdToken(true).toString())
-                            val hasId = viewModel.hasId(auth.currentUser!!)
+                            val hasId = loginViewModel.hasId(auth.currentUser!!)
                             Log.d("아이디 있는지", hasId.toString())
                             Log.d("uid", auth.currentUser!!.uid.toString())
 
@@ -128,7 +130,7 @@ class StartActivity : ComponentActivity() {
             }
         }
         launch {
-            viewModel.event.collect { event ->
+            loginViewModel.event.collect { event ->
                 when (event) {
                     LoginViewModel.LoginEvent.ToMain -> toMainActivity()
                 }
@@ -184,7 +186,7 @@ private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
             auth.currentUser?.let {
                 Log.d("로그인중", "로그인 되어야함3")
                 CoroutineScope(Dispatchers.Main).launch {
-                    viewModel.setLoginResult(true)
+                    loginViewModel.setLoginResult(true)
                 }
             }
         }

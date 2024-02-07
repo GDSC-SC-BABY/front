@@ -4,6 +4,9 @@ import android.app.DatePickerDialog
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -43,6 +46,7 @@ fun BabyPatternRecordPage(viewModel: BabyPatternRecordViewModel, navController: 
             }
         },
         content = { innerPadding ->
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .background(Color.White)
@@ -53,6 +57,7 @@ fun BabyPatternRecordPage(viewModel: BabyPatternRecordViewModel, navController: 
                         top = 20.dp,
                         bottom = innerPadding.calculateBottomPadding()
                     )
+                    .verticalScroll(scrollState)
             ) {
                 Text("제목", style = MaterialTheme.typography.h6)
                 TextField(

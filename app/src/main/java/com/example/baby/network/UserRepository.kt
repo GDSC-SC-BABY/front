@@ -12,7 +12,7 @@ class UserRepository {
     suspend fun registerUser(user: User): Response<User> {
         return RetrofitClient.service.registerUser(user)
     }
-    suspend fun checkUserId(userId: String):UserResponse{
+    suspend fun checkUserId(userId: String):Response<UserResponse>{
         return RetrofitClient.service.checkUserId(userId = userId)
     }
 }
