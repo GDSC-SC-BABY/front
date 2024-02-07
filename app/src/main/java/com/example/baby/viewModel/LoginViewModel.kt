@@ -1,102 +1,104 @@
 package com.example.baby.viewModel
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.example.baby.network.AuthRepository
-import com.example.baby.network.FirebaseAuthRepository
+import com.example.baby.network.ApiService
+import com.example.baby.network.UserRepository
+import com.example.baby.util.App
+import com.example.baby.util.SharedPreferenceUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
-class LoginViewModel(private val repository: FirebaseAuthRepository) : ViewModel() {
-/*    private val _navigateToMainScreen = MutableLiveData<Boolean>()
-    val navigateToMainScreen: LiveData<Boolean> = _navigateToMainScreen
-
-    private lateinit var googleSignInClient: GoogleSignInClient
-//    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val RC_SIGN_IN = 1313
+class LoginViewModel : ViewModel() {
+   // private val dbAccessModule = DBAccessModule()
+    private lateinit var googleSignInClient : GoogleSignInClient
 
     // 로그인 결과 반환 변수
     private val _loginResult = MutableSharedFlow<Boolean>()
     var loginResult = _loginResult.asSharedFlow()
 
+    suspend fun hasId(user: FirebaseUser): Boolean {
+        var hasId = false
+
+        viewModelScope.launch {
+            val userResponse = "abc"
+            //val userResponse = UserRepository().checkUserId(user.uid)
+            if (userResponse != null) {
+                SharedPreferenceUtil(App.context()).setString("uid", user.uid)
+                hasId = true
+            }
+            Log.d("hasId", hasId.toString())
+        }.join()
+
+        return hasId
+    }
+
     fun tryLogin(context: Context) {
+        Log.d("로그인중", "로그인중")
         viewModelScope.launch {
             val account = async {
                 getLastSignedInAccount(context)
             }
+            delay(2500)
+            // 계정 확인 -> true, 없음 -> false 반환
             setLoginResult(account.await() != null)
         }
     }
 
     // 이전에 로그인 한 계정이 있는지 확인
-    private fun getLastSignedInAccount(context: Context) = GoogleSignIn.getLastSignedInAccount(context)
+    private fun getLastSignedInAccount(context: Context) =
+        GoogleSignIn.getLastSignedInAccount(context)
 
-    private fun setLoginResult(isLogin: Boolean) {
+    fun setLoginResult(isLogin: Boolean) {
         viewModelScope.launch {
             _loginResult.emit(isLogin)
         }
+    }
+
+
+    private val _event = MutableSharedFlow<LoginEvent>()
+    val event = _event.asSharedFlow()
+
+
+    val time = System.currentTimeMillis()
+    private val timeStamp: String = SimpleDateFormat("yyyy-MM-dd HH:MM:ss", Locale.KOREA).format(
+        Date(time)
+    )
+
+    fun toMainActivity() = viewModelScope.launch { _event.emit(LoginEvent.ToMain) }
+
+    sealed class LoginEvent{
+        object ToMain : LoginEvent()
+    }
+
+/*    suspend fun checkNickname() {
+        if (userNicknameInput.isEmpty()) {
+            isEmpty.value = true
+            availableNickname.value = false
+        }else{
+            isEmpty.value = false
+            val result = dbAccessModule.checkNickname(userNicknameInput)
+            availableNickname.value = if (!result) {
+                isOverlap.value = true
+                true
+            }else{
+                isOverlap.value = false
+                false
+            }}
     }*/
-var pref: SharedPreferences? = null
-    private var _isChecked = MutableLiveData<Boolean>()
-    val isChecked: LiveData<Boolean>
-        get() = _isChecked
 
-    private var authRepository: FirebaseAuthRepository = repository
-    //private var fireStoreRepo: FireStoreRepository = fireStoreRepository
-    private val _userLiveData = authRepository.userLiveData
-
-    val userLiveData: LiveData<FirebaseUser>
-        get() = _userLiveData
-
-    // set 함수는 이렇게 만드는 게 맞나? 아니면 더 간단한 방법이 있을까?
-    fun setCheckedValue(value: Boolean) {
-        _isChecked.value = value
-        isAutoLogin()
-    }
-
-    private fun getAuthRepository(authRepo: FirebaseAuthRepository){
-    }
-
-    suspend fun signUp(navController: NavController, email: String, pw: String){
-        withContext(Dispatchers.Main) {
-            val result = authRepository.signUp(email, pw)
-            //fireStoreRepo.createUser(result)
-            //유저 값 DB에 저장
-        }
-    }
-    fun signInUser(email: String, pw: String){
-        authRepository.signIn(email, pw)
-    }
-
-    private fun isAutoLogin(){
-        if(isChecked.value == true){
-            pref?.edit()?.apply {
-                putBoolean("AutoLoginChecked", true)
-                apply()
-                Log.d("SharedPreference",
-                    pref?.getBoolean("AutoLoginChecked", true).toString()
-                )
-            }
-        }
-        else{
-            pref?.edit()?.apply {
-                putBoolean("AutoLoginChecked", false)
-                apply()
-                Log.d("SharedPreference",
-                    pref?.getBoolean("AutoLoginChecked", false).toString()
-                )
-            }
-        }
-
-    }
 }

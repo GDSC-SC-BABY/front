@@ -6,22 +6,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.baby.R
-import com.example.baby.data.NavigationRoutes.FoodDetailScreen.route
-import com.example.baby.screen.RegisterButton
-import com.example.baby.viewModel.LoadingViewModel
-import com.example.baby.viewModel.LoginViewModel
+
 
 
 @Composable
-fun LoginPage(viewModel: LoadingViewModel, navController: NavController, content: () -> Unit) {
-    val context = LocalContext.current
+fun LoginScreen(content: () -> Unit) {
 
     Column(
         modifier = Modifier
@@ -31,72 +25,14 @@ fun LoginPage(viewModel: LoadingViewModel, navController: NavController, content
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("로그인", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-        Spacer(modifier = Modifier.height(30.dp))
-        LoginField()
         Spacer(modifier = Modifier.height(20.dp))
         SignInGoogleButton {
             content()
-            navController.navigate("registerScreen")
-//            viewModel.tryLogin(context)
-//            if(viewModel.loginResult){
-//
-//            }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        RegisterButton(
-            isNotNull = true,
-            text = "로그인",
-            route = "mainScreen"
-        ) {
-            /*viewModel.signInUser(){
-                navController.navigate(route)
-            }*/
-
-            navController.navigate(route)
-
-
-        }
     }
 }
 
-@Composable
-fun LoginField() {
-    var id by remember { mutableStateOf("") }
-    var pw by remember { mutableStateOf("") }
-
-    Column() {
-        OutlinedTextField(
-            value = id,
-            onValueChange = { id = it },
-            label = { Text("ID") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 30.dp)
-        )
-        OutlinedTextField(
-            value = pw,
-            onValueChange = { pw = it },
-            label = { Text("PASSWORD") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 30.dp)
-        )
-    }
-}
-
-@Composable
-fun RegisterButton(isNotNull: Boolean, text: String, route: String, content: () -> Unit) {
-    Box(
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        Button(
-            onClick = content,
-            enabled = isNotNull
-        ) {
-            Text(text)
-        }
-    }
-}
 
 @Composable
 fun SignInGoogleButton(onClick: () -> Unit) {

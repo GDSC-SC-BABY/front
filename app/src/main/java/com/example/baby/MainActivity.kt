@@ -1,6 +1,5 @@
 package com.example.baby
 
-import LoginPage
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,10 +24,6 @@ class MainActivity : ComponentActivity() {
 
     private val loadingViewModel by viewModels<LoadingViewModel>()
 
-    private val userRegisterViewModel: UserRegisterViewModel by viewModels {
-        UserViewModelFactory(UserRepository())
-    }
-
     private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel>{
         BabyRegisterViewModelFactory(UserRepository())
@@ -39,10 +34,6 @@ class MainActivity : ComponentActivity() {
     private val authViewModel by viewModels<AuthViewModel> {
         AuthViewModelFactory(AuthRepository(this@MainActivity))
     }
-
-//    private val loginViewModel by viewModels<LoginViewModel> {
-//        FirebaseAuthViewModelFactory(FirebaseAuthRepository(this@MainActivity))
-//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,19 +47,10 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 // NavHost 설정
-                NavHost(navController = navController, startDestination = "loadingScreen") {
-                    composable(NavigationRoutes.LoadingScreen.route) {
+                NavHost(navController = navController, startDestination = "mainScreen") {
+/*                    composable(NavigationRoutes.LoadingScreen.route) {
                         LoadingScreen(viewModel = loadingViewModel, navController = navController)
-                    }
-                    composable(NavigationRoutes.RegisterScreen.route) {
-                        UserRegisterScreen(
-                            viewModel = userRegisterViewModel,
-                            navController = navController
-                        )
-                    }
-                    composable(NavigationRoutes.LoginScreen.route) {
-                        LoginPage(viewModel = loadingViewModel, navController = navController) {}
-                    }
+                    }*/
                     composable(NavigationRoutes.MainScreen.route) {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
                     }

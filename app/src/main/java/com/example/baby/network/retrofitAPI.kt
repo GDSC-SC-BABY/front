@@ -12,6 +12,6 @@ interface ApiService {
     @POST("user")
     suspend fun registerUser(@Body user: User): Response<User>
 
-    @GET("/user/{userId}")
-    suspend fun getUser(@Path("userId") userId: String): UserResponse
+    @GET("user/{userId}")
+    suspend fun checkUserId(@Path("userId") userId: String): UserResponse
 }
