@@ -47,6 +47,17 @@ class LoginViewModel : ViewModel() {
         return hasId
     }
 
+    /*fun hasInfo(context: Context): Boolean {
+        val pref = SharedPreferenceUtil(context)
+        val savedNickname = pref.getString("nickname", "")
+        val savedBabyname = pref.getString("babyName", "")
+
+        return !(savedNickname.isNullOrEmpty() || savedBabyname.isNullOrEmpty())
+    }*/
+    // 아이디와 기본 정보를 따로 생각하지 말고 기본 정보를 등록해야 아이디가 디비에 등록되도록 하는 건?
+
+
+
     fun tryLogin(context: Context) {
         Log.d("로그인중", "로그인중")
         viewModelScope.launch {

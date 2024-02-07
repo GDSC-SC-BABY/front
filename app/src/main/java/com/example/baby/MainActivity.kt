@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
         AuthViewModelFactory(AuthRepository(this@MainActivity))
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this);
@@ -62,12 +61,6 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(NavigationRoutes.MyPageScreen.route) {
                         MyPageScreen(viewModel = babyRegisterViewModel, navController = navController)
-                    }
-                    composable(NavigationRoutes.BabyRegisterScreen.route) {
-                        BabyRegisterScreen(
-                            viewModel = babyRegisterViewModel,
-                            navController = navController
-                        )
                     }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(

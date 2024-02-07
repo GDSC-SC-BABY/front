@@ -27,13 +27,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.UserRepository
+import com.example.baby.screen.BabyRegisterScreen
 import com.example.baby.screen.GuideScreen
 import com.example.baby.screen.UserRegisterScreen
 import com.example.baby.util.App
 import com.example.baby.util.SharedPreferenceUtil
-import com.example.baby.viewModel.LoginViewModel
-import com.example.baby.viewModel.UserRegisterViewModel
-import com.example.baby.viewModel.UserViewModelFactory
+import com.example.baby.viewModel.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -56,8 +55,11 @@ class StartActivity : ComponentActivity() {
     private val userRegisterViewModel: UserRegisterViewModel by viewModels {
         UserViewModelFactory(UserRepository())
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
+        BabyRegisterViewModelFactory(UserRepository())
+    }
+    private val pref = SharedPreferenceUtil(context = this)
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
         setContent {
@@ -82,40 +84,20 @@ class StartActivity : ComponentActivity() {
                         Log.d("로그인 되어있음", auth.currentUser.toString())
                         if (auth.currentUser != null) {
                             Log.d("token", auth.currentUser!!.getIdToken(true).toString())
-                            val result = viewModel.hasId(auth.currentUser!!)
-                            Log.d("아이디 있는지", result.toString())
+                            val hasId = viewModel.hasId(auth.currentUser!!)
+                            Log.d("아이디 있는지", hasId.toString())
                             Log.d("uid", auth.currentUser!!.uid.toString())
-/*                            FirebaseMessaging.getInstance().token.addOnCompleteListener(
-                                OnCompleteListener { task ->
-                                    if (!task.isSuccessful) {
-                                        Log.w(
-                                            TAG,
-                                            "Fetching FCM registration token failed",
-                                            task.exception
-                                        )
-                                        return@OnCompleteListener
-                                    }
 
-                                    // Get new FCM registration token
-                                    val token = task.result
-
-                                    // Log and toast
-                                    val msg = getString(R.string.msg_token_fmt, token)
-                                    Log.d("token!!", msg)
-                                    SharedPreferenceUtil(App.context()).setString("fcm", token)
-                                })*/
-
-                            if (result) {
-                                Log.d("아이디 있는지", "메인으로")
+                            if (hasId) {
+                                Log.d("아이디랑 기본 정보 모두 저장됨", "메인으로")
                                 toMainActivity()
                             } else {
-                                Log.d("아이디 없어서", "등록으로")
+                                Log.d("아이디가 디비에 저장 안 됨(유저 정보 등록 안함)", "등록으로")
                                 setContent {
                                     val navController = rememberNavController()
 
-
                                     // NavHost 로 네비게이션 결정
-                                    NavHost(navController, "RegisterInfo")
+                                    NavHost(navController, "registerScreen")
                                     {
                                         composable(NavigationRoutes.RegisterScreen.route) {
                                             UserRegisterScreen(
@@ -123,8 +105,13 @@ class StartActivity : ComponentActivity() {
                                                 navController = navController
                                             )
                                         }
+                                        composable(NavigationRoutes.BabyRegisterScreen.route) {
+                                            BabyRegisterScreen(
+                                                viewModel = babyRegisterViewModel,
+                                                navController = navController
+                                            )
+                                        }
                                     }
-
                             }
                         }
                     } else {
