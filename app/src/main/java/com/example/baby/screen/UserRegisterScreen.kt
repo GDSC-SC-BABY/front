@@ -21,7 +21,7 @@ import com.example.baby.data.User
 import com.example.baby.viewModel.UserRegisterViewModel
 
 @Composable
-fun UserRegisterScreen(viewModel: UserRegisterViewModel, navController: NavController) {
+fun UserRegisterScreen(userId: String, viewModel: UserRegisterViewModel, navController: NavController) {
 
     val isFormValid by viewModel.isFormValid.collectAsState()
     val relation by viewModel.relationship.collectAsState()
@@ -41,7 +41,7 @@ fun UserRegisterScreen(viewModel: UserRegisterViewModel, navController: NavContr
         RegisterButton(
             isNotNull = isFormValid,
             viewModel = viewModel,
-            user = User(viewModel.nickname.toString(), residence = "노원구", relation = relation),
+            user = User(userId = userId, viewModel.nickname.toString(), residence = "노원구"),
             text = "가입하기",
             route = NavigationRoutes.BabyRegisterScreen.route,
             navController = navController
@@ -158,7 +158,7 @@ fun RegisterButton(
         Button(
             onClick = {
                 if (isNotNull) {
-                    viewModel.setUserInfoToSP(context, user.nickname, user.relation)
+                    viewModel.setUserInfoToSP(context, user.name, user.residence)
                     navController.navigate(route)
 //                    viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }

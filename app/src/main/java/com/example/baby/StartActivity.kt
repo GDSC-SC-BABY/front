@@ -102,6 +102,7 @@ class StartActivity : ComponentActivity() {
                                     {
                                         composable(NavigationRoutes.RegisterScreen.route) {
                                             UserRegisterScreen(
+                                                userId = auth.currentUser!!.uid,
                                                 viewModel = userRegisterViewModel,
                                                 navController = navController
                                             )
