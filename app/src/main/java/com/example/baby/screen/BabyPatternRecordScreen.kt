@@ -30,12 +30,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.baby.R
 import com.example.baby.viewModel.BabyPatternRecordViewModel
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Composable
-fun BabyPatternRecordPage(viewModel: BabyPatternRecordViewModel, navController: NavController, context: Context) {
+fun BabyPatternRecordPage(
+    viewModel: BabyPatternRecordViewModel,
+    navController: NavController,
+    context: Context
+) {
     // 현재 선택된 탭의 인덱스를 저장하는 상태 변수
     var selectedTab by remember { mutableStateOf(TabType.Pee) }
 
@@ -66,7 +72,7 @@ fun BabyPatternRecordPage(viewModel: BabyPatternRecordViewModel, navController: 
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                BabyPatternTime(selectedTab.ordinal,{
+                BabyPatternTime(selectedTab.ordinal, {
                     viewModel.setSelectedDate(it)
                 }, context)
                 Spacer(modifier = Modifier.height(20.dp))
@@ -84,25 +90,23 @@ fun BabyPatternRecordPage(viewModel: BabyPatternRecordViewModel, navController: 
         }
     )
 }
+
 @Composable
-fun BabyPatternTime(selectedTabIndex: Int, onDateSelected: (LocalDate) -> Unit,    context: Context) {
+fun BabyPatternTime(selectedTabIndex: Int, onDateSelected: (LocalDate) -> Unit, context: Context) {
     Column {
         Text(text = "생활패턴 시간", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
-        DatePickerWithButton(LocalDate.now(), onDateSelected, context)
+        DatePickerWithButton(onDateSelected, context)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerWithButton(
-    selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     context: Context
 ) {
-    var date by remember {
-        mutableStateOf("Open date picker dialog")
-    }
+    var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
 
     var showDatePicker by remember {
         mutableStateOf(false)
@@ -114,7 +118,7 @@ fun DatePickerWithButton(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "${selectedDate.year} ${selectedDate.monthValue} ${selectedDate.dayOfMonth}",
+                text = "${selectedDate.year}년 ${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
                 modifier = Modifier.weight(2f),
                 fontSize = 18.sp
 
@@ -123,14 +127,17 @@ fun DatePickerWithButton(
                 onClick = { showDatePicker = true },
                 modifier = Modifier.padding(start = 8.dp)
             ) {
-                Icon(Icons.Rounded.Notifications,"")
+                Icon(Icons.Rounded.Notifications, "")
             }
         }
     }
 
-    if(showDatePicker){
-        MyDatePickerDialog(
-            onDateSelected = { date = it },
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDateSelected = {
+                selectedDate = it
+                onDateSelected(it)
+                             },
 
             onDismiss = { showDatePicker = false }
         )
@@ -139,26 +146,31 @@ fun DatePickerWithButton(
 
 @ExperimentalMaterial3Api
 @Composable
-fun MyDatePickerDialog(
-    onDateSelected: (String) -> Unit,
+fun DatePickerDialog(
+    onDateSelected: (LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             return utcTimeMillis <= System.currentTimeMillis()
         }
     })
 
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        val formatter = SimpleDateFormat("dd/MM/yyyy")
-        formatter.format(Date(it))
-    } ?: ""
+
+    val selectedDateMillis = datePickerState.selectedDateMillis
+    val selectedDate = if (selectedDateMillis != null) {
+        Instant.ofEpochMilli(selectedDateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
+    } else {
+        LocalDate.now()
+    }
+
 
     DatePickerDialog(
         onDismissRequest = {},
         confirmButton = {
             Button(onClick = {
-                onDateSelected(selectedDate)
+                onDateSelected(LocalDate.ofEpochDay(datePickerState.selectedDateMillis!! / (1000 * 60 * 60 * 24)))
                 onDismiss()
             }
 
