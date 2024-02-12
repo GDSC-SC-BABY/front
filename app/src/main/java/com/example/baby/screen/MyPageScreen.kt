@@ -41,6 +41,11 @@ fun MyPageScreen(
     userViewModel: UserRegisterViewModel,
     navController: NavController
 ) {
+
+    LaunchedEffect(true) {
+        userViewModel.getUserInfo("ztg4NhVNvgXpWMhxw3bx7k3p4SC2")
+    }
+
     Scaffold(
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) { innerPadding ->
@@ -130,8 +135,6 @@ fun userInfo(viewModel: UserRegisterViewModel) {
     val context = LocalContext.current
 
     val userInfoState by viewModel.userInfoState.collectAsState()
-
-    viewModel.getUserInfo("ztg4NhVNvgXpWMhxw3bx7k3p4SC2")
 
     when (userInfoState) {
         is Resource.Loading -> {
@@ -232,16 +235,16 @@ fun Co_parentInfo(viewModel: BabyRegisterViewModel) {
     }
 
     Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
             Text("공동양육자", fontWeight = FontWeight.Bold, fontSize = 23.sp)
-            IconButton(onClick = { relationDialogOpen = true }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
-            }
-        }
+//            IconButton(onClick = { relationDialogOpen = true }) {
+//                Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
+//            }
+//        }
         Spacer(modifier = Modifier.height(5.dp))
 
         if (viewModel.coParentNicknames.isEmpty()) {
