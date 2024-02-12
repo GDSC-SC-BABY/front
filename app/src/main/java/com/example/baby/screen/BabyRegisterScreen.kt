@@ -105,7 +105,7 @@ fun showDatePicker(
 @Composable
 fun BabyGenderRegisterWidget(viewModel: BabyRegisterViewModel) {
     val selectedOption by viewModel.gender.collectAsState()
-    Column() {
+    Row() {
         RadioButton(selected = selectedOption == "남자", onClick = {
             viewModel.gender.value = "남자"
         })

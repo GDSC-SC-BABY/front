@@ -38,6 +38,9 @@ fun UserRegisterScreen(userId: String, viewModel: UserRegisterViewModel, navCont
         NicknameRegisterField(viewModel)
         Spacer(modifier = Modifier.height(20.dp))
         RelationshipRegisterFiled(viewModel)
+        Spacer(modifier = Modifier.height(20.dp))
+        CoParentCodeRegisterField(viewModel)
+        Spacer(modifier = Modifier.height(20.dp))
         RegisterButton(
             isNotNull = isFormValid,
             viewModel = viewModel,
@@ -61,6 +64,23 @@ fun NicknameRegisterField(viewModel: UserRegisterViewModel) {
             viewModel.nickname.value = updatedNickname
         },
         label = { Text("닉네임") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp)
+    )
+}
+
+@Composable
+fun CoParentCodeRegisterField(viewModel: UserRegisterViewModel) {
+
+    val nickname by viewModel.nickname.collectAsState()
+
+    OutlinedTextField(
+        value = nickname,
+        onValueChange = { updatedNickname ->
+            viewModel.nickname.value = updatedNickname
+        },
+        label = { Text("공동양육자 코드") },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 30.dp)
