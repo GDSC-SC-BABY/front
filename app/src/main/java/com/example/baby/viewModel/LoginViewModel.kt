@@ -36,7 +36,7 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
         viewModelScope.launch {
             val userResponse = "abc"
-            //val userResponse = userRepository.checkUserId(user.uid).body()
+//            val userResponse = userRepository.checkUserId(user.uid).body()
             // composable, activity 간의 이동 고민(베이비 등록 페이지 후 메인 페이지)
             if (userResponse != null) {
                 SharedPreferenceUtil(App.context()).setString("uid", user.uid)

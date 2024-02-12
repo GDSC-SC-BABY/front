@@ -32,6 +32,10 @@ class MainActivity : ComponentActivity() {
 
     private val babySnackRegisterViewModel by viewModels<BabySnackRegisterViewModel>()
 
+    private val userRegisterViewModel: UserRegisterViewModel by viewModels {
+        UserViewModelFactory(UserRepository())
+    }
+
     private val authViewModel by viewModels<AuthViewModel> {
         AuthViewModelFactory(AuthRepository(this@MainActivity))
     }
@@ -92,6 +96,14 @@ class MainActivity : ComponentActivity() {
                             viewModel = babyPatternRecordViewModel,
                             navController = navController,
                             context = applicationContext
+                        )
+                    }
+
+                    composable(NavigationRoutes.RegisterScreen.route) {
+                        UserRegisterScreen(
+                            userId = "asdfb",
+                            viewModel = userRegisterViewModel,
+                            navController = navController
                         )
                     }
                 }

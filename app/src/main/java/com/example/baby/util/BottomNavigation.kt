@@ -47,9 +47,9 @@ fun CustomBottomNavigation(navController: NavController) {
         )
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-            selected = navController.currentDestination?.route == "policyScreen",
+            selected = navController.currentDestination?.route == "registerScreen",
             onClick = {
-                navController.navigate(NavigationRoutes.PolicyScreen.route)
+                navController.navigate(NavigationRoutes.RegisterScreen.route)
             }
         )
         BottomNavigationItem(

@@ -134,6 +134,7 @@ class StartActivity : ComponentActivity() {
             loginViewModel.event.collect { event ->
                 when (event) {
                     LoginViewModel.LoginEvent.ToMain -> toMainActivity()
+                    else -> {}
                 }
             }
         }

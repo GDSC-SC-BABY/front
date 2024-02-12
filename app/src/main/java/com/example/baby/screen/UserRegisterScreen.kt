@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.data.User
+import com.example.baby.network.Resource
 import com.example.baby.viewModel.UserRegisterViewModel
 
 @Composable
@@ -179,8 +181,7 @@ fun RegisterButton(
             onClick = {
                 if (isNotNull) {
                     viewModel.setUserInfoToSP(context, user.name, user.residence)
-                    navController.navigate(route)
-//                    viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
+                    viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }
             },
             enabled = isNotNull
@@ -188,21 +189,20 @@ fun RegisterButton(
             Text(text)
         }
 
-//        LaunchedEffect(userRegistrationState) {
-//            when (userRegistrationState) {
-//                is Resource.Success -> {
-//                    navController.navigate(route)
-//                }
-//                is Resource.Error -> {
-//                    // 오류가 발생한 경우 로그 출력
-//                    Log.d("RegisterButton", "API 오류: ${userRegistrationState.message}")
-//                    navController.navigate(route)
-//                }
-//                is Resource.Loading -> {
-//                    // 필요한 경우 로딩 상태 처리
-//                }
-//            }
-//        }
+        LaunchedEffect(userRegistrationState) {
+            when (userRegistrationState) {
+                is Resource.Success -> {
+                    navController.navigate(route)
+                }
+                is Resource.Error -> {
+                    // 오류가 발생한 경우 로그 출력
+                    Log.d("RegisterButton", "API 오류: ${userRegistrationState.message}")
+                }
+                is Resource.Loading -> {
+                    // 필요한 경우 로딩 상태 처리
+                }
+            }
+        }
     }
 }
 
