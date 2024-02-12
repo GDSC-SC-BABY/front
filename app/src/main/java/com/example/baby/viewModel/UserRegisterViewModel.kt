@@ -11,12 +11,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.baby.R
 import com.example.baby.data.User
+import com.example.baby.data.UserResponse
 import com.example.baby.network.Resource
 import com.example.baby.network.UserRepository
 import com.example.baby.util.SharedPreferenceUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,6 +38,12 @@ class UserRegisterViewModel(private val userRepository: UserRepository) : ViewMo
     val userRegistrationState: StateFlow<Resource<User>> = _userRegistrationState
 
 
+    private val _userInfoState = MutableStateFlow<Resource<UserResponse>>(Resource.loading(null))
+    val userInfoState: StateFlow<Resource<UserResponse>> = _userInfoState.asStateFlow()
+
+
+
+
     fun registerUser(user: User) {
         viewModelScope.launch {
             _userRegistrationState.value = Resource.loading(null)
@@ -48,6 +56,22 @@ class UserRegisterViewModel(private val userRepository: UserRepository) : ViewMo
                 }
             } catch(e: Exception) {
                 _userRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
+            }
+        }
+    }
+
+    fun getUserInfo(uId: String) {
+        viewModelScope.launch {
+            _userInfoState.value = Resource.loading(null)
+            try {
+                val response = userRepository.getUserInfo(uId)
+                if (response.isSuccessful && response.body() != null) {
+                    _userInfoState.value = Resource.success(response.body())
+                } else {
+                    _userInfoState.value = Resource.error(response.errorBody()?.string() ?: "Unknown error", null)
+                }
+            } catch(e: Exception) {
+                _userInfoState.value = Resource.error(e.message ?: "An error occurred", null)
             }
         }
     }

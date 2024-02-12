@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                         PolicyScreen(viewModel = loadingViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.MyPageScreen.route) {
-                        MyPageScreen(viewModel = babyRegisterViewModel, navController = navController)
+                        MyPageScreen(viewModel = babyRegisterViewModel, userViewModel = userRegisterViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(

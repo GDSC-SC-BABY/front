@@ -27,13 +27,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.R
+import com.example.baby.data.UserResponse
+import com.example.baby.network.Resource
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.viewModel.BabyRegisterViewModel
+import com.example.baby.viewModel.UserRegisterViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MyPageScreen(viewModel: BabyRegisterViewModel, navController: NavController) {
+fun MyPageScreen(
+    viewModel: BabyRegisterViewModel,
+    userViewModel: UserRegisterViewModel,
+    navController: NavController
+) {
     Scaffold(
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) { innerPadding ->
@@ -52,7 +59,7 @@ fun MyPageScreen(viewModel: BabyRegisterViewModel, navController: NavController)
             ) {
                 babyInfoCard()
                 Spacer(modifier = Modifier.height(20.dp))
-                userInfo(viewModel)
+                userInfo(userViewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 Divider(thickness = 1.dp, color = Color.Black)
                 Spacer(modifier = Modifier.height(10.dp))
@@ -119,36 +126,65 @@ fun babyInfoCard() {
 }
 
 @Composable
-fun userInfo(viewModel: BabyRegisterViewModel) {
+fun userInfo(viewModel: UserRegisterViewModel) {
     val context = LocalContext.current
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
-            IconButton(onClick = {
-                SharedPreferenceUtil(context).setString("relation", "아빠")
-//                viewModel.deleteAllCoParentRelation()
-            }) {
-                Icon(imageVector = Icons.Default.Create, contentDescription = "updateUserIcon")
+
+    val userInfoState by viewModel.userInfoState.collectAsState()
+
+    viewModel.getUserInfo("ztg4NhVNvgXpWMhxw3bx7k3p4SC2")
+
+    when (userInfoState) {
+        is Resource.Loading -> {
+            // 로딩 상태 UI
+            Box(
+                contentAlignment = Alignment.Center
+            ){
+                CircularProgressIndicator()
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column() {
-                Text("닉네임", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
-                Text("관계", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
-                Text("거주지", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
+
+        is Resource.Success -> {
+            val userInfo = (userInfoState as Resource.Success<UserResponse>).data
+
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
+                    IconButton(onClick = {
+                        SharedPreferenceUtil(context).setString("relation", "아빠")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Create,
+                            contentDescription = "updateUserIcon"
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column() {
+                        Text("닉네임", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
+                        Text("관계", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
+                        Text("거주지", fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
+                    }
+                    Spacer(Modifier.width(45.dp))
+                    Column() {
+                        Text(userInfo!!.name)
+                        Text("엄마")
+                        Text(userInfo.residence)
+                    }
+                }
             }
-            Spacer(Modifier.width(45.dp))
-            Column() {
-                Text(SharedPreferenceUtil(context).getString("nickname", "").toString())
-                Text(SharedPreferenceUtil(context).getString("relation", "").toString())
-                Text("시흥시")
+        }
+
+        is Resource.Error -> {
+            Column {
+                Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
+                Text("유저 정보 조회에 실패했습니다.\n잠시 후 다시 시도해 주세요.")
             }
         }
     }
@@ -359,7 +395,8 @@ fun Co_parentNicknameDialog(
                 TextField(
                     value = selectedValue,
                     onValueChange = {
-                        selectedValue = it }
+                        selectedValue = it
+                    }
                 )
             }
         },
