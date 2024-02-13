@@ -98,6 +98,11 @@ class MainActivity : ComponentActivity() {
                             context = applicationContext
                         )
                     }
+                    composable(NavigationRoutes.BabyPatternScreen.route) {
+                        BabyPatternPage(
+
+                        )
+                    }
 
                     composable(NavigationRoutes.RegisterScreen.route) {
                         UserRegisterScreen(

@@ -14,4 +14,5 @@ sealed class NavigationRoutes(val route: String) {
     object AuthScreen : NavigationRoutes("authScreen")
     object FoodDetailScreen : NavigationRoutes("foodDetailScreen")
     object BabyPatternRecordScreen : NavigationRoutes("patternRecordScreen")
+    object BabyPatternScreen : NavigationRoutes("patternScreen")
 }
