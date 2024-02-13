@@ -31,7 +31,7 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val _loginResult = MutableSharedFlow<Boolean>()
     var loginResult = _loginResult.asSharedFlow()
 
-    suspend fun hasId(user: FirebaseUser): Boolean {
+    suspend fun hasData(user: FirebaseUser): Boolean {
         var hasId = false
 
         viewModelScope.launch {

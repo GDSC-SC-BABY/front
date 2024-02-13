@@ -83,17 +83,17 @@ class StartActivity : ComponentActivity() {
                 loginViewModel.loginResult.collect { isLogin ->
                     if (isLogin) {
                         Log.d("로그인 되어있음", auth.currentUser.toString())
+                        // 파이어 베이스 로그인 확인
                         if (auth.currentUser != null) {
-                            Log.d("token", auth.currentUser!!.getIdToken(true).toString())
-                            val hasId = loginViewModel.hasId(auth.currentUser!!)
-                            Log.d("아이디 있는지", hasId.toString())
-                            Log.d("uid", auth.currentUser!!.uid.toString())
+                            Log.d("uid", auth.currentUser!!.uid)
+                            // 데이터 확인해야 함
+                            val hasData = loginViewModel.hasData(auth.currentUser!!)
 
-                            if (hasId) {
-                                Log.d("아이디랑 기본 정보 모두 저장됨", "메인으로")
+                            if (hasData) {
+                                Log.d("기본 정보 모두 저장됨", "메인으로")
                                 toMainActivity()
                             } else {
-                                Log.d("아이디가 디비에 저장 안 됨(유저 정보 등록 안함)", "등록으로")
+                                Log.d("유저 정보 등록 안함", "등록으로")
                                 setContent {
                                     val navController = rememberNavController()
 
