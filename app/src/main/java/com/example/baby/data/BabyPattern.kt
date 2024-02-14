@@ -3,8 +3,6 @@ package com.example.baby.data
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
-// Sleep 조회 api는 sleepId가 필요한데 db에 있는 슬립 아이디를 앱에서 어떻게 알지?
-
 data class SleepPattern(
     @SerializedName("startTime") val startTime: LocalDateTime,
     @SerializedName("endTime") val endTime: LocalDateTime,
@@ -19,10 +17,16 @@ data class SleepDetails(
 )
 
 data class MedicinePattern(
-    val startTime: String,
-    val medicineType: String,
-    val memo: String,
-    val babyId: Int
+    @SerializedName("startTime") val startTime: LocalDateTime,
+    @SerializedName("medicineType")val medicineType: String,
+    @SerializedName("memo") val memo: String?,
+    @SerializedName("babyId") val babyId: Int
+)
+
+data class MedicineDetails(
+    @SerializedName("startTime") val startTime: LocalDateTime,
+    @SerializedName("medicineType") val medicineType: String?,
+    @SerializedName("memo") val memo: String?,
 )
 
 data class DefecationPattern(

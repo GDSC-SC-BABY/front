@@ -3,6 +3,7 @@ package com.example.baby.network
 import com.example.baby.data.*
 import retrofit2.Response
 import retrofit2.http.*
+import java.util.regex.Pattern
 
 interface ApiService {
 
@@ -19,13 +20,29 @@ interface ApiService {
     suspend fun registerSleepPattern(@Body sleepPattern: SleepPattern):Response<PatternResponse>
 
     @GET("sleep/{sleepId}")
-    suspend fun getSleepById(@Path("sleepId") sleepId: Long): Response<SleepDetails>
+    suspend fun getSleepById(@Path("sleepId") sleepId: Int): Response<SleepDetails>
 
     @DELETE("sleep/{sleepId}")
-    suspend fun deleteSleep(@Path("sleepId") sleepId: String): Response<PatternResponse>
+    suspend fun deleteSleep(@Path("sleepId") sleepId: Int): Response<PatternResponse>
     @PATCH("sleep/{sleepId}")
     suspend fun updateSleep(
-        @Path("sleepId") sleepId: Long,
+        @Path("sleepId") sleepId: Int,
         @Body sleepUpdate: SleepDetails
+    ): Response<PatternResponse>
+
+    // Medicine Pattern
+    @POST("medicine")
+    suspend fun registerMedicinePattern(@Body medicinePattern: MedicinePattern): Response<PatternResponse>
+
+    @GET("medicine/{medicineId}")
+    suspend fun getMedicineById(@Path("medicineId") medicineId: Int): Response<MedicineDetails>
+
+    @DELETE("medicine/{medicineId}")
+    suspend fun deleteMedicine(@Path("medicineId") medicineId: Int): Response<PatternResponse>
+
+    @PATCH("medicine/{medicineId}")
+    suspend fun updateMedicine(
+        @Path("medicineId") medicineId: Int,
+        @Body medicineEdit: MedicineDetails
     ): Response<PatternResponse>
 }
