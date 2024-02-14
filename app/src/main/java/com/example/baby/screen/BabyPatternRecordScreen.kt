@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.R
+import com.example.baby.data.*
+import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.viewModel.BabyPatternRecordViewModel
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -44,69 +44,110 @@ fun BabyPatternRecordPage(
 ) {
     // 현재 선택된 탭의 인덱스를 저장하는 상태 변수
     var selectedTab by remember { mutableStateOf(TabType.Pee) }
+    var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
+    var startTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
+    var endTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
+    var memo: String? by remember { mutableStateOf("") }
+    var medicineType: String? by remember { mutableStateOf("") }
+    var defecationStatus: String? by remember { mutableStateOf("") }
+
 
     Scaffold(
         topBar = {
             CustomTabRow(selectedTabIndex = selectedTab.ordinal) { index ->
                 selectedTab = TabType.values()[index]
             }
-        },
-        content = { innerPadding ->
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxSize()
-                    .padding(
-                        start = 20.dp,
-                        end = 20.dp,
-                        top = 20.dp,
-                        bottom = innerPadding.calculateBottomPadding()
-                    )
-                    .verticalScroll(scrollState)
-            ) {
-                Text("제목", style = MaterialTheme.typography.h6)
-                TextField(
-                    value = selectedTab.title,
-                    onValueChange = { /* Handle title change */ },
-                    modifier = Modifier.fillMaxWidth()
+        }
+    ) { innerPadding ->
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize()
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    top = 20.dp,
+                    bottom = innerPadding.calculateBottomPadding()
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-                BabyPatternTime(selectedTab.ordinal, {
-                    viewModel.setSelectedDate(it)
-                }, context)
-                Spacer(modifier = Modifier.height(20.dp))
-                WriteSignificant()
-                Spacer(modifier = Modifier.height(20.dp))
-                Button(
-                    onClick = {
-                        navController.popBackStack()
-                    },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text("등록하기")
-                }
+                .verticalScroll(scrollState)
+        ) {
+            Text("제목", style = MaterialTheme.typography.h6)
+            TextField(
+                value = selectedTab.title,
+                onValueChange = { /* Handle title change */ },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            BabyPatternTime(selectedTab.ordinal, selectedDate) {
+                selectedDate = it
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            WriteSignificant()
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(
+                onClick = {
+                    //val babyId = SharedPreferenceUtil(context).getInt("")
+                    var babyId = 1
+                    val pattern = when (selectedTab) {
+                        TabType.Sleep -> SleepPattern(
+                            LocalDateTime.of(selectedDate, startTime),
+                            LocalDateTime.of(selectedDate, endTime),
+                            memo,
+                            babyId
+                        )
+                        TabType.Medicine -> {
+                            MedicinePattern(
+                                LocalDateTime.of(selectedDate, startTime),
+                                medicineType = medicineType,
+                                memo = memo,
+                                babyId = babyId
+                            )
+                        }
+                        else -> {
+
+                        }
+/*                        TabType.Pee -> DefecationPattern(
+                            LocalDateTime.of(selectedDate),
+                            "Pee", // or any other defecation status as per your requirement
+                            memo,
+                            babyId
+                        )
+                        TabType.Food -> {
+
+                        }*/
+
+                    }
+                    viewModel.registerPattern(pattern)
+                    navController.popBackStack()
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("등록하기")
             }
         }
-    )
+    }
 }
 
 @Composable
-fun BabyPatternTime(selectedTabIndex: Int, onDateSelected: (LocalDate) -> Unit, context: Context) {
+fun BabyPatternTime(
+    selectedTabIndex: Int,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
     Column {
         Text(text = "생활패턴 시간", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
-        DatePickerWithButton(onDateSelected, context)
+        DatePickerWithButton(selectedDate, onDateSelected)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerWithButton(
-    onDateSelected: (LocalDate) -> Unit,
-    context: Context
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
 ) {
-    var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
 
     var showDatePicker by remember {
         mutableStateOf(false)
@@ -135,9 +176,8 @@ fun DatePickerWithButton(
     if (showDatePicker) {
         DatePickerDialog(
             onDateSelected = {
-                selectedDate = it
                 onDateSelected(it)
-                             },
+            },
 
             onDismiss = { showDatePicker = false }
         )
@@ -152,10 +192,10 @@ fun DatePickerDialog(
 ) {
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
-        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            return utcTimeMillis <= System.currentTimeMillis()
-        }
-    })
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= System.currentTimeMillis()
+            }
+        })
 
 
     val selectedDateMillis = datePickerState.selectedDateMillis
