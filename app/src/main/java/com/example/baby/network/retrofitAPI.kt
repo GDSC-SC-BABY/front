@@ -14,6 +14,9 @@ interface ApiService {
     @GET("user/{userId}")
     suspend fun getUserInfo(@Path("userId") userId: String): Response<UserResponse>
 
+    // Baby
+    @POST("baby")
+    suspend fun registerBaby(@Body baby: Baby): Response<BabyResponse>
 
     // Sleep Pattern
     @POST("sleep")

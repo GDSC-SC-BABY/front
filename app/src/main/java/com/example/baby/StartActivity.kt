@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.data.NavigationRoutes
+import com.example.baby.network.BabyRepository
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.BabyRegisterScreen
 import com.example.baby.screen.GuideScreen
@@ -58,7 +59,7 @@ class StartActivity : ComponentActivity() {
         UserViewModelFactory(UserRepository())
     }
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
-        BabyRegisterViewModelFactory(UserRepository())
+        BabyRegisterViewModelFactory(BabyRepository())
     }
         override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

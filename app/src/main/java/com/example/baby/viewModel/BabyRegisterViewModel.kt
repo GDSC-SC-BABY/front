@@ -7,14 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.baby.R
 import com.example.baby.data.User
+import com.example.baby.network.BabyRepository
 import com.example.baby.network.Resource
-import com.example.baby.network.UserRepository
 import com.example.baby.util.SharedPreferenceUtil
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 
-class BabyRegisterViewModel(private val userRepository: UserRepository) : ViewModel() {
+class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewModel() {
+
 
     val babyName = MutableStateFlow("")
     val birth = MutableStateFlow("")
