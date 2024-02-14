@@ -12,6 +12,12 @@ data class SleepPattern(
     @SerializedName("babyId") val babyId: Int
 )
 
+data class SleepDetails(
+    @SerializedName("startTime") val startTime: LocalDateTime,
+    @SerializedName("endTime") val endTime: LocalDateTime,
+    @SerializedName("memo") val memo: String?,
+)
+
 data class MedicinePattern(
     val startTime: String,
     val medicineType: String,
