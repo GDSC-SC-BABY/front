@@ -82,6 +82,49 @@ fun BabyPatternRecordPage(
             BabyPatternTime(selectedTab.ordinal, selectedDate) {
                 selectedDate = it
             }
+            when (selectedTab) {
+                TabType.Sleep -> Box() {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // endTime
+                }
+                TabType.Medicine -> Column {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(text = "투약 종류", fontWeight = FontWeight.SemiBold)
+                    TextField(
+                        value = medicineType ?: "",
+                        onValueChange = {
+                            medicineType = it
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                TabType.Pee -> Column {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = "배변 상태", fontWeight = FontWeight.SemiBold)
+                    TextField(
+                        value = defecationStatus ?: "",
+                        onValueChange = {
+                            defecationStatus = it
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                else -> {
+
+                }
+/*                        TabType.Pee -> DefecationPattern(
+                    LocalDateTime.of(selectedDate),
+                    "Pee", // or any other defecation status as per your requirement
+                    memo,
+                    babyId
+                )
+                TabType.Food -> {
+
+                }*/
+
+            }
             Spacer(modifier = Modifier.height(20.dp))
             WriteSignificant()
             Spacer(modifier = Modifier.height(20.dp))
@@ -127,6 +170,15 @@ fun BabyPatternRecordPage(
             }
         }
     }
+}
+
+@Composable
+fun ExtraInfo(
+    selectedTab: TabType,
+    onValueChanged: (String) -> Unit
+) {
+
+
 }
 
 @Composable

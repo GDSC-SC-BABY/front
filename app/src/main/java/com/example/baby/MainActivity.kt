@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
+import com.example.baby.network.BabyRepository
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
     private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel>{
-        BabyRegisterViewModelFactory(UserRepository())
+        BabyRegisterViewModelFactory(BabyRepository())
     }
     private val babyPatternRecordViewModel by viewModels<BabyPatternRecordViewModel>()
 
