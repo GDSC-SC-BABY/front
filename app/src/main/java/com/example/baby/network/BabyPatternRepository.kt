@@ -6,6 +6,11 @@ import retrofit2.http.*
 
 class BabyPatternRepository {
 
+    // Activity
+    suspend fun getActivitiesByDate(babyId: Int, date: String): Response<List<Activity>> {
+        return RetrofitClient.service.getActivitiesByBabyIdAndDate(babyId, date)
+    }
+
     // Sleep Pattern
     suspend fun registerSleepPattern(sleepPattern: SleepPattern): Response<PatternResponse> {
         return RetrofitClient.service.registerSleepPattern(sleepPattern)
@@ -29,23 +34,23 @@ class BabyPatternRepository {
 
 
     // Medicine Pattern
-    suspend fun registerMedicinePattern(medicinePattern: MedicinePattern): Response<PatternResponse>{
+    suspend fun registerMedicinePattern(medicinePattern: MedicinePattern): Response<PatternResponse> {
         return RetrofitClient.service.registerMedicinePattern(medicinePattern)
     }
 
-    suspend fun getMedicineById(medicineId: Int): Response<MedicineDetails>{
+    suspend fun getMedicineById(medicineId: Int): Response<MedicineDetails> {
         return RetrofitClient.service.getMedicineById(medicineId)
 
     }
 
-    suspend fun deleteMedicine(medicineId: Int): Response<PatternResponse>{
+    suspend fun deleteMedicine(medicineId: Int): Response<PatternResponse> {
         return RetrofitClient.service.deleteMedicine(medicineId)
     }
 
     suspend fun updateMedicine(
         medicineId: Int,
         medicineUpdate: MedicineDetails
-    ): Response<PatternResponse>{
+    ): Response<PatternResponse> {
         return RetrofitClient.service.updateMedicine(medicineId, medicineUpdate)
     }
 }

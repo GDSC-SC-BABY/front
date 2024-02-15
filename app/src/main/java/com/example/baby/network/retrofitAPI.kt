@@ -48,4 +48,10 @@ interface ApiService {
         @Path("medicineId") medicineId: Int,
         @Body medicineEdit: MedicineDetails
     ): Response<PatternResponse>
+
+    @GET("activity/{babyId}")
+    suspend fun getActivitiesByBabyIdAndDate(
+        @Path("babyId") babyId: Int,
+        @Query("date") date: String
+    ): Response<List<Activity>>
 }
