@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class BabyPatternRecordViewModel: ViewModel() {
+class BabyPatternRecordViewModel(private val babyPatternRepository: BabyPatternRepository): ViewModel() {
 
     private val _registerState = MutableStateFlow<Resource<PatternResponse>>(Resource.loading(null))
     val registerState: StateFlow<Resource<PatternResponse>> = _registerState
@@ -25,7 +25,6 @@ class BabyPatternRecordViewModel: ViewModel() {
         _selectedDate.value = date
     }
 
-    private val babyPatternRepository = BabyPatternRepository()
 
 
     fun registerPattern(pattern: Any) {
