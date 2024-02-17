@@ -2,9 +2,10 @@ package com.example.baby.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.example.baby.data.Activity
+import com.example.baby.network.BabyPatternRepository
 import java.time.LocalDateTime
 
-class BabyPatternViewModel : ViewModel() {
+class BabyPatternViewModel(private val babyPatternRepository: BabyPatternRepository) : ViewModel() {
     var dummy: List<Activity> = mutableListOf(
         Activity(
             activityId = 1,
