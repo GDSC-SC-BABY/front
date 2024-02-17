@@ -67,11 +67,6 @@ fun RecordSelectDialog(navController: NavController, onDismiss: () -> Unit){
                     navController.navigate(NavigationRoutes.SnackRegisterScreen.route)
                     onDismiss()
                 }.padding(16.dp))
-                Divider()
-                Text("생활패턴 기록", modifier = Modifier.fillMaxWidth().clickable {
-                    navController.navigate(NavigationRoutes.BabyPatternScreen.route)
-                    onDismiss()
-                }.padding(16.dp))
             }
         }
     }

@@ -1,7 +1,11 @@
 package com.example.baby.util
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -12,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.util.FoodSelectDialog
@@ -41,8 +46,7 @@ fun CustomBottomNavigation(navController: NavController) {
             icon = { Icon(imageVector = Icons.Default.List, contentDescription = null) },
             selected = navController.currentDestination?.route == "guideScreen",
             onClick = {
-                // Handle navigation to Guide screen
-                navController.navigate(NavigationRoutes.GuideScreen.route)
+                navController.navigate(NavigationRoutes.BabyPatternScreen.route)
             }
         )
         BottomNavigationItem(
