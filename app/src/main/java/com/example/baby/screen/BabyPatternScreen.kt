@@ -1,9 +1,14 @@
 package com.example.baby.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,10 +17,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.baby.R
+import com.example.baby.viewModel.BabyPatternViewModel
 
 
 @Composable
-fun BabyPatternPage() {
+fun BabyPatternPage(viewModel: BabyPatternViewModel) {
     Scaffold(
         content = { innerPadding ->
             val scrollState = rememberScrollState()
@@ -25,7 +31,9 @@ fun BabyPatternPage() {
                     .fillMaxSize()
                     .padding(
                         top = 20.dp,
-                        bottom = innerPadding.calculateBottomPadding()
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = 10.dp,
+                        end = 10.dp
                     )
             ) {
                 Text(
@@ -40,12 +48,26 @@ fun BabyPatternPage() {
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(start = 30.dp)
                 )
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    "10월 10일",
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(start = 30.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 15.dp, horizontal = 10.dp)
+                        .fillMaxWidth(fraction = 1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "전날")
+                    }
+                    Text(
+                        "10월 10일",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(start = 30.dp)
+                    )
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "다음날")
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(30.dp))
                 BabyPatternCard()
             }
@@ -59,7 +81,8 @@ fun BabyPatternCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-
+            //.padding(start = 20.dp, end = 20.dp)
+            //.border(width = 0.dp)
     ) {
 
         Row(
@@ -113,7 +136,8 @@ fun selectBabyPattern(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
                         painter = painterResource(id = drawable),
                         contentDescription = "Tab Icon",
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(45.dp)
+                        modifier = Modifier
+                            .size(45.dp)
                             .padding(end = 5.dp)
                     )
                 }
