@@ -64,4 +64,13 @@ interface ApiService {
     @GET("babyFood/{babyFoodId}")
     suspend fun getBabyFoodDetailByBabyFoodId(@Path("babyFoodId") babyFoodId: Int): Response<BabyFoodResponse>
 
+    @POST("snack")
+    suspend fun registerSnack(@Body snack: BabyFood): Response<BabyFood>
+
+    @GET("snack")
+    suspend fun getAllSnackByBabyId(@Query("babyId") babyId: Int) : Response<BabyFoodAllResponse>
+
+    @GET("snack/{snackId}")
+    suspend fun getSnackDetailBySnackId(@Path("snackId") snackId: Int): Response<BabyFoodResponse>
+
 }
