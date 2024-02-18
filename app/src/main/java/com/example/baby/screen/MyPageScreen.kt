@@ -138,9 +138,9 @@ fun userInfo(viewModel: UserRegisterViewModel) {
 
     when (userInfoState) {
         is Resource.Loading -> {
-            // 로딩 상태 UI
             Box(
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
             ){
                 CircularProgressIndicator()
             }

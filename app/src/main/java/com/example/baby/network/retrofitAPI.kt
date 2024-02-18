@@ -54,4 +54,14 @@ interface ApiService {
         @Path("babyId") babyId: Int,
         @Query("date") date: String
     ): Response<List<Activity>>
+
+    @POST("babyFood")
+    suspend fun registerBabyFood(@Body babyFood: BabyFood): Response<BabyFood>
+
+    @GET("babyFood")
+    suspend fun getAllBabyFoodByBabyId(@Query("babyId") babyId: Int) : Response<BabyFoodAllResponse>
+
+    @GET("babyFood/{babyFoodId}")
+    suspend fun getBabyFoodDetailByBabyFoodId(@Path("babyFoodId") babyFoodId: Int): Response<BabyFoodResponse>
+
 }
