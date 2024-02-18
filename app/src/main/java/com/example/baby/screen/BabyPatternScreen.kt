@@ -1,8 +1,6 @@
 package com.example.baby.screen
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
@@ -18,12 +16,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.baby.R
+import com.example.baby.data.Activity
 import com.example.baby.data.NavigationRoutes
+import com.example.baby.network.Resource
 import com.example.baby.viewModel.BabyPatternViewModel
+import java.time.LocalDate
 
 
 @Composable
 fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavController) {
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val selectedMonth = selectedDate.monthValue
+    val selectedDay = selectedDate.dayOfMonth
+
     Scaffold(
         content = { innerPadding ->
             val scrollState = rememberScrollState()
@@ -57,21 +62,28 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        selectedDate = selectedDate.minusDays(1)
+                        viewModel.getBabyPatternWithDate(selectedDate)
+                    }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "전날")
                     }
                     Text(
-                        "10월 10일",
+                        "${selectedMonth}월 ${selectedDay}일",
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(start = 30.dp)
                     )
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        selectedDate = selectedDate.plusDays(1)
+                        viewModel.getBabyPatternWithDate(selectedDate)
+
+                    }) {
                         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "다음날")
                     }
                 }
 
                 Spacer(modifier = Modifier.height(30.dp))
-                BabyPatternCard()
+                BabyPatternCardList(viewModel)
             }
         },
         bottomBar = {
@@ -85,7 +97,34 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
 }
 
 @Composable
-fun BabyPatternCard() {
+fun BabyPatternCardList(viewModel: BabyPatternViewModel) {
+    val babyPatternData = viewModel.patternDataState.collectAsState().value
+
+    when (babyPatternData) {
+        is Resource.Loading -> {
+            // 로딩 상태일 때 UI 표시
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        is Resource.Success -> {
+            // 성공적으로 데이터를 받아온 경우 UI 표시
+            val patternData = babyPatternData.data
+            // patternData를 사용하여 UI를 구성하는 코드 작성
+        }
+        is Resource.Error -> {
+            // 오류 발생 시 UI 표시
+            val errorMessage = babyPatternData.message ?: "An error occurred"
+            // errorMessage를 사용하여 오류 메시지를 표시하는 UI 작성
+        }
+    }
+}
+
+@Composable
+fun BabyPatternCard(activity: Activity){
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,7 +151,7 @@ fun BabyPatternCard() {
                     Text("오늘은 상태가 어쩌구", style = MaterialTheme.typography.body2)
                 }
             }
-            Text("04:42PM", style = MaterialTheme.typography.h6)
+            Text("04:42 PM", style = MaterialTheme.typography.h6)
         }
     }
 }
