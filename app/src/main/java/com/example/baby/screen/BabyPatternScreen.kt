@@ -16,12 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.baby.R
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.viewModel.BabyPatternViewModel
 
 
 @Composable
-fun BabyPatternPage(viewModel: BabyPatternViewModel) {
+fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavController) {
     Scaffold(
         content = { innerPadding ->
             val scrollState = rememberScrollState()
@@ -54,7 +56,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel) {
                         .fillMaxWidth(fraction = 1f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     IconButton(onClick = {}) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "전날")
                     }
@@ -72,7 +74,13 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel) {
                 BabyPatternCard()
             }
         },
-        bottomBar = { selectBabyPattern(selectedTabIndex = 1) {} }
+        bottomBar = {
+            selectBabyPattern { selectedIndex ->
+                navController.navigate(
+                    route = "${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex"
+                )
+            }
+        }
     )
 }
 
@@ -81,13 +89,13 @@ fun BabyPatternCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            //.padding(start = 20.dp, end = 20.dp)
-            //.border(width = 0.dp)
+        //.padding(start = 20.dp, end = 20.dp)
+        //.border(width = 0.dp)
     ) {
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             Row(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp)
@@ -110,7 +118,7 @@ fun BabyPatternCard() {
 }
 
 @Composable
-fun selectBabyPattern(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
+fun selectBabyPattern(onTabSelected: (Int) -> Unit) {
     val iconList = listOf(
         R.drawable.pee_icon,
         R.drawable.meal_icon,

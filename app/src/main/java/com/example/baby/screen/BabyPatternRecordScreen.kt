@@ -40,10 +40,10 @@ import java.util.*
 fun BabyPatternRecordPage(
     viewModel: BabyPatternRecordViewModel,
     navController: NavController,
-    context: Context
+    selectedIndex: Int
 ) {
     // 현재 선택된 탭의 인덱스를 저장하는 상태 변수
-    var selectedTab by remember { mutableStateOf(TabType.Pee) }
+    var selectedTab by remember { mutableStateOf(  TabType.values()[selectedIndex]) }
     var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
     var startTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
     var endTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }

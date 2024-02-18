@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
 import com.example.baby.network.BabyPatternRepository
@@ -27,13 +29,13 @@ class MainActivity : ComponentActivity() {
     private val loadingViewModel by viewModels<LoadingViewModel>()
 
     private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
-    private val babyRegisterViewModel by viewModels<BabyRegisterViewModel>{
+    private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
         BabyRegisterViewModelFactory(BabyRepository())
     }
-    private val babyPatternRecordViewModel by viewModels<BabyPatternRecordViewModel>{
+    private val babyPatternRecordViewModel by viewModels<BabyPatternRecordViewModel> {
         BabyPatternRecordViewModelFactory(BabyPatternRepository())
     }
-    private val babyPatternViewModel by viewModels<BabyPatternViewModel>{
+    private val babyPatternViewModel by viewModels<BabyPatternViewModel> {
         BabyPatternViewModelFactory(BabyPatternRepository())
     }
 
@@ -72,7 +74,11 @@ class MainActivity : ComponentActivity() {
                         PolicyScreen(viewModel = loadingViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.MyPageScreen.route) {
-                        MyPageScreen(viewModel = babyRegisterViewModel, userViewModel = userRegisterViewModel, navController = navController)
+                        MyPageScreen(
+                            viewModel = babyRegisterViewModel,
+                            userViewModel = userRegisterViewModel,
+                            navController = navController
+                        )
                     }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(
@@ -98,16 +104,27 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
-                    composable(NavigationRoutes.BabyPatternRecordScreen.route) {
+                    composable(
+                        route = "${NavigationRoutes.BabyPatternRecordScreen.route}/{selectedTabIndex}",
+                        arguments = listOf(
+                            navArgument("selectedTabIndex") {
+                                type = NavType.IntType
+                            }
+                        )
+                    ) { backStackEntry ->
+                        val selectedIndex =
+                            backStackEntry.arguments?.getInt("selectedTabIndex") ?: 0
+
                         BabyPatternRecordPage(
                             viewModel = babyPatternRecordViewModel,
                             navController = navController,
-                            context = applicationContext
+                            selectedIndex = selectedIndex
                         )
                     }
                     composable(NavigationRoutes.BabyPatternScreen.route) {
                         BabyPatternPage(
-                            viewModel = babyPatternViewModel
+                            viewModel = babyPatternViewModel,
+                            navController = navController
                         )
                     }
 
