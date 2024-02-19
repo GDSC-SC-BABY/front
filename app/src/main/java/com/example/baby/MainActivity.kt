@@ -9,8 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.baby.data.BabyFood
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.AuthRepository
+import com.example.baby.network.BabyFoodRepository
 import com.example.baby.network.BabyPatternRepository
 import com.example.baby.network.BabyRepository
 import com.example.baby.network.UserRepository
@@ -28,7 +30,11 @@ class MainActivity : ComponentActivity() {
 
     private val loadingViewModel by viewModels<LoadingViewModel>()
 
-    private val babyFoodRegisterViewModel by viewModels<BabyFoodRegisterViewModel>()
+
+    private val babyFoodViewModel by viewModels<BabyFoodViewModel> {
+        BabyFoodViewModelFactory(BabyFoodRepository())
+    }
+
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
         BabyRegisterViewModelFactory(BabyRepository())
     }
@@ -83,7 +89,7 @@ class MainActivity : ComponentActivity() {
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(
                             viewModel = dateViewModel,
-                            babyFoodViewModel = babyFoodRegisterViewModel,
+                            babyFoodViewModel = babyFoodViewModel,
                             navController = navController
                         )
                     }
@@ -100,7 +106,7 @@ class MainActivity : ComponentActivity() {
                     composable(NavigationRoutes.FoodDetailScreen.route) {
                         BabyFoodDetailScreen(
                             viewModel = dateViewModel,
-                            babyFoodViewModel = babyFoodRegisterViewModel,
+                            babyFoodViewModel = babyFoodViewModel,
                             navController = navController
                         )
                     }

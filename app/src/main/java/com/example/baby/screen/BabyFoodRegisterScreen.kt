@@ -30,13 +30,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.baseMealList
 import com.example.baby.util.mealTimeList
-import com.example.baby.viewModel.BabyFoodRegisterViewModel
+import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.DateViewModel
 
 @Composable
 fun BabyFoodRegisterScreen(
     viewModel: DateViewModel,
-    babyFoodViewModel: BabyFoodRegisterViewModel,
+    babyFoodViewModel: BabyFoodViewModel,
     navController: NavController
 ) {
     Scaffold(
@@ -71,7 +71,7 @@ fun BabyFoodRegisterScreen(
 }
 
 @Composable
-fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodRegisterViewModel) {
+fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodViewModel) {
     var text by remember { mutableStateOf("") }
 
     Row(
@@ -112,7 +112,7 @@ fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodRegist
 }
 
 @Composable
-fun ImagePickerBox(viewModel: BabyFoodRegisterViewModel) {
+fun ImagePickerBox(viewModel: BabyFoodViewModel) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -143,7 +143,7 @@ fun ImagePickerBox(viewModel: BabyFoodRegisterViewModel) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MealTimeSelectDropDownMenu(viewModel: BabyFoodRegisterViewModel) {
+fun MealTimeSelectDropDownMenu(viewModel: BabyFoodViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val items = mealTimeList
     val relationship by viewModel.mealTime.collectAsState()
@@ -260,7 +260,7 @@ fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun ToppingSelectWidget(viewModel: BabyFoodRegisterViewModel) {
+fun ToppingSelectWidget(viewModel: BabyFoodViewModel) {
     Column {
 
         Row(
@@ -285,7 +285,7 @@ fun ToppingSelectWidget(viewModel: BabyFoodRegisterViewModel) {
 }
 
 @Composable
-fun ToppingField(index: Int, topping: String, viewModel: BabyFoodRegisterViewModel) {
+fun ToppingField(index: Int, topping: String, viewModel: BabyFoodViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
