@@ -53,7 +53,7 @@ class StartActivity : ComponentActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 1313
-    private val loginViewModel:LoginViewModel by viewModels {
+    private val loginViewModel: LoginViewModel by viewModels {
         LoginViewModelFactory(UserRepository())
     }
     private val userRegisterViewModel: UserRegisterViewModel by viewModels {
@@ -62,7 +62,8 @@ class StartActivity : ComponentActivity() {
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
         BabyRegisterViewModelFactory(BabyRepository())
     }
-        override fun onCreate(savedInstanceState: Bundle?) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
         setContent {
@@ -78,7 +79,7 @@ class StartActivity : ComponentActivity() {
             }
         }
         // 로그인 시도
-            loginViewModel.tryLogin(this)
+        loginViewModel.tryLogin(this)
 
         lifecycleScope.launchWhenCreated {
             launch {
@@ -122,89 +123,89 @@ class StartActivity : ComponentActivity() {
                                             )
                                         }
                                     }
+                                }
                             }
+                        } else {
+                            Log.d("로그인 되어있음", "로그인 되어있지만? 유저가 없음")
                         }
                     } else {
-                        Log.d("로그인 되어있음", "로그인 되어있지만? 유저가 없음")
+                        Log.d("로그인 안되어있음", "로그인 안되어있음")
+                        // 로그인 안되어있을 때 로그인 페이지 열림
+                        setContent {
+                            LoginScreen({
+                                googleLogin()
+                            }, applicationContext)
+                        }
                     }
-                } else {
-                Log.d("로그인 안되어있음", "로그인 안되어있음")
-                // 로그인 안되어있을 때 로그인 페이지 열림
-                setContent {
-                    LoginScreen {
-                        googleLogin()
+                }
+            }
+            launch {
+                loginViewModel.event.collect { event ->
+                    when (event) {
+                        LoginViewModel.LoginEvent.ToMain -> toMainActivity()
+                        else -> {}
                     }
                 }
             }
-            }
-        }
-        launch {
-            loginViewModel.event.collect { event ->
-                when (event) {
-                    LoginViewModel.LoginEvent.ToMain -> toMainActivity()
-                    else -> {}
-                }
-            }
+
         }
 
     }
 
-}
+    // 로그인 객체 생성
+    private fun googleLogin() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            // 빨간줄이지만 토큰 문제라 실행 가능
+            .requestIdToken("292129982271-dncmaevefv0n74od6pom19v5m37he4no.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
 
-// 로그인 객체 생성
-private fun googleLogin() {
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        // 빨간줄이지만 토큰 문제라 실행 가능
-        .requestIdToken("292129982271-dncmaevefv0n74od6pom19v5m37he4no.apps.googleusercontent.com")
-        .requestEmail()
-        .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-    googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-    googleSignIn()
-}
-
-// 구글 회원가입
-private fun googleSignIn() {
-    val signInIntent = googleSignInClient.signInIntent
-    startActivityForResult(signInIntent, RC_SIGN_IN)
-}
-
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-
-    if (requestCode == RC_SIGN_IN) {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account)
-        } catch (e: ApiException) {
-            Toast.makeText(this, "구글 회원가입에 실패하였습니다: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    } else {
-        /*no-op*/
+        googleSignIn()
     }
-}
 
-// account 객체에서 id 토큰 가져온 후 Firebase 인증
-private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
-    val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
-    auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
-        Log.d("로그인중", "로그인 되어야함1")
-        if (task.isSuccessful) {
-            Log.d("로그인중", "로그인 되어야함2")
-            auth.currentUser?.let {
-                Log.d("로그인중", "로그인 되어야함3")
-                CoroutineScope(Dispatchers.Main).launch {
-                    loginViewModel.setLoginResult(true)
+    // 구글 회원가입
+    private fun googleSignIn() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account)
+            } catch (e: ApiException) {
+                Toast.makeText(this, "구글 회원가입에 실패하였습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            /*no-op*/
+        }
+    }
+
+    // account 객체에서 id 토큰 가져온 후 Firebase 인증
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
+        val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
+            Log.d("로그인중", "로그인 되어야함1")
+            if (task.isSuccessful) {
+                Log.d("로그인중", "로그인 되어야함2")
+                auth.currentUser?.let {
+                    Log.d("로그인중", "로그인 되어야함3")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        loginViewModel.setLoginResult(true)
+                    }
                 }
             }
         }
     }
-}
 
 
-private fun toMainActivity() {
-    startActivity(Intent(this, MainActivity::class.java))
-}
+    private fun toMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
+    }
 }
