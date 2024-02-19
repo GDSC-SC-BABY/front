@@ -11,8 +11,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.baby.R
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.viewModel.CalendarViewModel
@@ -32,7 +34,7 @@ fun MainScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .background(Color.White)
+                .background(color = colorResource(id = R.color.sub_color))
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {

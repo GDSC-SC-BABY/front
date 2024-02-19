@@ -5,6 +5,9 @@
     <color name="secondary_color">#295F2E</color>
     <color name="secondary_light">#55AF57</color>
     <color name="delete_fail">#FF0101</color>
+    <color name="sunday">#F21155</color>
+    <color name="saturday">#0094D4</color>
+    <color name="day">#55AF57</color>
     <color name="error_alert">#FA572A</color>
     <color name="success">#00539C</color>
 
@@ -23,5 +26,7 @@
     <color name="background_secondary">#F1F7F2</color>
     <color name="background_blue">#F0F2F4</color>
     <color name="background_gray">#F4F4F4</color>
+
+    <color name="purple_700">#FF3700B3</color>
 
 </resources>

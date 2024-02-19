@@ -18,11 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.baby.R
 import com.example.baby.data.CalendarDate
 import com.example.baby.util.FoodSelectDialog
 import com.example.baby.util.RecordSelectDialog
@@ -101,11 +104,13 @@ fun MonthWidget(viewModel: CalendarViewModel) {
             .fillMaxWidth()
             .height(50.dp)
     ) {
-        Row() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             IconButton(onClick = { viewModel.previousMonth() }) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    tint = MaterialTheme.colors.secondary,
+                    painter = painterResource(id = R.drawable.previous_month_icon),
+                    tint = colorResource(id = R.color.secondary_light),
                     contentDescription = "달 -1"
                 )
             }
@@ -118,8 +123,8 @@ fun MonthWidget(viewModel: CalendarViewModel) {
 
             IconButton(onClick = { viewModel.nextMonth() }) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    tint = MaterialTheme.colors.secondary,
+                    painter = painterResource(id = R.drawable.next_month_icon),
+                    tint = colorResource(id = R.color.secondary_light),
                     contentDescription = "달 +1"
                 )
             }
@@ -151,7 +156,11 @@ fun WeekDayHeaders() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         daysOfWeek.forEach { day ->
-            val textColor = if (day == "Sun") Color.Red else Color.Black
+            val textColor = when (day) {
+                "Sun" -> colorResource(id = R.color.sunday)
+                "Sat" -> colorResource(id = R.color.saturday)
+                else -> colorResource(id = R.color.day)
+            }
             Text(
                 text = day,
                 style = MaterialTheme.typography.subtitle2,
