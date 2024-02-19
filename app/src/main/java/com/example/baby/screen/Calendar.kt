@@ -1,14 +1,17 @@
 package com.example.baby.screen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -21,51 +24,17 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.CalendarDate
-import com.example.baby.util.FoodSelectDialog
 import com.example.baby.util.RecordSelectDialog
 import com.example.baby.viewModel.CalendarViewModel
 import java.text.SimpleDateFormat
-import java.util.*
-
-@Composable
-fun CustomCalendarLayout(
-    textHeight: Int,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Layout(
-        content = content,
-        modifier = modifier
-    ) { measurable, constraints ->
-        val cellWidth = constraints.maxWidth / 7
-        val cellHeight = constraints.maxHeight / 6
-
-        val placeable = measurable.map { measurable ->
-            measurable.measure(Constraints.fixed(cellWidth, cellHeight))
-        }
-
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            var xPosition = 0
-            var yPosition = 0
-
-            placeable.forEachIndexed { index, placeable ->
-                placeable.placeRelative(x = xPosition, y = yPosition)
-
-                xPosition += cellWidth
-                if (index % 7 == 6) {
-                    xPosition = 0
-                    yPosition += cellHeight
-                }
-            }
-        }
-    }
-}
+import java.util.Locale
 
 @Composable
 fun CustomCalendarView(
@@ -92,6 +61,40 @@ fun CustomCalendarView(
 
     if (showDialog.value) {
         RecordSelectDialog(navController = navController, onDismiss = { showDialog.value = false })
+    }
+}
+
+@Composable
+fun CustomCalendarLayout(
+    textHeight: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        content = content,
+        modifier = modifier.padding(horizontal = 2.dp)
+    ) { measurable, constraints ->
+        val cellWidth = constraints.maxWidth / 7
+        val cellHeight = constraints.maxHeight / 6
+
+        val placeable = measurable.map { measurable ->
+            measurable.measure(Constraints.fixed(cellWidth, cellHeight))
+        }
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            var xPosition = 0
+            var yPosition = 0
+
+            placeable.forEachIndexed { index, placeable ->
+                placeable.placeRelative(x = xPosition, y = yPosition)
+
+                xPosition += cellWidth
+                if (index % 7 == 6) {
+                    xPosition = 0
+                    yPosition += cellHeight
+                }
+            }
+        }
     }
 }
 
@@ -136,14 +139,15 @@ fun MonthWidget(viewModel: CalendarViewModel) {
 @Composable
 fun DateCell(calendarDay: CalendarDate, dateFormatter: SimpleDateFormat, onClick: () -> Unit) {
     val textColor = if (calendarDay.isCurrentMonth) Color.Black else Color.Gray
-
     Text(
         text = dateFormatter.format(calendarDay.date),
         color = textColor,
         modifier = Modifier
-            .padding(4.dp) // 요일 헤더와 같은 가로 패딩을 적용합니다.
+            .padding(4.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 15.dp) // 추가된 코드
+            .width(32.dp) // WeekDayHeaders에서 사용한 것과 동일한 너비 적용
+            .padding(horizontal = 15.dp),
+        fontSize = 14.sp
     )
 }
 
@@ -153,7 +157,7 @@ fun WeekDayHeaders() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 14.dp),
+            .padding(horizontal = 2.dp), // CustomCalendarLayout의 패딩과 일치
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         daysOfWeek.forEach { day ->
@@ -164,9 +168,12 @@ fun WeekDayHeaders() {
             }
             Text(
                 text = day,
-                style = MaterialTheme.typography.subtitle2,
                 color = textColor,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 4.dp),
             )
         }
     }
