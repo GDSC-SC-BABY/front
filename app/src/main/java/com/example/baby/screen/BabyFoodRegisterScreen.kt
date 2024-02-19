@@ -276,22 +276,20 @@ fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
     val textColor =
         if (isSelected) colorResource(R.color.gray6) else colorResource(id = R.color.gray3)
 
-    Box(
+    Card(
         modifier = Modifier
             .padding(4.dp)
             .size(width = 110.dp, height = 40.dp)
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center,
+            .clickable(onClick = onClick),
+        backgroundColor = backgroundColor,
+        shape = RoundedCornerShape(8.dp)
     ) {
-        TextButton(
-            onClick = {
-                onClick
-            },
-            modifier = Modifier
-                .fillMaxSize()
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                item,
+                text = item,
                 color = textColor,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold
