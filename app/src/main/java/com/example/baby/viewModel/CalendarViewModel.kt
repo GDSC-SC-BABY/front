@@ -75,7 +75,7 @@ class CalendarViewModel : ViewModel() {
     // 현재 연도와 월을 문자열로 반환하는 함수
     fun getCurrentYearAndMonth(): String {
         val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH) + 1
+        val month = calendar.get(Calendar.MONTH)
         return String.format(Locale.getDefault(), "%d년 %02d월", year, month)
     }
 

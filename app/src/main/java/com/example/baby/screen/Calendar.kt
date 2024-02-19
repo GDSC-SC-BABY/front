@@ -116,9 +116,10 @@ fun MonthWidget(viewModel: CalendarViewModel) {
             }
 
             Text(
-                text = "2024년 01월",
+                text = info,
                 fontSize = 22.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.secondary_color)
             )
 
             IconButton(onClick = { viewModel.nextMonth() }) {
