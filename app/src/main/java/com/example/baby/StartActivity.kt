@@ -30,6 +30,7 @@ import com.example.baby.network.BabyRepository
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.BabyRegisterScreen
 import com.example.baby.screen.GuideScreen
+import com.example.baby.screen.MemberTypeScreen
 import com.example.baby.screen.UserRegisterScreen
 import com.example.baby.util.App
 import com.example.baby.util.SharedPreferenceUtil
@@ -112,6 +113,12 @@ class StartActivity : ComponentActivity() {
                                             BabyRegisterScreen(
                                                 viewModel = babyRegisterViewModel,
                                                 navController = navController
+                                            )
+                                        }
+                                        composable(NavigationRoutes.MemberTypeScreen.route) {
+                                            MemberTypeScreen(
+                                                navController = navController,
+                                                context = applicationContext
                                             )
                                         }
                                     }

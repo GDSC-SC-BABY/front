@@ -37,29 +37,28 @@ val Typography = Typography(
     )
     */
 )
-
-val startActivityFontStyle = Typography(
-    defaultFontFamily = nanumSquare,
-    h1 = TextStyle(
-        fontFamily = nanumSquare,
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
-    ),
-    h2 = TextStyle(
-        fontFamily = nanumSquare,
-        fontWeight = FontWeight.Normal,
-        fontSize = 15.sp
-    ),
-    body1 = TextStyle(
-        color = Color(R.color.gray4),
-        fontFamily = nanumSquare,
-        fontWeight = FontWeight.Normal,
-        fontSize = 15.sp
-    ),
-    button = TextStyle(
-        color = Color(R.color.secondary_color),
-        fontFamily = nanumSquare,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 15.sp,
-    ),
-)
+class StartFontStyle{
+    companion object{
+        var startHeadline = TextStyle(
+            fontFamily = nanumSquare,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 23.sp
+        )
+        var startSubtitle = TextStyle(
+            fontFamily = nanumSquare,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 18.sp
+        )
+        var startBody1 = TextStyle(
+            fontFamily = nanumSquare,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+        var startButton = TextStyle(
+            color = Color(R.color.secondary_color),
+            fontFamily = nanumSquare,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 18.sp,
+        )
+    }
+}
