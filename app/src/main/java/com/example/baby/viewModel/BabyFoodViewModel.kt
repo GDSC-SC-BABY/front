@@ -41,6 +41,10 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
         }
     }
 
+    fun setMealTime(time: String) {
+        mealTime.value = time
+    }
+
     fun deleteTopping(idx: Int) {
         _toppings.removeAt(idx)
     }
