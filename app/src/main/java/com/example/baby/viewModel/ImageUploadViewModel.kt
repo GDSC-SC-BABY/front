@@ -26,11 +26,10 @@ class ImageUploadViewModel(application: Application, private val repository: Ima
             try {
                 val result = repository.uploadImage(imageUri)
                 _imageUrl.value = result
+                Log.d("사진", result)
             } catch (e: HttpException) {
-                // HttpException 발생 시, 상태 코드와 함께 로그 출력
                 Log.e("ImageUploadViewModel", "API Error: HTTP ${e.code()} ${e.message}")
             } catch (e: Exception) {
-                // 기타 예외 처리, 상태 코드 없이 오류 로그 출력
                 Log.e("ImageUploadViewModel", "Unknown Error: ${e.message}")
             }
         }
