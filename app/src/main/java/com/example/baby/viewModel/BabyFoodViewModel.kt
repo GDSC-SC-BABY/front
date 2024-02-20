@@ -22,6 +22,9 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
     private val _toppings = mutableStateListOf<String>()
     val toppings: List<String> = _toppings
 
+    private val _toppingAmounts = mutableStateListOf<Int>()
+    val toppingAmounts: List<Int> = _toppingAmounts
+
     private val _selectedImage = MutableLiveData<Uri?>()
     val selectedImage: LiveData<Uri?> = _selectedImage
 
@@ -29,17 +32,26 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
         _selectedImage.value = uri
     }
 
-    // 토핑 추가 함수
     fun addTopping() {
-        _toppings.add("") // 새로운 토핑(빈 문자열) 추가
+        _toppings.add("")
     }
 
-    // 특정 인덱스의 토핑을 업데이트하는 함수
     fun updateTopping(index: Int, topping: String) {
         if (index in _toppings.indices) {
             _toppings[index] = topping
         }
     }
+
+    fun addToppingAmount() {
+        _toppingAmounts.add(0)
+    }
+
+    fun updateToppingAmount(index: Int, amount: Int) {
+        if (index in _toppingAmounts.indices) {
+            _toppingAmounts[index] = amount
+        }
+    }
+
 
     fun setMealTime(time: String) {
         mealTime.value = time
