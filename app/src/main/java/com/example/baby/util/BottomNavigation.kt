@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -39,7 +40,10 @@ fun CustomBottomNavigation(navController: NavController) {
 
     Box(
         modifier = Modifier
-            .background(Color.Gray.copy(alpha = 0.7f), shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+            .background(
+                Color.Gray.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
+            )
             .padding(1.dp)
     ){
 
@@ -49,8 +53,27 @@ fun CustomBottomNavigation(navController: NavController) {
                 .height(80.dp)
                 .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
         ) {
+
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.DateRange, contentDescription = null) },
+                icon = { Icon(painter = painterResource(id = R.drawable.diary_icon), contentDescription = null) },
+                selected = navController.currentDestination?.route == "guideScreen",
+                onClick = {
+                    navController.navigate(NavigationRoutes.BabyPatternScreen.route)
+                },
+                selectedContentColor = colorResource(id = R.color.brand_color),
+                unselectedContentColor = colorResource(id = R.color.gray1)
+            )
+            BottomNavigationItem(
+                icon = { Icon(painter = painterResource(id = R.drawable.guide_icon), contentDescription = null) },
+                selected = navController.currentDestination?.route == "registerScreen",
+                onClick = {
+                    navController.navigate(NavigationRoutes.RegisterScreen.route)
+                },
+                selectedContentColor = colorResource(id = R.color.brand_color),
+                unselectedContentColor = colorResource(id = R.color.gray1)
+            )
+            BottomNavigationItem(
+                icon = { Icon(painter = painterResource(id = R.drawable.home_icon), contentDescription = null) },
                 selected = navController.currentDestination?.route == "mainScreen",
                 onClick = {
                     // Handle navigation to Calendar screen
@@ -60,25 +83,7 @@ fun CustomBottomNavigation(navController: NavController) {
                 unselectedContentColor = colorResource(id = R.color.gray1)
             )
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.List, contentDescription = null) },
-                selected = navController.currentDestination?.route == "guideScreen",
-                onClick = {
-                    navController.navigate(NavigationRoutes.BabyPatternScreen.route)
-                },
-                selectedContentColor = colorResource(id = R.color.brand_color),
-                unselectedContentColor = colorResource(id = R.color.gray1)
-            )
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                selected = navController.currentDestination?.route == "registerScreen",
-                onClick = {
-                    navController.navigate(NavigationRoutes.RegisterScreen.route)
-                },
-                selectedContentColor = colorResource(id = R.color.brand_color),
-                unselectedContentColor = colorResource(id = R.color.gray1)
-            )
-            BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                icon = { Icon(painter = painterResource(id = R.drawable.babyfood_icon), contentDescription = null) },
                 selected = navController.currentDestination?.route == NavigationRoutes.FoodRegisterScreen.route || navController.currentDestination?.route == NavigationRoutes.SnackRegisterScreen.route,
                 onClick = {
                     showDialog.value = true;
@@ -87,7 +92,7 @@ fun CustomBottomNavigation(navController: NavController) {
                 unselectedContentColor = colorResource(id = R.color.gray1)
             )
             BottomNavigationItem(
-                icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                icon = { Icon(painter = painterResource(id = R.drawable.mypage_icon), contentDescription = null) },
                 selected = navController.currentDestination?.route == "myPageScreen",
                 onClick = {
                     navController.navigate(NavigationRoutes.MyPageScreen.route)
