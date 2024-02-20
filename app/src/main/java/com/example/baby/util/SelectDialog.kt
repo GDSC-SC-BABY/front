@@ -54,7 +54,7 @@ fun RecordSelectDialog(navController: NavController, onDismiss: () -> Unit){
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Text("이유식 기록", modifier = Modifier.fillMaxWidth().clickable {
-                    navController.navigate(NavigationRoutes.FoodDetailScreen.route)
+                    navController.navigate(NavigationRoutes.DayBabyFoodScreen.route)
                     onDismiss()
                 }.padding(16.dp))
                 Divider()

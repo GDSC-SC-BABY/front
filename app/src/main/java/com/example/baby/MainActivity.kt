@@ -95,6 +95,13 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+                    composable(NavigationRoutes.DayBabyFoodScreen.route) {
+                        DayBabyFoodScreen(
+                            viewModel = dateViewModel,
+                            userViewModel = userRegisterViewModel,
+                            navController = navController
+                        )
+                    }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(
                             viewModel = imageUploadViewModel,
