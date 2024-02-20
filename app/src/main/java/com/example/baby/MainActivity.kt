@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +16,7 @@ import com.example.baby.network.AuthRepository
 import com.example.baby.network.BabyFoodRepository
 import com.example.baby.network.BabyPatternRepository
 import com.example.baby.network.BabyRepository
+import com.example.baby.network.ImageRepository
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
@@ -22,6 +24,12 @@ import com.example.baby.viewModel.*
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+
+
+    private val imageUploadViewModel by viewModels<ImageUploadViewModel> {
+        // Application 인스턴스와 함께 ImageRepository 인스턴스를 Factory에 전달
+        ImageUploadViewModelFactory(application, ImageRepository(applicationContext))
+    }
 
 
     private val dateViewModel by viewModels<DateViewModel>()
@@ -38,6 +46,7 @@ class MainActivity : ComponentActivity() {
     private val babyRegisterViewModel by viewModels<BabyRegisterViewModel> {
         BabyRegisterViewModelFactory(BabyRepository())
     }
+
     private val babyPatternRecordViewModel by viewModels<BabyPatternRecordViewModel> {
         BabyPatternRecordViewModelFactory(BabyPatternRepository())
     }
@@ -88,7 +97,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(
-                            viewModel = dateViewModel,
+                            viewModel = imageUploadViewModel,
                             babyFoodViewModel = babyFoodViewModel,
                             navController = navController
                         )

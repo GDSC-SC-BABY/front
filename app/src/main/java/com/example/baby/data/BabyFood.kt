@@ -43,3 +43,5 @@ data class Topping(
     @SerializedName("name") val name: String,
     @SerializedName("hasAllergy") val hasAllergy: Boolean
 )
+
+data class ImageResponse(val imageUrl: String)

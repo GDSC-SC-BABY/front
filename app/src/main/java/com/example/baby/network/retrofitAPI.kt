@@ -1,6 +1,7 @@
 package com.example.baby.network
 
 import com.example.baby.data.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 import java.util.regex.Pattern
@@ -73,4 +74,7 @@ interface ApiService {
     @GET("snack/{snackId}")
     suspend fun getSnackDetailBySnackId(@Path("snackId") snackId: Int): Response<BabyFoodResponse>
 
+    @Multipart
+    @POST("Image")
+    suspend fun uploadImage(@Part image: MultipartBody.Part): ImageResponse
 }
