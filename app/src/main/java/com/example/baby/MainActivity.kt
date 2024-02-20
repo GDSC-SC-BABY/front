@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(NavigationRoutes.SnackRegisterScreen.route) {
                         BabySnackRegisterScreen(
-                            viewModel = dateViewModel,
+                            viewModel = imageUploadViewModel,
                             babySnackViewModel = babySnackRegisterViewModel,
                             navController = navController
                         )

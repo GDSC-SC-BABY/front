@@ -59,8 +59,12 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
         baseMeal.value = meal
     }
 
-    fun setSignificant(significant: String) {
-        baseMeal.value = significant
+    fun setBaseMealAmount(amt: String) {
+        amount.value = amt
+    }
+
+    fun setSignificant(content: String) {
+        significant.value = content
     }
 
     fun deleteTopping(idx: Int) {

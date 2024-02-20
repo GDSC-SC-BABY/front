@@ -152,19 +152,21 @@ fun BabyFoodRegisterInfo(viewModel: ImageUploadViewModel, foodViewModel: BabyFoo
         ) {
             MealTimeSelectDropDownMenu(foodViewModel)
             Spacer(Modifier.height(10.dp))
-            RegisterBaseMealAmount()
+            RegisterBaseMealAmount(foodViewModel)
         }
     }
 }
 
 @Composable
-fun RegisterBaseMealAmount() {
+fun RegisterBaseMealAmount(viewModel: BabyFoodViewModel) {
     var text by remember { mutableStateOf("") }
+
     TextField(
         value = text,
         onValueChange = { gram ->
             if (gram.all { it.isDigit() }) {
                 text = gram
+                viewModel.setBaseMealAmount(gram)
             }
         },
         singleLine = true,
@@ -499,7 +501,8 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
 
     Box(
         modifier = Modifier
-            .fillMaxWidth().height(80.dp)
+            .fillMaxWidth()
+            .height(80.dp)
             .padding(10.dp),
     ) {
         Button(
