@@ -41,10 +41,11 @@ import com.example.baby.util.baseMealList
 import com.example.baby.util.mealTimeList
 import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.DateViewModel
+import com.example.baby.viewModel.ImageUploadViewModel
 
 @Composable
 fun BabyFoodRegisterScreen(
-    viewModel: DateViewModel,
+    viewModel: ImageUploadViewModel,
     babyFoodViewModel: BabyFoodViewModel,
     navController: NavController
 ) {
@@ -95,7 +96,7 @@ fun BabyFoodRegisterScreen(
 }
 
 @Composable
-fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodViewModel) {
+fun BabyFoodRegisterInfo(viewModel: ImageUploadViewModel, foodViewModel: BabyFoodViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -109,7 +110,7 @@ fun BabyFoodRegisterInfo(viewModel: DateViewModel, foodViewModel: BabyFoodViewMo
                 .weight(0.8f)
                 .height(100.dp)
         ) {
-            ImagePickerBox(viewModel = foodViewModel)
+            ImagePickerBox(viewModel = viewModel)
         }
 //        Spacer(modifier = Modifier.width(20.dp))
         Column(
@@ -151,37 +152,40 @@ fun RegisterBaseMealAmount() {
 }
 
 @Composable
-fun ImagePickerBox(viewModel: BabyFoodViewModel) {
+fun ImagePickerBox(viewModel: ImageUploadViewModel) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        viewModel.onImagePicked(uri)
+        uri?.let {
+            viewModel.uploadImage(it)
+        }
     }
+
     Box(
         modifier = Modifier
             .background(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(15.dp)
             )
-            .clickable {
-                launcher.launch("image/*")
-            }
+            .clickable { launcher.launch("image/*") }
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.image_picker_icon),
-            contentDescription = "Add Image",
-            tint = colorResource(
-                id = R.color.gray3
+        val imageUrl by viewModel.imageUrl.observeAsState()
+        if (imageUrl == null) {
+            Icon(
+                painter = painterResource(id = R.drawable.image_picker_icon),
+                contentDescription = "Add Image",
+                tint = Color.Gray
             )
-        )
-    }
-
-    val selectedImageUri by viewModel.selectedImage.observeAsState()
-    selectedImageUri?.let { uri ->
-        Image(painter = rememberAsyncImagePainter(uri), contentDescription = null)
+        } else {
+            Image(
+                painter = rememberAsyncImagePainter(imageUrl),
+                contentDescription = "Uploaded Image",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
 

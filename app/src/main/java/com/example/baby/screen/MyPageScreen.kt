@@ -1,8 +1,6 @@
 package com.example.baby.screen
 
-import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,9 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +46,21 @@ fun MyPageScreen(
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = colorResource(id = R.color.sub_color),
+                elevation = 0.dp,
+                title = {
+                    Text(
+                        "마이 페이지",
+                        textAlign = TextAlign.Center,
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+            )
+        },
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) { innerPadding ->
         BoxWithConstraints {
@@ -58,26 +71,36 @@ fun MyPageScreen(
                     .padding(
                         start = 20.dp,
                         end = 20.dp,
-                        top = 40.dp,
-                        bottom = innerPadding.calculateBottomPadding() + 20.dp
+                        top = 20.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 10.dp
                     )
                     .verticalScroll(rememberScrollState())
             ) {
                 babyInfoCard()
                 Spacer(modifier = Modifier.height(20.dp))
-                userInfo(userViewModel)
+                UserInfoCard(userViewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                Divider(thickness = 1.dp, color = Color.Black)
+                Text(
+                    "공동양육자예요",
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorResource(id = R.color.secondary_color),
+                    fontSize = 20.sp
+                )
                 Spacer(modifier = Modifier.height(10.dp))
-                userCodeInfo()
-                Spacer(modifier = Modifier.height(20.dp))
-                Divider(thickness = 1.dp, color = Color.Black)
+                CoParentInfoCard(viewModel = userViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-                Co_parentInfo(viewModel)
-                Spacer(modifier = Modifier.height(20.dp))
-                Divider(thickness = 1.dp, color = Color.Black)
-                Spacer(modifier = Modifier.height(20.dp))
-                DarkModeSelect()
+                CoParentInfoCard(viewModel = userViewModel)
+//                Divider(thickness = 1.dp, color = Color.Black)
+//                Spacer(modifier = Modifier.height(10.dp))
+//                userCodeInfo()
+//                Spacer(modifier = Modifier.height(20.dp))
+//                Divider(thickness = 1.dp, color = Color.Black)
+//                Spacer(modifier = Modifier.height(10.dp))
+//                Co_parentInfo(viewModel)
+//                Spacer(modifier = Modifier.height(20.dp))
+//                Divider(thickness = 1.dp, color = Color.Black)
+//                Spacer(modifier = Modifier.height(20.dp))
+//                DarkModeSelect()
             }
         }
     }
@@ -90,7 +113,8 @@ fun babyInfoCard() {
     Card(
         shape = RoundedCornerShape(20.dp),
         backgroundColor = colorResource(id = R.color.sub_color),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 2.dp
     ) {
         Row(modifier = Modifier.padding(10.dp)) {
             Image(
@@ -108,6 +132,7 @@ fun babyInfoCard() {
                     Text(
                         SharedPreferenceUtil(context).getString("babyName", "").toString(),
                         fontWeight = FontWeight.SemiBold,
+                        color = colorResource(id = R.color.secondary_color),
                         fontSize = 25.sp
                     )
                     Spacer(modifier = Modifier.width(5.dp))
@@ -123,21 +148,241 @@ fun babyInfoCard() {
                         modifier = Modifier.size(23.dp)
                     )
                 }
-                Text(SharedPreferenceUtil(context).getString("birth", "").toString())
-                Row(){
-                    Text("생후", color = colorResource(id = R.color.secondary_color))
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    SharedPreferenceUtil(context).getString("birth", "").toString(),
+                    color = colorResource(id = R.color.secondary_color),
+                    fontWeight = FontWeight.SemiBold
+                )
+                Row() {
+                    Text(
+                        "생후",
+                        color = colorResource(id = R.color.secondary_light),
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Spacer(Modifier.width(5.dp))
-                    Text("6개월")
+                    Text(
+                        "6개월",
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-                Row(){
-                    Text("성장 단계", color = colorResource(id = R.color.secondary_color))
+                Row() {
+                    Text(
+                        "성장 단계",
+                        color = colorResource(id = R.color.secondary_light),
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Spacer(Modifier.width(5.dp))
-                    Text("이유식 초기")
+                    Text(
+                        "이유식 초기",
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
     }
 }
+
+@Composable
+fun UserInfoCard(viewModel: UserRegisterViewModel) {
+    val context = LocalContext.current
+
+//    val userInfoState by viewModel.userInfoState.collectAsState()
+//
+//    when (userInfoState) {
+//        is Resource.Loading -> {
+//            Box(
+//                contentAlignment = Alignment.Center,
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                CircularProgressIndicator()
+//            }
+//        }
+//
+//        is Resource.Success -> {
+//            val userInfo = (userInfoState as Resource.Success<UserResponse>).data
+    Column() {
+        Text(
+            "내 정보는요",
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.secondary_color),
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            backgroundColor = Color.White,
+            modifier = Modifier.fillMaxWidth(),
+            elevation = 2.dp
+        ) {
+            Row(modifier = Modifier.padding(10.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.teddy_bear),
+                    contentDescription = "babyPhoto",
+                    modifier = Modifier.size(100.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "말랑콩떡",
+//                        SharedPreferenceUtil(context).getString("nickname", "").toString(),
+                            fontWeight = FontWeight.SemiBold,
+                            color = colorResource(id = R.color.secondary_color),
+                            fontSize = 20.sp
+                        )
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "edit profile",
+                                tint = colorResource(
+                                    id = R.color.gray2
+                                )
+                            )
+                        }
+//                            Image(
+//                                painter = painterResource(
+//                                    id = R.drawable.man_icon
+////                            SharedPreferenceUtil(context).getInt(
+////                                "genderIcon",
+////                                R.drawable.man_icon
+////                            )
+//                                ),
+//                                contentDescription = "gender",
+//                                modifier = Modifier.size(23.dp)
+//                            )
+                    }
+                    Spacer(Modifier.height(5.dp))
+                    Text(
+                        "${
+                            SharedPreferenceUtil(context).getString("babyName", "").toString()
+                        } ${SharedPreferenceUtil(context).getString("relation", "").toString()}",
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Row() {
+                        Text(
+                            "고유 코드",
+                            color = colorResource(id = R.color.secondary_light),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(Modifier.width(5.dp))
+                        Text(
+                            "3v8duaod88u7",
+                            color = colorResource(id = R.color.secondary_color),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+//        is Resource.Error -> {
+//            Column {
+//                Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
+//                Text("유저 정보 조회에 실패했습니다.\n잠시 후 다시 시도해 주세요.")
+//            }
+//        }
+//    }
+//}
+
+@Composable
+fun CoParentInfoCard(viewModel: UserRegisterViewModel) {
+    val context = LocalContext.current
+
+//    val userInfoState by viewModel.userInfoState.collectAsState()
+//
+//    when (userInfoState) {
+//        is Resource.Loading -> {
+//            Box(
+//                contentAlignment = Alignment.Center,
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                CircularProgressIndicator()
+//            }
+//        }
+//
+//        is Resource.Success -> {
+//            val userInfo = (userInfoState as Resource.Success<UserResponse>).data
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        backgroundColor = Color.White,
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 2.dp
+    ) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.teddy_bear),
+                contentDescription = "babyPhoto",
+                modifier = Modifier.size(100.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "말랑콩떡",
+//                        SharedPreferenceUtil(context).getString("nickname", "").toString(),
+                        fontWeight = FontWeight.SemiBold,
+                        color = colorResource(id = R.color.secondary_color),
+                        fontSize = 20.sp
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "edit profile",
+                        tint = Color.White,
+                        modifier = Modifier.size(47.dp)
+                    )
+                }
+                Spacer(Modifier.height(5.dp))
+                Text(
+                    "${
+                        SharedPreferenceUtil(context).getString("babyName", "").toString()
+                    } ${SharedPreferenceUtil(context).getString("relation", "").toString()}",
+                    color = colorResource(id = R.color.secondary_color),
+                    fontWeight = FontWeight.SemiBold
+                )
+                Row() {
+                    Text(
+                        "고유 코드",
+                        color = colorResource(id = R.color.secondary_light),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        "3v8duaod88u7",
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+    }
+}
+
+//        is Resource.Error -> {
+//            Column {
+//                Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
+//                Text("유저 정보 조회에 실패했습니다.\n잠시 후 다시 시도해 주세요.")
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun userInfo(viewModel: UserRegisterViewModel) {
@@ -150,7 +395,7 @@ fun userInfo(viewModel: UserRegisterViewModel) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 CircularProgressIndicator()
             }
         }
@@ -250,7 +495,7 @@ fun Co_parentInfo(viewModel: BabyRegisterViewModel) {
 //            horizontalArrangement = Arrangement.SpaceBetween,
 //            modifier = Modifier.fillMaxWidth()
 //        ) {
-            Text("공동양육자", fontWeight = FontWeight.Bold, fontSize = 23.sp)
+        Text("공동양육자", fontWeight = FontWeight.Bold, fontSize = 23.sp)
 //            IconButton(onClick = { relationDialogOpen = true }) {
 //                Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
 //            }
