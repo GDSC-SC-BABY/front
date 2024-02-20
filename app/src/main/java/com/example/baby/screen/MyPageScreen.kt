@@ -2,6 +2,7 @@ package com.example.baby.screen
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -34,7 +36,6 @@ import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.viewModel.BabyRegisterViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyPageScreen(
     viewModel: BabyRegisterViewModel,
@@ -88,7 +89,7 @@ fun babyInfoCard() {
 
     Card(
         shape = RoundedCornerShape(20.dp),
-        backgroundColor = Color.LightGray,
+        backgroundColor = colorResource(id = R.color.sub_color),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(10.dp)) {
@@ -112,20 +113,28 @@ fun babyInfoCard() {
                     Spacer(modifier = Modifier.width(5.dp))
                     Image(
                         painter = painterResource(
-                            id = SharedPreferenceUtil(context).getInt(
-                                "genderIcon",
-                                R.drawable.man_icon
-                            )
+                            id = R.drawable.man_icon
+//                            SharedPreferenceUtil(context).getInt(
+//                                "genderIcon",
+//                                R.drawable.man_icon
+//                            )
                         ),
                         contentDescription = "gender",
                         modifier = Modifier.size(23.dp)
                     )
                 }
                 Text(SharedPreferenceUtil(context).getString("birth", "").toString())
-                Text("6개월")
-                Text("이유식 초기")
+                Row(){
+                    Text("생후", color = colorResource(id = R.color.secondary_color))
+                    Spacer(Modifier.width(5.dp))
+                    Text("6개월")
+                }
+                Row(){
+                    Text("성장 단계", color = colorResource(id = R.color.secondary_color))
+                    Spacer(Modifier.width(5.dp))
+                    Text("이유식 초기")
+                }
             }
-
         }
     }
 }
@@ -178,7 +187,8 @@ fun userInfo(viewModel: UserRegisterViewModel) {
                     Column() {
                         Text(userInfo!!.name)
                         Text("엄마")
-                        Text(userInfo.residence)
+//                        Text(userInfo.residence)
+                        Text("노원구")
                     }
                 }
             }
