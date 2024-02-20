@@ -1,10 +1,12 @@
 import android.content.Context
 import android.graphics.Paint.Align
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,6 +69,28 @@ fun LoginScreen(content: () -> Unit, context: Context) {
             SignInGoogleButton {
                 content()
             }
+            Spacer(modifier = Modifier.height(20.dp))
+            Row() {
+                Text(
+                    "아직 회원아 아니신가요?",
+                    style = StartFontStyle.startBody1,
+                    color = Color(R.color.gray4),
+                    fontWeight = FontWeight.Light
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "",
+                    tint = colorResource(
+                        id = R.color.gray4
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Image(
+                painter = painterResource(id = R.drawable.login),
+                contentDescription = "login",
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
