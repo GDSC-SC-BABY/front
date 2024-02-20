@@ -16,8 +16,10 @@ import kotlinx.coroutines.launch
 
 class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : ViewModel() {
 
-    val nickname = MutableStateFlow("")
+    val amount = MutableStateFlow("")
     val mealTime = MutableStateFlow("")
+    val baseMeal = MutableStateFlow("")
+    val significant = MutableStateFlow("")
 
     private val _toppings = mutableStateListOf<String>()
     val toppings: List<String> = _toppings
@@ -27,10 +29,6 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
 
     private val _selectedImage = MutableLiveData<Uri?>()
     val selectedImage: LiveData<Uri?> = _selectedImage
-
-    fun onImagePicked(uri: Uri?) {
-        _selectedImage.value = uri
-    }
 
     fun addTopping() {
         _toppings.add("")
@@ -57,12 +55,20 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
         mealTime.value = time
     }
 
+    fun setBaseMeal(meal: String) {
+        baseMeal.value = meal
+    }
+
+    fun setSignificant(significant: String) {
+        baseMeal.value = significant
+    }
+
     fun deleteTopping(idx: Int) {
         _toppings.removeAt(idx)
     }
 
-    val isFormValid: StateFlow<Boolean> = combine(nickname, mealTime) { nickname, relationship ->
-        nickname.isNotBlank() && relationship.isNotBlank()
+    val isFormValid: StateFlow<Boolean> = combine(amount, mealTime, baseMeal) { amount, mealTime, baseMeal ->
+        amount.isNotBlank() && mealTime.isNotBlank() && baseMeal.isNotBlank()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
 

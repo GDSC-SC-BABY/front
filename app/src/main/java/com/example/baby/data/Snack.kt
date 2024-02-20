@@ -22,7 +22,7 @@ data class SnackResponse(
     @SerializedName("amount") val amount: String,
     @SerializedName("imageUrl") val url: String,
     @SerializedName("specialNote") val note: String,
-    @SerializedName("beverageList") val beverageList: List<BasePorridge>,
+    @SerializedName("beverageList") val beverageList: List<Beverage>,
     @SerializedName("toppingList") val toppingList: List<Topping>,
 )
 

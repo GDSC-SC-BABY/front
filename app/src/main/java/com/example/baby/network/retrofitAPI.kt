@@ -2,6 +2,7 @@ package com.example.baby.network
 
 import com.example.baby.data.*
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 import java.util.regex.Pattern
@@ -82,5 +83,5 @@ interface ApiService {
 
     @Multipart
     @POST("Image")
-    suspend fun uploadImage(@Part image: MultipartBody.Part): ImageResponse
+    suspend fun uploadImage(@Part image: MultipartBody.Part): Response<ResponseBody>
 }

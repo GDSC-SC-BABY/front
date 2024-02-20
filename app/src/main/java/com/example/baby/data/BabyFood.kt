@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 
 data class BabyFood(
-    @SerializedName("babyId") val babyId: String,
+    @SerializedName("babyId") val babyId: Int,
     @SerializedName("dateTime") val dateTime: String,
-    @SerializedName("amount") val amount: String,
+    @SerializedName("amount") val amount: Int,
     @SerializedName("imageUrl") val url: String,
     @SerializedName("specialNote") val note: String,
-    @SerializedName("basePorridgeList") val basePorridgeList: List<BasePorridge>,
+    @SerializedName("basePorridge") val baseMeal: String,
     @SerializedName("toppingList") val toppingList: List<Topping>,
 )
 
@@ -22,7 +22,7 @@ data class BabyFoodResponse(
     @SerializedName("amount") val amount: String,
     @SerializedName("imageUrl") val url: String,
     @SerializedName("specialNote") val note: String,
-    @SerializedName("basePorridgeList") val basePorridgeList: List<BasePorridge>,
+    @SerializedName("basePorridge") val baseMeal: String,
     @SerializedName("toppingList") val toppingList: List<Topping>,
 )
 
@@ -34,14 +34,7 @@ data class BabyFoodInfo(
     @SerializedName("amount") val amount: Int
 )
 
-data class BasePorridge(
-    @SerializedName("name") val name: String,
-    @SerializedName("hasAllergy") val hasAllergy: Boolean
-)
-
 data class Topping(
     @SerializedName("name") val name: String,
-    @SerializedName("hasAllergy") val hasAllergy: Boolean
+    @SerializedName("toppingAmount") val amount: Int
 )
-
-data class ImageResponse(val imageUrl: String)

@@ -189,20 +189,20 @@ fun babyInfoCard() {
 fun UserInfoCard(viewModel: UserRegisterViewModel) {
     val context = LocalContext.current
 
-//    val userInfoState by viewModel.userInfoState.collectAsState()
-//
-//    when (userInfoState) {
-//        is Resource.Loading -> {
-//            Box(
-//                contentAlignment = Alignment.Center,
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                CircularProgressIndicator()
-//            }
-//        }
-//
-//        is Resource.Success -> {
-//            val userInfo = (userInfoState as Resource.Success<UserResponse>).data
+    val userInfoState by viewModel.userInfoState.collectAsState()
+
+    when (userInfoState) {
+        is Resource.Loading -> {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is Resource.Success -> {
+            val userInfo = (userInfoState as Resource.Success<UserResponse>).data
     Column() {
         Text(
             "내 정보는요",
@@ -233,7 +233,7 @@ fun UserInfoCard(viewModel: UserRegisterViewModel) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            "말랑콩떡",
+                            userInfo!!.name,
 //                        SharedPreferenceUtil(context).getString("nickname", "").toString(),
                             fontWeight = FontWeight.SemiBold,
                             color = colorResource(id = R.color.secondary_color),
@@ -248,17 +248,6 @@ fun UserInfoCard(viewModel: UserRegisterViewModel) {
                                 )
                             )
                         }
-//                            Image(
-//                                painter = painterResource(
-//                                    id = R.drawable.man_icon
-////                            SharedPreferenceUtil(context).getInt(
-////                                "genderIcon",
-////                                R.drawable.man_icon
-////                            )
-//                                ),
-//                                contentDescription = "gender",
-//                                modifier = Modifier.size(23.dp)
-//                            )
                     }
                     Spacer(Modifier.height(5.dp))
                     Text(
@@ -287,14 +276,14 @@ fun UserInfoCard(viewModel: UserRegisterViewModel) {
     }
 }
 
-//        is Resource.Error -> {
-//            Column {
-//                Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
-//                Text("유저 정보 조회에 실패했습니다.\n잠시 후 다시 시도해 주세요.")
-//            }
-//        }
-//    }
-//}
+        is Resource.Error -> {
+            Column {
+                Text("내 정보", fontWeight = FontWeight.Bold, fontSize = 23.sp)
+                Text("유저 정보 조회에 실패했습니다.\n잠시 후 다시 시도해 주세요.")
+            }
+        }
+    }
+}
 
 @Composable
 fun CoParentInfoCard(viewModel: UserRegisterViewModel) {

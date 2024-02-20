@@ -126,7 +126,7 @@ fun BabyPatternRecordPage(
 
             }
             Spacer(modifier = Modifier.height(20.dp))
-            WriteSignificant()
+//            WriteSignificant()
             Spacer(modifier = Modifier.height(20.dp))
             Button(
                 onClick = {

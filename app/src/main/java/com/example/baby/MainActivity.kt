@@ -99,6 +99,8 @@ class MainActivity : ComponentActivity() {
                         BabyFoodRegisterScreen(
                             viewModel = imageUploadViewModel,
                             babyFoodViewModel = babyFoodViewModel,
+                            dateViewModel = dateViewModel,
+                            imageViewModel = imageUploadViewModel,
                             navController = navController
                         )
                     }

@@ -1,28 +1,56 @@
 package com.example.baby.screen
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material.ExposedDropdownMenuDefaults.TrailingIcon
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ButtonColors
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,17 +64,23 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.baby.R
+import com.example.baby.data.BabyFood
+import com.example.baby.data.Topping
+import com.example.baby.network.Resource
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.baseMealList
 import com.example.baby.util.mealTimeList
 import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.ImageUploadViewModel
+import java.util.Date
 
 @Composable
 fun BabyFoodRegisterScreen(
     viewModel: ImageUploadViewModel,
     babyFoodViewModel: BabyFoodViewModel,
+    dateViewModel: DateViewModel,
+    imageViewModel: ImageUploadViewModel,
     navController: NavController
 ) {
     Scaffold(
@@ -65,10 +99,11 @@ fun BabyFoodRegisterScreen(
                 },
             )
         },
-        bottomBar = { CustomBottomNavigation(navController = navController) }
+        bottomBar = {
+            AddMealButton(viewModel = babyFoodViewModel, dateViewModel = dateViewModel, imageViewModel = imageViewModel, navController = navController)
+        }
     ) { innerPadding ->
         BoxWithConstraints {
-            val height = maxHeight.times(0.13f)
             Column(
                 modifier = Modifier
                     .background(Color.White)
@@ -77,19 +112,18 @@ fun BabyFoodRegisterScreen(
                         start = 20.dp,
                         end = 20.dp,
                         top = 20.dp,
-                        bottom = innerPadding.calculateBottomPadding() + 20.dp
+                        bottom = innerPadding.calculateBottomPadding() + 10.dp
                     )
                     .verticalScroll(rememberScrollState())
             ) {
                 BabyFoodRegisterInfo(viewModel = viewModel, foodViewModel = babyFoodViewModel)
                 Spacer(modifier = Modifier.height(25.dp))
-                BaseMealSelectWidget(height = height)
+                BaseMealSelectWidget(babyFoodViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
                 ToppingSelectWidget(viewModel = babyFoodViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-                WriteSignificant()
+                WriteSignificant(babyFoodViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-                AddMealButton(navController)
             }
         }
     }
@@ -157,35 +191,31 @@ fun ImagePickerBox(viewModel: ImageUploadViewModel) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            viewModel.uploadImage(it)
+        uri?.let { selectedImageUri ->
+            viewModel.uploadImage(selectedImageUri)
         }
     }
 
+    val imageUrl by viewModel.imageUrl.observeAsState()
+
     Box(
         modifier = Modifier
-            .background(
-                color = Color.LightGray,
-                shape = RoundedCornerShape(15.dp)
-            )
+            .background(Color.LightGray, RoundedCornerShape(15.dp))
             .clickable { launcher.launch("image/*") }
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val imageUrl by viewModel.imageUrl.observeAsState()
-        if (imageUrl == null) {
-            Icon(
-                painter = painterResource(id = R.drawable.image_picker_icon),
-                contentDescription = "Add Image",
-                tint = Color.Gray
-            )
-        } else {
+        imageUrl?.let { url ->
             Image(
-                painter = rememberAsyncImagePainter(imageUrl),
+                painter = rememberAsyncImagePainter(url),
                 contentDescription = "Uploaded Image",
                 modifier = Modifier.fillMaxSize()
             )
-        }
+        } ?: Icon(
+            painter = painterResource(id = R.drawable.image_picker_icon),
+            contentDescription = "Add Image",
+            tint = Color.Gray
+        )
     }
 }
 
@@ -253,9 +283,9 @@ fun MealTimeSelectDropDownMenu(viewModel: BabyFoodViewModel) {
 }
 
 @Composable
-fun BaseMealSelectWidget(height: Dp) {
+fun BaseMealSelectWidget(viewModel: BabyFoodViewModel) {
     val dataList = (0..7).map { baseMealList[it] }
-    val selectedMeal = remember { mutableStateOf<String?>(null) }
+    val selectedMeal by viewModel.baseMeal.collectAsState()
 
     Column() {
         Text(
@@ -280,8 +310,8 @@ fun BaseMealSelectWidget(height: Dp) {
                 modifier = Modifier.align(Alignment.Center)
             ) {
                 items(dataList) { item ->
-                    BaseMealGridItem(item, selectedMeal.value == item) {
-                        selectedMeal.value = item
+                    BaseMealGridItem(item, selectedMeal == item) {
+                        viewModel.setBaseMeal(item)
                     }
                 }
             }
@@ -408,8 +438,8 @@ fun ToppingField(index: Int, topping: String, viewModel: BabyFoodViewModel) {
 }
 
 @Composable
-fun WriteSignificant() {
-    var text by remember { mutableStateOf("") }
+fun WriteSignificant(viewModel: BabyFoodViewModel) {
+    val text by viewModel.significant.collectAsState()
     Column {
         Text(
             text = "특이사항에 대해 적어요",
@@ -430,7 +460,7 @@ fun WriteSignificant() {
             TextField(
                 value = text,
                 onValueChange = { newText ->
-                    text = newText
+                    viewModel.setSignificant(newText)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
@@ -457,14 +487,58 @@ fun WriteSignificant() {
 }
 
 @Composable
-fun AddMealButton(navController: NavController) {
+fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, imageViewModel: ImageUploadViewModel, navController: NavController) {
+    val state = viewModel.babyFoodRegistrationState.collectAsState().value
+    val amount = viewModel.amount.collectAsState().value
+    val url = imageViewModel.imageUrl.observeAsState().value
+    val note = viewModel.significant.collectAsState().value
+    val baseMeal = viewModel.baseMeal.collectAsState().value
+    val toppingList = viewModel.toppings.zip(viewModel.toppingAmounts) { topping, amount ->
+        Topping(name = topping, amount = amount)
+    }
+
     Box(
-        contentAlignment = Alignment.BottomEnd
+        modifier = Modifier
+            .fillMaxWidth().height(80.dp)
+            .padding(10.dp),
     ) {
         Button(
-            onClick = { navController.popBackStack() }
+            onClick = {
+                url?.let {
+                    BabyFood(
+                        babyId = 1,
+                        dateTime = "${dateViewModel.getDateNow()} ${viewModel.mealTime}",
+                        amount = amount.toInt(),
+                        url = it,
+                        note = note,
+                        baseMeal = baseMeal,
+                        toppingList = toppingList
+                        )
+                }?.let { viewModel.registerBabyFood(it) }
+                 },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.brand_color),
+                contentColor = colorResource(id = R.color.secondary_color),
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(36.dp)
         ) {
-            Text("등록")
+            Text("저장하기", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+
+    LaunchedEffect(state) {
+        when (state) {
+            is Resource.Success -> {
+                navController.popBackStack()
+            }
+            is Resource.Error -> {
+                // 오류가 발생한 경우 로그 출력
+                Log.d("RegisterButton", "API 오류: ${state.message}")
+            }
+            is Resource.Loading -> {
+                // 필요한 경우 로딩 상태 처리
+            }
         }
     }
 }
