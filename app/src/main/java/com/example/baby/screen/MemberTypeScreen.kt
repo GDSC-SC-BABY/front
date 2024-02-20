@@ -5,11 +5,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,11 +50,11 @@ fun MemberTypeScreen(navController: NavController, context: Context) {
         )
         Spacer(modifier = Modifier.height(10.dp))
         selectParentingInfoButton {
-            navController.navigate(route = NavigationRoutes.LoginScreen.route)
+            navController.navigate(route = NavigationRoutes.RegisterScreen.route)
         }
         Spacer(modifier = Modifier.height(10.dp))
         selectParentingMemoButton {
-
+            navController.navigate(route = NavigationRoutes.RegisterScreen.route)
         }
     }
 }
@@ -64,12 +63,17 @@ fun MemberTypeScreen(navController: NavController, context: Context) {
 fun selectParentingInfoButton(
     onTabSelected: () -> Unit
 ) {
-    Card(
-        shape = RoundedCornerShape(12.dp)
+    Button(
+        onClick = onTabSelected,
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(id = R.color.background_gray),
+            contentColor = colorResource(id = R.color.secondary_color),
+        ),
+        elevation = ButtonDefaults.elevation(0.dp,0.dp)
     ) {
         Row(
             modifier = Modifier
-                .background(color = colorResource(id = R.color.background_gray))
                 .padding(vertical = 13.dp, horizontal = 12.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -106,8 +110,14 @@ fun selectParentingInfoButton(
 fun selectParentingMemoButton(
     onTabSelected: () -> Unit
 ) {
-    Card(
-        shape = RoundedCornerShape(12.dp)
+    Button(
+        onClick = onTabSelected,
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(id = R.color.background_main),
+            contentColor = colorResource(id = R.color.secondary_color),
+        ),
+        elevation = ButtonDefaults.elevation(0.dp,0.dp)
     ) {
         Row(
             modifier = Modifier
