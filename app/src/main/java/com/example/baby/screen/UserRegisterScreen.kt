@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.viewModel.UserRegisterViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserRegisterScreen(
@@ -102,7 +104,7 @@ fun UserRegisterScreen(
             RegisterButton(
                 isNotNull = isFormValid,
                 viewModel = viewModel,
-                user = User(userId = userId, viewModel.nickname.toString(), residence = "노원구"),
+                user = User(userId = userId, viewModel.nickname.toString(), babyId = 0),
                 text = "회원 정보를 모두 입력했어요",
                 route = NavigationRoutes.BabyRegisterScreen.route,
                 navController = navController
@@ -290,7 +292,7 @@ fun RegisterButton(
             shape = RoundedCornerShape(12.dp),
             onClick = {
                 if (isNotNull) {
-                    viewModel.setUserInfoToSP(context, user.name, user.residence)
+                    viewModel.setUserInfoToSP(context, user.name, "엄마")
                     viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }
             },
