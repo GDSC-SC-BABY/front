@@ -86,7 +86,7 @@ fun UserRegisterScreen(
             Spacer(modifier = Modifier.height(30.dp))
             Text("공동양육자와 같이 사용할 수 있어요.", style = StartFontStyle.startSubtitle)
             Spacer(modifier = Modifier.height(20.dp))
-            CoParentCodeRegisterField(viewModel)
+            CoParentCodeRegisterField(viewModel, userId)
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 "Q : 공동양육자 코드가 뭔가요?",
@@ -104,7 +104,7 @@ fun UserRegisterScreen(
             RegisterButton(
                 isNotNull = isFormValid,
                 viewModel = viewModel,
-                user = User(userId = userId, viewModel.nickname.toString(), babyId = 0),
+                user = User(userId = userId, viewModel.nickname.toString()),
                 text = "회원 정보를 모두 입력했어요",
                 route = NavigationRoutes.BabyRegisterScreen.route,
                 navController = navController
@@ -149,18 +149,18 @@ fun NicknameRegisterField(viewModel: UserRegisterViewModel) {
 }
 
 @Composable
-fun CoParentCodeRegisterField(viewModel: UserRegisterViewModel) {
+fun CoParentCodeRegisterField(viewModel: UserRegisterViewModel, userId: String) {
 
-    val relationship by viewModel.relationship.collectAsState()
+    val coParentCode by viewModel.coParentCode.collectAsState()
 
     Row() {
         OutlinedTextField(
             modifier = Modifier
                 .width(230.dp)
                 .height(60.dp),
-            value = relationship,
-            onValueChange = { updatedRelationship ->
-                viewModel.relationship.value = updatedRelationship
+            value = coParentCode,
+            onValueChange = { updatedCoParentCode ->
+                viewModel.coParentCode.value = updatedCoParentCode
             },
             placeholder = {
                 Text(
@@ -186,8 +186,11 @@ fun CoParentCodeRegisterField(viewModel: UserRegisterViewModel) {
                 backgroundColor = colorResource(id = R.color.brand_color),
                 contentColor = colorResource(id = R.color.secondary_color),
             ),
-            onClick = {},
-            shape = RoundedCornerShape(12.dp)
+            onClick = {
+                viewModel.addBabyCode(userId, coParentCode)
+            },
+            shape = RoundedCornerShape(12.dp),
+            elevation = ButtonDefaults.elevation(0.dp,0.dp)
         ) {
             Text(
                 "코드 인증",
@@ -292,14 +295,15 @@ fun RegisterButton(
             shape = RoundedCornerShape(12.dp),
             onClick = {
                 if (isNotNull) {
-                    viewModel.setUserInfoToSP(context, user.name, "엄마")
+                    viewModel.setUserInfoToSP(context, user.name, viewModel.coParentCode.value)
                     viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.brand_color),
                 contentColor = colorResource(id = R.color.secondary_color),
-            )
+            ),
+            elevation = ButtonDefaults.elevation(0.dp,0.dp)
         ) {
             Text(
                 text, style = StartFontStyle.startButton,
