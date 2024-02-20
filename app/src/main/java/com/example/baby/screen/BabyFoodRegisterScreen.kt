@@ -49,6 +49,21 @@ fun BabyFoodRegisterScreen(
     navController: NavController
 ) {
     Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = colorResource(id = R.color.sub_color),
+                elevation = 0.dp,
+                title = {
+                    Text(
+                        "이유식 기록",
+                        textAlign = TextAlign.Center,
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+            )
+        },
         bottomBar = { CustomBottomNavigation(navController = navController) }
     ) { innerPadding ->
         BoxWithConstraints {
@@ -118,20 +133,20 @@ fun RegisterBaseMealAmount() {
             }
         },
         singleLine = true,
-        placeholder = { Text("베이스 죽 (g)", fontSize = 14.sp) },
+        placeholder = { Text("죽 무게 작성 (g)", fontSize = 14.sp, textAlign = TextAlign.Center) },
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
             .padding(horizontal = 15.dp)
-            .background(Color(0xFFE0E0E0), RoundedCornerShape(12.dp)),
+            .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
         colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.Black,
-            backgroundColor = Color(0xFFE0E0E0),
+            textColor = colorResource(R.color.secondary_color),
+            backgroundColor = colorResource(R.color.background_main),
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            placeholderColor = Color.Gray
+            placeholderColor = colorResource(R.color.gray3)
         ),
-        shape = RoundedCornerShape(12.dp) // 텍스트 필드의 모서리 둥글기
+        shape = RoundedCornerShape(12.dp)
     )
 }
 
@@ -183,7 +198,7 @@ fun MealTimeSelectDropDownMenu(viewModel: BabyFoodViewModel) {
             .fillMaxWidth()
             .height(50.dp)
             .padding(horizontal = 15.dp)
-            .background(Color(0xFFE0E0E0), RoundedCornerShape(12.dp))
+            .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -195,7 +210,7 @@ fun MealTimeSelectDropDownMenu(viewModel: BabyFoodViewModel) {
                     .weight(1f)
                     .padding(16.dp),
                 textAlign = TextAlign.Center,
-                color = Color.Black
+                color = colorResource(R.color.secondary_color)
             )
             IconButton(
                 onClick = {
@@ -205,7 +220,8 @@ fun MealTimeSelectDropDownMenu(viewModel: BabyFoodViewModel) {
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.dropdown_icon),
-                    contentDescription = "dropdown icon"
+                    contentDescription = "dropdown icon",
+                    tint = colorResource(R.color.secondary_color)
                 )
             }
         }
@@ -314,13 +330,14 @@ fun ToppingSelectWidget(viewModel: BabyFoodViewModel) {
                 fontSize = 18.sp
             )
 
-            // 토핑 추가 버튼
-            IconButton(onClick = { viewModel.addTopping() }) {
+            IconButton(onClick = {
+                viewModel.addTopping()
+                viewModel.addToppingAmount()
+            }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
             }
         }
 
-        // 동적으로 생성된 토핑 필드들
         viewModel.toppings.forEachIndexed { index, topping ->
             ToppingField(index, topping, viewModel)
             Spacer(modifier = Modifier.height(10.dp))
@@ -330,24 +347,58 @@ fun ToppingSelectWidget(viewModel: BabyFoodViewModel) {
 
 @Composable
 fun ToppingField(index: Int, topping: String, viewModel: BabyFoodViewModel) {
+    var amount by remember { mutableStateOf("") }
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-
         TextField(
-            modifier = Modifier.fillMaxWidth(0.6f),
             value = topping,
-            onValueChange = { updatedTopping -> viewModel.updateTopping(index, updatedTopping) },
-            label = { Text("재료") }
+            onValueChange = { updatedTopping ->
+                viewModel.updateTopping(index, updatedTopping)
+            },
+            singleLine = true,
+            placeholder = { Text("재료 이름", fontSize = 14.sp, textAlign = TextAlign.Center) },
+            modifier = Modifier
+                .height(50.dp)
+                .weight(0.6f)
+                .padding(horizontal = 15.dp)
+                .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = colorResource(R.color.secondary_color),
+                backgroundColor = colorResource(R.color.background_gray),
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                placeholderColor = colorResource(R.color.gray3)
+            ),
+            shape = RoundedCornerShape(12.dp)
         )
 
         TextField(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            value = topping,
-            onValueChange = { updatedTopping -> viewModel.updateTopping(index, updatedTopping) },
-            label = { Text("용량 (g)") }
+            value = amount,
+            onValueChange = { gram ->
+                if (gram.all { it.isDigit() }) {
+                    amount = gram
+                    viewModel.updateToppingAmount(index, gram.toInt())
+                }
+            },
+            singleLine = true,
+            placeholder = { Text("용량", fontSize = 14.sp, textAlign = TextAlign.Center) },
+            modifier = Modifier
+                .height(50.dp)
+                .weight(0.4f)
+                .padding(horizontal = 15.dp)
+                .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = colorResource(R.color.secondary_color),
+                backgroundColor = colorResource(R.color.background_gray),
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                placeholderColor = colorResource(R.color.gray3)
+            ),
+            shape = RoundedCornerShape(12.dp)
         )
     }
 }
@@ -366,7 +417,7 @@ fun WriteSignificant() {
         Box(
             modifier = Modifier
                 .background(
-                    colorResource(id = R.color.sub_color),
+                    colorResource(id = R.color.background_main),
                     shape = RoundedCornerShape(15.dp)
                 )
                 .fillMaxWidth()
