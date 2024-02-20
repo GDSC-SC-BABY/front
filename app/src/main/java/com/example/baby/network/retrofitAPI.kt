@@ -10,10 +10,16 @@ interface ApiService {
 
     // User
     @POST("user")
-    suspend fun registerUser(@Body user: User): Response<User>
+    suspend fun registerUser(@Body user: User): Response<UserDuplicateResponse>
 
     @GET("user")
     suspend fun getUserInfo(@Query("userId") userId: String): Response<UserResponse>
+
+    @GET("/user/duplicate/{userId}")
+    suspend fun checkDuplicateUserId(@Path("userId") userId: String): Response<UserDuplicateResponse>
+
+    @PATCH("/user/addBaby")
+    suspend fun addBabyCode(@Body babyCode: BabyCode): Response<UserDuplicateResponse>
 
     // Baby
     @POST("baby")

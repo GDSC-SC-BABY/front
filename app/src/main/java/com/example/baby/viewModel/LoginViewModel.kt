@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.baby.data.UserDuplicateResponse
 import com.example.baby.network.ApiService
 import com.example.baby.network.UserRepository
 import com.example.baby.util.App
@@ -24,7 +25,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
-   // private val dbAccessModule = DBAccessModule()
     private lateinit var googleSignInClient : GoogleSignInClient
 
     // 로그인 결과 반환 변수
@@ -35,12 +35,14 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
         var hasId = false
 
         viewModelScope.launch {
-            val userResponse = "abc"
-//            val userResponse = userRepository.checkUserId(user.uid).body()
+/*            val userResponse = UserDuplicateResponse(
+                state = false
+            )*/
+            val userResponse = userRepository.checkDuplicateUserId(user.uid).body()
             // composable, activity 간의 이동 고민(베이비 등록 페이지 후 메인 페이지)
-            if (userResponse != null) {
+            if (userResponse?.state == true) {
                 SharedPreferenceUtil(App.context()).setString("uid", user.uid)
-                hasId = true
+                hasId = userResponse.state
             }
             Log.d("hasId", hasId.toString())
         }.join()
