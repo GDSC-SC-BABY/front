@@ -113,7 +113,9 @@ class StartActivity : ComponentActivity() {
                                         composable(NavigationRoutes.BabyRegisterScreen.route) {
                                             BabyRegisterScreen(
                                                 viewModel = babyRegisterViewModel,
-                                                navController = navController
+                                                navController = navController,
+                                                context = applicationContext,
+                                                onSuccess = toMainActivity()
                                             )
                                         }
                                         composable(NavigationRoutes.MemberTypeScreen.route) {

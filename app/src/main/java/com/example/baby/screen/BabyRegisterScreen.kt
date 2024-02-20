@@ -3,49 +3,103 @@ package com.example.baby.screen
 import android.app.DatePickerDialog
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
+import com.example.baby.R
+import com.example.baby.ui.theme.StartFontStyle
+import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.viewModel.BabyRegisterViewModel
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BabyRegisterScreen(viewModel: BabyRegisterViewModel, navController: NavController) {
+fun BabyRegisterScreen(
+    context: Context,
+    viewModel: BabyRegisterViewModel,
+    navController: NavController,
+    onSuccess: Unit
+) {
     val isFormValid by viewModel.isFormValid.collectAsState()
+    var appName = context.resources.getString(R.string.app_name)
 
-    Column(
-        modifier = Modifier
-            .background(Color.White)
-            .fillMaxSize()
-            .padding(top = 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "자녀 등록",
+                        style = StartFontStyle.startButton,
+                        color = colorResource(id = R.color.secondary_color),
+                        //modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            contentDescription = "Back",
+                            tint = Color(R.color.secondary_color)
+                        )
+                    }
+                },
+                //colors = Color(R.color.white)
+            )
+        }
     ) {
-        Text("자녀 등록", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-        Spacer(modifier = Modifier.height(30.dp))
-        BabyNameRegisterField(viewModel)
-        Spacer(modifier = Modifier.height(20.dp))
-        BirthdayRegisterField(viewModel)
-        Spacer(modifier = Modifier.height(20.dp))
-        BabyInfoRegisterWidget(viewModel)
-        Spacer(modifier = Modifier.height(20.dp))
-        BabyGenderRegisterWidget(viewModel)
-        BabyRegisterButton(
-            viewModel = viewModel,
-            isNotNull = isFormValid,
-            text = "로그인",
-            route = "mainScreen",
-            navController = navController
-        )
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(vertical = 20.dp, horizontal = 30.dp),
+        ) {
+            Text("아이의 이름은 무엇인가요?", style = StartFontStyle.startSubtitle)
+            Spacer(modifier = Modifier.height(20.dp))
+            BabyNameRegisterField(viewModel)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text("아이의 성별을 지정해주세요.", style = StartFontStyle.startSubtitle)
+            Spacer(modifier = Modifier.height(20.dp))
+            BabyGenderRegisterWidget(viewModel)
+            //BirthdayRegisterField(viewModel)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text("아이의 키와 몸무게를 설정해주세요.", style = StartFontStyle.startSubtitle)
+            Spacer(modifier = Modifier.height(20.dp))
+            BabyInfoRegisterWidget(viewModel)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text("아이의 생일을 알려주세요.", style = StartFontStyle.startSubtitle)
+            Spacer(modifier = Modifier.height(20.dp))
+            showDatePicker(viewModel)
+            BabyRegisterButton(
+                viewModel = viewModel,
+                isNotNull = isFormValid,
+                text = "${appName} 시작하기",
+                route = "mainScreen",
+                navController = navController,
+                onSuccess = onSuccess
+            )
+        }
     }
 }
 
@@ -55,65 +109,143 @@ fun BabyNameRegisterField(viewModel: BabyRegisterViewModel) {
 
     OutlinedTextField(
         value = text,
-        onValueChange = { updatedName ->
-            viewModel.babyName.value = updatedName
+        onValueChange = { updatedBabyName ->
+            viewModel.babyName.value = updatedBabyName
         },
-        label = { Text("이름") },
+        placeholder = {
+            Text(
+                "이름을 입력하세요.",
+                style = StartFontStyle.startBody1,
+                color = Color(R.color.gray4)
+            )
+        },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp)
+            .height(60.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            backgroundColor = colorResource(id = R.color.background_gray),
+            focusedBorderColor = Color.Unspecified,
+            cursorColor = Color.Unspecified,
+            unfocusedBorderColor = Color.Unspecified
+        ),
+        shape = RoundedCornerShape(12.dp)
     )
 }
 
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BirthdayRegisterField(viewModel: BabyRegisterViewModel) {
-    var text by remember { mutableStateOf("생일을 선택하세요.") }
-    val context = LocalContext.current // Composable 함수 내부에서 사용
-
-    TextButton(onClick = {
-        showDatePicker(context) { year, month, dayOfMonth ->
-            // 사용자가 날짜를 선택하면 텍스트 업데이트
-            text = "${year}년 ${month + 1}월 ${dayOfMonth}일"
-            viewModel.birth.value = text
-        }
-
-    }) {
-        Text(text, fontSize = 15.sp)
-    }
-}
-
 fun showDatePicker(
-    context: Context,
-    onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit
+    viewModel: BabyRegisterViewModel,
 ) {
     // 현재 날짜를 기본값으로 설정
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val year by viewModel.year.collectAsState()
+    val month by viewModel.month.collectAsState()
+    val day by viewModel.day.collectAsState()
 
-    // 날짜 선택기 다이얼로그 생성 및 표시
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, selectedYear, selectedMonth, dayOfMonth ->
-            onDateSelected(selectedYear, selectedMonth, dayOfMonth)
-        }, year, month, day
-    )
-    datePickerDialog.show()
+    var expanded by remember { mutableStateOf(false) }
+    val yearList = (2024 downTo 2005).map { it.toString() }
+
+    val selectedYearIndex = yearList.indexOf(year)
+
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            textStyle = TextStyle(
+                fontFamily = nanumSquare,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.secondary_color)
+            ),
+            value = yearList.getOrElse(selectedYearIndex) { "2023" },
+            onValueChange = { },
+            readOnly = true, // This makes the TextField not editable
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Dropdown arrow",
+                    Modifier.clickable { expanded = true }
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = colorResource(id = R.color.background_main),
+                focusedBorderColor = Color.Unspecified,
+                cursorColor = Color.Unspecified,
+                unfocusedBorderColor = Color.Unspecified,
+                disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.surface, MaterialTheme.shapes.small)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            modifier = Modifier.fillMaxWidth(),
+            onDismissRequest = { expanded = false },
+            properties = PopupProperties(focusable = false)
+        ) {
+            yearList.forEachIndexed { index, text ->
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.year.value = yearList[index]
+                        expanded = false
+                    }
+                ) {
+                    Text(text = "$text")
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
 fun BabyGenderRegisterWidget(viewModel: BabyRegisterViewModel) {
+    val gender = listOf(
+        "남자",
+        "여자"
+    )
     val selectedOption by viewModel.gender.collectAsState()
-    Row() {
-        RadioButton(selected = selectedOption == "남자", onClick = {
-            viewModel.gender.value = "남자"
-        })
-        Text("남자")
-        RadioButton(selected = selectedOption == "여자", onClick = {
-            viewModel.gender.value = "여자"
-        })
-        Text("여자")
+    Row(modifier = Modifier.fillMaxWidth()) {
+        gender.forEach { gender ->
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (gender == selectedOption) {
+                        colorResource(id = R.color.brand_color)
+                    } else {
+                        colorResource(id = R.color.background_gray)
+                    },
+                    contentColor = colorResource(id = R.color.secondary_color),
+                ),
+                onClick = {
+                    viewModel.gender.value = gender
+                },
+                shape = RoundedCornerShape(12.dp),
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp)
+            ) {
+                Text(
+                    text = gender,
+                    style = StartFontStyle.startButton,
+                    color = if (gender == selectedOption) {
+                        colorResource(id = R.color.secondary_color)
+                    } else {
+                        colorResource(id = R.color.gray4)
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -122,35 +254,61 @@ fun BabyInfoRegisterWidget(viewModel: BabyRegisterViewModel) {
     val heightText by viewModel.height.collectAsState()
     val weightText by viewModel.weight.collectAsState()
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+    Row() {
         OutlinedTextField(
+            modifier = Modifier
+                .weight(1f)
+                .height(50.dp),
             value = heightText,
             onValueChange = { height ->
                 if (height.all { it.isDigit() || it == '.' } && height.count { it == '.' } <= 1) {
                     viewModel.height.value = height
                 }
             },
-            label = { Text("키 (cm)") },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .padding(horizontal = 30.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            placeholder = {
+                Text(
+                    "키 (cm)",
+                    textAlign = TextAlign.Center,
+                    style = StartFontStyle.startBody1,
+                    color = Color(R.color.gray4),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = colorResource(id = R.color.background_gray),
+                focusedBorderColor = Color.Unspecified,
+                cursorColor = Color.Unspecified,
+                unfocusedBorderColor = Color.Unspecified
+            ),
+            shape = RoundedCornerShape(12.dp)
         )
-
+        Spacer(modifier = Modifier.width(9.dp))
         OutlinedTextField(
+            modifier = Modifier
+                .weight(1f)
+                .height(50.dp),
             value = weightText,
             onValueChange = { weight ->
                 if (weight.all { it.isDigit() || it == '.' } && weight.count { it == '.' } <= 1) {
                     viewModel.weight.value = weight
                 }
             },
-            label = { Text("몸무게 (kg)") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 30.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            placeholder = {
+                Text(
+                    "몸무게 (kg)",
+                    style = StartFontStyle.startBody1,
+                    color = Color(R.color.gray4),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = colorResource(id = R.color.background_gray),
+                focusedBorderColor = Color.Unspecified,
+                cursorColor = Color.Unspecified,
+                unfocusedBorderColor = Color.Unspecified
+            ),
+            shape = RoundedCornerShape(12.dp)
         )
     }
 }
@@ -161,7 +319,8 @@ fun BabyRegisterButton(
     isNotNull: Boolean,
     text: String,
     route: String,
-    navController: NavController
+    navController: NavController,
+    onSuccess: Unit
 ) {
     val name by viewModel.babyName.collectAsState()
     val birth by viewModel.birth.collectAsState()
@@ -171,18 +330,34 @@ fun BabyRegisterButton(
 
     val context = LocalContext.current
 
-    Box(
-        contentAlignment = Alignment.BottomEnd
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
     ) {
+        Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {
-//                viewModel.registerUser(user)
+                //viewModel.registerUser(user)
                 viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height)
-                navController.navigate(route)
+                onSuccess
             },
-            enabled = isNotNull
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.brand_color),
+                contentColor = colorResource(id = R.color.secondary_color),
+            ),
+            shape = RoundedCornerShape(12.dp),
+            elevation = ButtonDefaults.elevation(0.dp, 0.dp)
         ) {
-            Text(text)
+            Text(
+                text,
+                style = StartFontStyle.startButton,
+                color = colorResource(id = R.color.secondary_color)
+            )
         }
+
     }
+
 }

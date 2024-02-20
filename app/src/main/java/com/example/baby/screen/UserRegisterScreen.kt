@@ -57,7 +57,7 @@ fun UserRegisterScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-
+                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
@@ -66,7 +66,7 @@ fun UserRegisterScreen(
                         )
                     }
                 },
-                //colors = Color(R.color.white)
+                //colors = Color(R.color.white)/ㅇ//
             )
         }
     ) {

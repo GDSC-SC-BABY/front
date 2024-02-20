@@ -17,11 +17,15 @@ import kotlinx.coroutines.launch
 class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewModel() {
 
 
-    val babyName = MutableStateFlow("")
+    var babyName = MutableStateFlow("")
     val birth = MutableStateFlow("")
     val gender = MutableStateFlow("남자")
     val height = MutableStateFlow("")
     val weight = MutableStateFlow("")
+
+    val year = MutableStateFlow("")
+    val month = MutableStateFlow("")
+    val day = MutableStateFlow("")
 
     val isFormValid: StateFlow<Boolean> = combine(babyName, birth, gender, weight, height) { name, birth, gender, weight, height ->
         name.isNotBlank() && birth.isNotBlank() && gender.isNotBlank()&& weight.isNotBlank()&& height.isNotBlank()
