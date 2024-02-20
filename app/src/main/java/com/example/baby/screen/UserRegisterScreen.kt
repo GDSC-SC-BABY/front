@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -70,7 +71,6 @@ fun UserRegisterScreen(
         Column(
             modifier = Modifier
                 .background(Color.White)
-                .fillMaxSize()
                 .padding(vertical = 20.dp, horizontal = 30.dp),
             //horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -206,7 +206,9 @@ fun RelationshipRegisterFiled(viewModel: UserRegisterViewModel) {
 
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
     ) {
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -215,9 +217,13 @@ fun RelationshipRegisterFiled(viewModel: UserRegisterViewModel) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
         ) {
-            TextField(
+            OutlinedTextField(
+                textStyle = TextStyle(
+                    fontFamily = nanumSquare,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.secondary_color)
+                ),
                 value = items.getOrElse(selectedIndex) { "엄마" },
                 onValueChange = { },
                 readOnly = true, // This makes the TextField not editable
@@ -228,11 +234,13 @@ fun RelationshipRegisterFiled(viewModel: UserRegisterViewModel) {
                         Modifier.clickable { expanded = true }
                     )
                 },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = MaterialTheme.colors.surface,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = colorResource(id = R.color.background_main),
+                    focusedBorderColor = Color.Unspecified,
+                    cursorColor = Color.Unspecified,
+                    unfocusedBorderColor = Color.Unspecified,
                     disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
                     disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                    disabledIndicatorColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
                     disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
                 ),
                 modifier = Modifier
@@ -241,8 +249,8 @@ fun RelationshipRegisterFiled(viewModel: UserRegisterViewModel) {
             )
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false },
                 modifier = Modifier.fillMaxWidth(),
+                onDismissRequest = { expanded = false },
                 properties = PopupProperties(focusable = false)
             ) {
                 items.forEachIndexed { index, text ->
