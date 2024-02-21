@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.baby.data.BabyFood
+import com.example.baby.data.BabyFoodAllResponse
 import com.example.baby.data.BabyFoodResponse
 import com.example.baby.data.UserDuplicateResponse
 import com.example.baby.network.BabyFoodRepository
@@ -85,6 +86,9 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
     private val _babyFoodInfoState = MutableStateFlow<Resource<BabyFoodResponse>>(Resource.loading(null))
     val babyFoodInfoState: StateFlow<Resource<BabyFoodResponse>> = _babyFoodInfoState.asStateFlow()
 
+    private val _allBabyFoodInfoState = MutableStateFlow<Resource<BabyFoodAllResponse>>(Resource.loading(null))
+    val allBabyFoodInfoState: StateFlow<Resource<BabyFoodAllResponse>> = _allBabyFoodInfoState.asStateFlow()
+
 
     fun registerBabyFood(babyFood: BabyFood) {
         viewModelScope.launch {
@@ -109,7 +113,7 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
         viewModelScope.launch {
             _babyFoodInfoState.value = Resource.loading(null)
             try {
-                val response = babyFoodRepository.getUserInfoByBabyFoodId(bfId)
+                val response = babyFoodRepository.getBabyFoodInfoByBabyFoodId(bfId)
                 if (response.isSuccessful && response.body() != null) {
                     _babyFoodInfoState.value = Resource.success(response.body())
                 } else {
@@ -120,4 +124,24 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
             }
         }
     }
+
+    suspend fun getAllBabyFoodByBabyId(babyId: Int): BabyFoodAllResponse? {
+        return try {
+            val response = babyFoodRepository.getAllBabyFoodByBabyId(babyId)
+            if (response.isSuccessful && response.body() != null) {
+                _allBabyFoodInfoState.value = Resource.success(response.body())
+                response.body()
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                Log.e("API Error", "에러 응답: $errorBody")
+                _allBabyFoodInfoState.value = Resource.error(response.errorBody().toString(), null)
+                null // 실패하거나 응답 본문이 없는 경우 null 반환
+            }
+        } catch (e: Exception) {
+            Log.e("API Exception", "요청 중 예외 발생: ${e.message}")
+            _allBabyFoodInfoState.value = Resource.error(e.message ?: "An error occurred", null)
+            null // 예외 발생 시 null 반환
+        }
+    }
+
 }

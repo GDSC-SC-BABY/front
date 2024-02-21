@@ -513,7 +513,6 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
 
                 val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
 
-
                 url?.let {
                     BabyFood(
                         babyId = 1,
