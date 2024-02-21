@@ -50,7 +50,7 @@ fun CustomBottomNavigation(navController: NavController) {
 
             BottomNavigationItem(
                 icon = { Icon(painter = painterResource(id = R.drawable.diary_icon), contentDescription = null) },
-                selected = navController.currentDestination?.route == "guideScreen",
+                selected = navController.currentDestination?.route == NavigationRoutes.GuideScreen.route || navController.currentDestination?.route == NavigationRoutes.BabyPatternScreen.route,
                 onClick = {
                     showDiaryDialog.value = true
                     showDialog.value = false
@@ -100,7 +100,7 @@ fun CustomBottomNavigation(navController: NavController) {
     }
 
     if (showDiaryDialog.value) {
-        DiarySelectDialog(navController = navController, onDismiss = { showDialog.value = false })
+        DiarySelectDialog(navController = navController, onDismiss = { showDiaryDialog.value = false })
     }
 
     if (showDialog.value) {

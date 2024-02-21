@@ -87,7 +87,7 @@ fun DiarySelectDialog(navController: NavController, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
+                            navController.navigate(NavigationRoutes.GuideScreen.route)
                             onDismiss()
                         }
                         .padding(16.dp)
