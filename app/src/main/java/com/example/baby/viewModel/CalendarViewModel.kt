@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.baby.data.CalendarDate
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import java.util.*
 
 class CalendarViewModel : ViewModel() {
@@ -81,5 +84,14 @@ class CalendarViewModel : ViewModel() {
         calendar.add(Calendar.MONTH, 1)
         updateCalendarDays()
         Log.d("NextMonth", Calendar.MONTH.toString())
+    }
+
+    fun convertDateToLocalDate(date: Date): LocalDate {
+
+        val instant = org.threeten.bp.Instant.ofEpochMilli(date.time)
+
+        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+
+        return zonedDateTime.toLocalDate()
     }
 }

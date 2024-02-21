@@ -95,11 +95,18 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
-                    composable(NavigationRoutes.DayBabyFoodScreen.route) {
+                    composable(NavigationRoutes.DayBabyFoodScreen.route, arguments = listOf(
+                        navArgument("year") { type = NavType.IntType },
+                        navArgument("month") { type = NavType.IntType },
+                        navArgument("day") { type = NavType.IntType }
+                    )
+                    ) { entry ->
                         DayBabyFoodScreen(
-                            viewModel = dateViewModel,
-                            userViewModel = userRegisterViewModel,
-                            navController = navController
+                            userViewModel = userRegisterViewModel, // ViewModel 인스턴스
+                        navController = navController,
+                        year = entry.arguments?.getInt("year")!!,
+                        month = entry.arguments?.getInt("month")!!,
+                        day = entry.arguments?.getInt("day")!!
                         )
                     }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {

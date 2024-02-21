@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.baby.R
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.data.UserResponse
@@ -39,12 +42,15 @@ import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.viewModel.BabyRegisterViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
+import java.time.LocalDate
 
 @Composable
 fun DayBabyFoodScreen(
-    viewModel: DateViewModel,
     userViewModel: UserRegisterViewModel,
-    navController: NavController
+    navController: NavController,
+    year: Int,
+    month: Int,
+    day: Int
 ) {
 
     LaunchedEffect(true) {
@@ -82,12 +88,7 @@ fun DayBabyFoodScreen(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    viewModel.getDateNow(),
-                    fontSize = 20.sp,
-                    color = colorResource(id = R.color.secondary_color),
-                    fontWeight = FontWeight.SemiBold
-                )
+                SelectDayWidget(year, month, day)
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -97,6 +98,37 @@ fun DayBabyFoodScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun SelectDayWidget(year: Int, month: Int, day: Int){
+    var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
+
+    Row(
+        modifier = Modifier
+            .padding(vertical = 15.dp, horizontal = 10.dp)
+            .fillMaxWidth(fraction = 1f),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(onClick = {
+            selectedDate = selectedDate.minusDays(1)
+//            viewModel.getBabyPatternWithDate(selectedDate)
+        }) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "전날")
+        }
+        Text(
+            "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(start = 30.dp)
+        )
+        IconButton(onClick = {
+            selectedDate = selectedDate.plusDays(1)
+//            viewModel.getBabyPatternWithDate(selectedDate)
+        }) {
+            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "다음날")
         }
     }
 }

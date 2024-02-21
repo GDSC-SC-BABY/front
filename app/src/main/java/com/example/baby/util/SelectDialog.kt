@@ -1,24 +1,16 @@
 package com.example.baby.util
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +20,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.NavigationRoutes
+import org.threeten.bp.LocalDate
 
 @Composable
 fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit) {
@@ -73,7 +66,7 @@ fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun RecordSelectDialog(navController: NavController, onDismiss: () -> Unit) {
+fun RecordSelectDialog(navController: NavController, selectedDate: LocalDate, onDismiss: () -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -88,7 +81,8 @@ fun RecordSelectDialog(navController: NavController, onDismiss: () -> Unit) {
                     textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate(NavigationRoutes.DayBabyFoodScreen.route)
+                            navController.navigate(NavigationRoutes.DayBabyFoodScreen.createRoute(selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth))
+                            Log.d("selectedDate", "${selectedDate.year}년 ${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}")
                             onDismiss()
                         }
                         .padding(16.dp))

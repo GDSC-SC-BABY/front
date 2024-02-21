@@ -2,13 +2,11 @@ package com.example.baby.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +25,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -50,9 +47,11 @@ import com.example.baby.R
 import com.example.baby.data.CalendarDate
 import com.example.baby.util.RecordSelectDialog
 import com.example.baby.util.SharedPreferenceUtil
-import com.example.baby.viewModel.BabySnackRegisterViewModel
 import com.example.baby.viewModel.CalendarViewModel
 import java.text.SimpleDateFormat
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
@@ -62,9 +61,10 @@ fun CustomCalendarView(
     navController: NavController
 ) {
     val showDialog = remember { mutableStateOf(false) }
+    val selectedDate = remember { mutableStateOf(LocalDate.now()) }
     val daysInMonth by viewModel.calendarDays.observeAsState(emptyList())
-
     val dateFormatter = SimpleDateFormat("dd", Locale.getDefault())
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,6 +99,7 @@ fun CustomCalendarView(
                     CustomCalendarLayout(textHeight = textHeight) {
                         daysInMonth.forEach { calendarDay ->
                             DateCell(calendarDay, dateFormatter) {
+                                selectedDate.value = viewModel.convertDateToLocalDate(calendarDay.date)
                                 showDialog.value = true
                             }
                         }
@@ -112,6 +113,7 @@ fun CustomCalendarView(
             if (showDialog.value) {
                 RecordSelectDialog(
                     navController = navController,
+                    selectedDate = selectedDate.value,
                     onDismiss = { showDialog.value = false })
             }
         }
@@ -128,16 +130,14 @@ fun CustomCalendarLayout(
         content = content,
         modifier = modifier.padding(horizontal = 2.dp)
     ) { measurables, constraints ->
-        // 날짜 셀의 기본 너비와 높이를 정의합니다.
+
         val cellWidth = constraints.maxWidth / 7
         val cellHeight = constraints.maxWidth / 5
 
-        // 각 measurables을 지정된 cellWidth와 cellHeight로 측정합니다.
         val placeables = measurables.map { measurable ->
             measurable.measure(Constraints.fixed(width = cellWidth, height = cellHeight))
         }
 
-        // 캘린더의 전체 높이를 계산합니다. 예를 들어, 한 달이 최대 6주까지 있을 수 있다고 가정합니다.
         val calendarHeight = cellHeight * (placeables.size / 7)
 
         layout(constraints.maxWidth, calendarHeight) {
@@ -148,7 +148,7 @@ fun CustomCalendarLayout(
                 placeable.place(x = xPosition, y = yPosition)
 
                 xPosition += cellWidth
-                if (index % 7 == 6) { // 한 주의 끝에 도달했을 때, 위치를 리셋합니다.
+                if (index % 7 == 6) {
                     xPosition = 0
                     yPosition += cellHeight
                 }

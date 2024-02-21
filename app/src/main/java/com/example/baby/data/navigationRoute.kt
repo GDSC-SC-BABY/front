@@ -16,5 +16,7 @@ sealed class NavigationRoutes(val route: String) {
     object BabyPatternRecordScreen : NavigationRoutes("patternRecordScreen")
     object BabyPatternScreen : NavigationRoutes("patternScreen")
     object MemberTypeScreen : NavigationRoutes("memberTypeScreen")
-    object DayBabyFoodScreen : NavigationRoutes("dayBabyFoodScreen")
+    object DayBabyFoodScreen : NavigationRoutes("dayBabyFoodScreen/{year}/{month}/{day}") {
+        fun createRoute(year: Int, month: Int, day: Int) = "dayBabyFoodScreen/$year/$month/$day"
+    }
 }

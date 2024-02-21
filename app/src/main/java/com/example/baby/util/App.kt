@@ -3,6 +3,7 @@ package com.example.baby.util
 import android.app.Application
 import android.content.Context
 import com.google.firebase.FirebaseApp
+import com.jakewharton.threetenabp.AndroidThreeTen
 
 
 // 전역 context - Application 클래스를 상속받는 별도의 클래스 생성
@@ -20,6 +21,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AndroidThreeTen.init(this)
         instance = this
         FirebaseApp.initializeApp(context())
     }
