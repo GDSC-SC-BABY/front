@@ -21,19 +21,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.Baby
 import com.example.baby.network.Resource
 import com.example.baby.ui.theme.StartFontStyle
-import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.viewModel.BabyRegisterViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -46,7 +41,7 @@ fun BabyRegisterScreen(
     context: Context,
     viewModel: BabyRegisterViewModel,
     navController: NavController,
-    onSuccess: Unit
+    userId: String
 ) {
     val isFormValid by viewModel.isFormValid.collectAsState()
     var appName = context.resources.getString(R.string.app_name)
@@ -104,7 +99,7 @@ fun BabyRegisterScreen(
                 text = "${appName} 시작하기",
                 route = "mainScreen",
                 navController = navController,
-                onSuccess = onSuccess
+                userId = userId
             )
         }
     }
@@ -450,7 +445,7 @@ fun BabyRegisterButton(
     text: String,
     route: String,
     navController: NavController,
-    onSuccess: Unit
+    userId: String
 ) {
     val name by viewModel.babyName.collectAsState()
     val birth by viewModel.birth.collectAsState()
@@ -461,9 +456,25 @@ fun BabyRegisterButton(
 
     val babyRegisterState = viewModel.babyRegistrationState.collectAsState().value
 
-    Log.d("year", year.toString())
-
     val context = LocalContext.current
+
+    val baby = Baby(
+        name = name,
+        gender = gender,
+        birthWeight = weight,
+        birthHeight = height,
+        imgUrl = "a",
+        dateTime = LocalDateTime.of(
+            LocalDate.of(
+                viewModel.year.value,
+                viewModel.month.value,
+                viewModel.day.value
+            ),
+            LocalTime.MIDNIGHT
+        ),
+        userId = userId
+    )
+    Log.d("baby", baby.toString())
 
     Column(
         modifier = Modifier
@@ -473,24 +484,9 @@ fun BabyRegisterButton(
         Button(
             onClick = {
                 viewModel.registerBaby(
-                    Baby(
-                        name = name,
-                        gender = gender,
-                        birthWeight = weight,
-                        birthHeight = height,
-                        imageUrl = "",
-                        dateTime = LocalDateTime.of(
-                            LocalDate.of(
-                                viewModel.year.value,
-                                viewModel.month.value,
-                                viewModel.day.value
-                            ),
-                            LocalTime.MIDNIGHT
-                        )
-                    )
+                    baby
                 )
                 viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height)
-                onSuccess
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -518,6 +514,7 @@ fun BabyRegisterButton(
             }
             is Resource.Error -> {
                 // 오류가 발생한 경우 로그 출력
+                Log.d("RegisterButton", "API 오류: ${babyRegisterState.data}")
                 Log.d("RegisterButton", "API 오류: ${babyRegisterState.message}")
             }
             is Resource.Loading -> {

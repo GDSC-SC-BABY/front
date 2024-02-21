@@ -97,6 +97,7 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
                 } else {
                     _babyRegistrationState.value = Resource.error(response.errorBody().toString(), null)
                 }
+                Log.d("registerBaby", response.toString())
             } catch(e: Exception) {
                 _babyRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
             }

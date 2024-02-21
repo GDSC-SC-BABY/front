@@ -39,7 +39,6 @@ class BabyPatternViewModel(private val babyPatternRepository: BabyPatternReposit
             specificStatus = "Status 3",
             memo = "Memo 3"
         )
-
     )
 
     private val _patternDataState = MutableStateFlow<Resource<List<Activity>>>(Resource.Success(null))
@@ -64,6 +63,4 @@ class BabyPatternViewModel(private val babyPatternRepository: BabyPatternReposit
             }
         }
     }
-
-
 }

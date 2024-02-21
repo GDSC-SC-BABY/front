@@ -3,15 +3,18 @@ package com.example.baby.data
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
+
 data class Baby(
     @SerializedName("name") val name: String,
     @SerializedName("gender") val gender: String,
+    @SerializedName("imgUrl") val imgUrl: String,
     @SerializedName("dateTime") val dateTime: LocalDateTime,
-    @SerializedName("imageUrl") val imageUrl: String,
     @SerializedName("birthHeight") val birthHeight: String,
-    @SerializedName("birthWeight") val birthWeight: String
+    @SerializedName("birthWeight") val birthWeight: String,
+    @SerializedName("userId") val userId: String
 )
 
+
 data class BabyResponse(
-    val state: Boolean
+    @SerializedName("state") val state: Boolean
 )
