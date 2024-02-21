@@ -8,8 +8,8 @@ data class Baby(
     @SerializedName("gender") val gender: String,
     @SerializedName("dateTime") val dateTime: LocalDateTime,
     @SerializedName("imageUrl") val imageUrl: String,
-    @SerializedName("birthHeight") val birthHeight: Int,
-    @SerializedName("birthWeight") val birthWeight: Int
+    @SerializedName("birthHeight") val birthHeight: String,
+    @SerializedName("birthWeight") val birthWeight: String
 )
 
 data class BabyResponse(

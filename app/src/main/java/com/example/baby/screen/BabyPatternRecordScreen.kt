@@ -318,10 +318,16 @@ fun CustomTabRow(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
     }
 }
 
-enum class TabType(val title: String, val content: String) {
-    Pee("기저귀", "상세 내용을 작성해주세요."),
-    Food("이유식", "상세 내용을 작성해주세요."),
-    Medicine("복약", "상세 내용을 작성해주세요."),
-    Sleep("수면", "상세 내용을 작성해주세요.")
+enum class TabType(val title: String, val content: String, val icon: Int, val backColor: Color) {
+    Pee("기저귀", "상세 내용을 작성해주세요.", R.drawable.icon_defecation, Color(0xFFF18CAE)),
+    Meal("이유식", "상세 내용을 작성해주세요.", R.drawable.icon_meal, Color(0xFF80C9E9)),
+    Medicine("복약", "상세 내용을 작성해주세요.", R.drawable.icon_medicine, Color(0xFFFA572A)),
+    Sleep("수면", "상세 내용을 작성해주세요.", R.drawable.icon_sleep, Color(0xFF00539C));
+
+    companion object {
+        fun fromTitle(title: String): TabType? {
+            return values().find { it.title == title }
+        }
+    }
 }
 
