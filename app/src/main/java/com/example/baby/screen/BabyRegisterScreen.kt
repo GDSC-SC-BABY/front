@@ -2,6 +2,7 @@ package com.example.baby.screen
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +30,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.R
+import com.example.baby.data.Baby
+import com.example.baby.network.Resource
 import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.viewModel.BabyRegisterViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +80,7 @@ fun BabyRegisterScreen(
         Column(
             modifier = Modifier
                 .background(Color.White)
-                .padding(vertical = 20.dp, horizontal = 30.dp),
+                .padding(top = 10.dp, bottom = 30.dp, start = 30.dp, end = 30.dp),
         ) {
             Text("아이의 이름은 무엇인가요?", style = StartFontStyle.startSubtitle)
             Spacer(modifier = Modifier.height(20.dp))
@@ -143,68 +150,191 @@ fun showDatePicker(
     val month by viewModel.month.collectAsState()
     val day by viewModel.day.collectAsState()
 
-    var expanded by remember { mutableStateOf(false) }
+    var expandedYear by remember { mutableStateOf(false) }
+    var expandedMonth by remember { mutableStateOf(false) }
+    var expandedDay by remember { mutableStateOf(false) }
     val yearList = (2024 downTo 2005).map { it.toString() }
+    val monthList = (12 downTo 1).map { it.toString() }
+    val dayList = (31 downTo 1).map { it.toString() }
 
     val selectedYearIndex = yearList.indexOf(year)
+    val selectedMonthIndex = monthList.indexOf(month)
+    val selectedDayIndex = dayList.indexOf(day)
 
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {
-            expanded = !expanded
-        },
-        modifier = Modifier
-            .fillMaxWidth()
+    Row(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        OutlinedTextField(
-            textStyle = TextStyle(
-                fontFamily = nanumSquare,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.secondary_color)
-            ),
-            value = yearList.getOrElse(selectedYearIndex) { "2023" },
-            onValueChange = { },
-            readOnly = true, // This makes the TextField not editable
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Dropdown arrow",
-                    Modifier.clickable { expanded = true }
-                )
+        ExposedDropdownMenuBox(
+            expanded = expandedYear,
+            onExpandedChange = {
+                expandedYear = !expandedYear
             },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = colorResource(id = R.color.background_main),
-                focusedBorderColor = Color.Unspecified,
-                cursorColor = Color.Unspecified,
-                unfocusedBorderColor = Color.Unspecified,
-                disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colors.surface, MaterialTheme.shapes.small)
-        )
-        DropdownMenu(
-            expanded = expanded,
-            modifier = Modifier.fillMaxWidth(),
-            onDismissRequest = { expanded = false },
-            properties = PopupProperties(focusable = false)
+            modifier = Modifier.weight(3f)
         ) {
-            yearList.forEachIndexed { index, text ->
-                DropdownMenuItem(
-                    onClick = {
-                        viewModel.year.value = yearList[index]
-                        expanded = false
+            OutlinedTextField(
+                textStyle = StartFontStyle.startButton,
+                value = yearList.getOrElse(selectedYearIndex) { LocalDate.now().year.toString() },
+                onValueChange = { },
+                readOnly = true,
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Dropdown arrow",
+                        Modifier.clickable { expandedYear = true }
+                    )
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = colorResource(id = R.color.background_gray),
+                    focusedBorderColor = Color.Unspecified,
+                    cursorColor = Color.Unspecified,
+                    unfocusedBorderColor = Color.Unspecified,
+                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                ),
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.small)
+            )
+            DropdownMenu(
+                expanded = expandedYear,
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(500.dp)
+                    .background(colorResource(id = R.color.background_gray)),
+                onDismissRequest = { expandedYear = false },
+                properties = PopupProperties(focusable = false)
+            ) {
+                yearList.forEachIndexed { index, text ->
+                    DropdownMenuItem(
+                        onClick = {
+                            viewModel.year.value = yearList[index]
+                            expandedYear = false
+                        }
+                    ) {
+                        Text(
+                            text = "$text", style = StartFontStyle.startBody1,
+                            color = Color(R.color.gray4)
+                        )
                     }
-                ) {
-                    Text(text = "$text")
                 }
             }
         }
-    }
+        Spacer(modifier = Modifier.width(9.dp))
+        ExposedDropdownMenuBox(
+            expanded = expandedMonth,
+            onExpandedChange = {
+                expandedMonth = !expandedMonth
+            },
+            modifier = Modifier.weight(2f)
+        ) {
+            OutlinedTextField(
+                textStyle = StartFontStyle.startButton,
+                value = monthList.getOrElse(selectedMonthIndex) { LocalDate.now().month.value.toString() },
+                onValueChange = { },
+                readOnly = true, // This makes the TextField not editable
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Dropdown arrow",
+                        Modifier.clickable { expandedMonth = true }
+                    )
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = colorResource(id = R.color.background_gray),
+                    focusedBorderColor = Color.Unspecified,
+                    cursorColor = Color.Unspecified,
+                    unfocusedBorderColor = Color.Unspecified,
+                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                ),
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.small)
+            )
+            DropdownMenu(
+                expanded = expandedMonth,
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(500.dp)
+                    .background(colorResource(id = R.color.background_gray)),
+                onDismissRequest = { expandedMonth = false },
+                properties = PopupProperties(focusable = false)
+            ) {
+                monthList.forEachIndexed { index, text ->
+                    DropdownMenuItem(
+                        onClick = {
+                            viewModel.month.value = monthList[index]
+                            expandedMonth = false
+                        }
+                    ) {
+                        Text(
+                            text = "$text", style = StartFontStyle.startBody1,
+                            color = Color(R.color.gray4)
+                        )
+                    }
+                }
+            }
 
+        }
+        Spacer(modifier = Modifier.width(9.dp))
+        ExposedDropdownMenuBox(
+            expanded = expandedMonth,
+            onExpandedChange = {
+                expandedDay = !expandedDay
+            },
+            modifier = Modifier.weight(2f)
+        ) {
+            OutlinedTextField(
+                textStyle = StartFontStyle.startButton,
+                value = monthList.getOrElse(selectedDayIndex) { LocalDate.now().dayOfMonth.toString() },
+                onValueChange = { },
+                readOnly = true, // This makes the TextField not editable
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Dropdown arrow",
+                        Modifier.clickable { expandedDay = true }
+                    )
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = colorResource(id = R.color.background_gray),
+                    focusedBorderColor = Color.Unspecified,
+                    cursorColor = Color.Unspecified,
+                    unfocusedBorderColor = Color.Unspecified,
+                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledTrailingIconColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+                ),
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.small)
+            )
+            DropdownMenu(
+                expanded = expandedDay,
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(500.dp)
+                    .background(colorResource(id = R.color.background_gray)),
+                onDismissRequest = { expandedDay = false },
+                properties = PopupProperties(focusable = false)
+            ) {
+                dayList.forEachIndexed { index, text ->
+                    DropdownMenuItem(
+                        onClick = {
+                            viewModel.day.value = dayList[index]
+                            expandedDay = false
+                        }
+                    ) {
+                        Text(
+                            text = "$text", style = StartFontStyle.startBody1,
+                            color = Color(R.color.gray4)
+                        )
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 @Composable
@@ -254,7 +384,7 @@ fun BabyInfoRegisterWidget(viewModel: BabyRegisterViewModel) {
     val heightText by viewModel.height.collectAsState()
     val weightText by viewModel.weight.collectAsState()
 
-    Row() {
+    Row {
         OutlinedTextField(
             modifier = Modifier
                 .weight(1f)
@@ -269,7 +399,7 @@ fun BabyInfoRegisterWidget(viewModel: BabyRegisterViewModel) {
                 Text(
                     "키 (cm)",
                     textAlign = TextAlign.Center,
-                    style = StartFontStyle.startBody1,
+                    style = StartFontStyle.startButton,
                     color = Color(R.color.gray4),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -296,7 +426,7 @@ fun BabyInfoRegisterWidget(viewModel: BabyRegisterViewModel) {
             placeholder = {
                 Text(
                     "몸무게 (kg)",
-                    style = StartFontStyle.startBody1,
+                    style = StartFontStyle.startButton,
                     color = Color(R.color.gray4),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
@@ -327,6 +457,11 @@ fun BabyRegisterButton(
     val gender by viewModel.gender.collectAsState()
     val weight by viewModel.weight.collectAsState()
     val height by viewModel.height.collectAsState()
+    val year by viewModel.year.collectAsState()
+
+    val babyRegisterState = viewModel.babyRegistrationState.collectAsState().value
+
+    Log.d("year", year)
 
     val context = LocalContext.current
 
@@ -337,7 +472,23 @@ fun BabyRegisterButton(
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {
-                //viewModel.registerUser(user)
+                viewModel.registerBaby(
+                    Baby(
+                        name = name,
+                        gender = gender,
+                        birthWeight = weight.toInt(),
+                        birthHeight = height.toInt(),
+                        imageUrl = "",
+                        dateTime = LocalDateTime.of(
+                            LocalDate.of(
+                                viewModel.year.value.toInt(),
+                                viewModel.month.value.toInt(),
+                                viewModel.day.value.toInt()
+                            ),
+                            LocalTime.MIDNIGHT
+                        )
+                    )
+                )
                 viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height)
                 onSuccess
             },
@@ -358,6 +509,21 @@ fun BabyRegisterButton(
             )
         }
 
+    }
+
+    LaunchedEffect(babyRegisterState) {
+        when (babyRegisterState) {
+            is Resource.Success -> {
+                navController.navigate(route)
+            }
+            is Resource.Error -> {
+                // 오류가 발생한 경우 로그 출력
+                Log.d("RegisterButton", "API 오류: ${babyRegisterState.message}")
+            }
+            is Resource.Loading -> {
+                // 필요한 경우 로딩 상태 처리
+            }
+        }
     }
 
 }

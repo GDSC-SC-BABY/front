@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.baby.R
+import com.example.baby.data.Baby
+import com.example.baby.data.BabyResponse
 import com.example.baby.data.User
 import com.example.baby.network.BabyRepository
 import com.example.baby.network.Resource
@@ -31,8 +33,8 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
         name.isNotBlank() && birth.isNotBlank() && gender.isNotBlank()&& weight.isNotBlank()&& height.isNotBlank()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    private val _userRegistrationState = MutableStateFlow<Resource<User>>(Resource.loading(null))
-    val userRegistrationState: StateFlow<Resource<User>> = _userRegistrationState
+    private val _babyRegistrationState = MutableStateFlow<Resource<BabyResponse>>(Resource.loading(null))
+    val babyRegistrationState: StateFlow<Resource<BabyResponse>> = _babyRegistrationState
 
     private val _coParentRelations = mutableStateListOf<String>()
     val coParentRelations: List<String> = _coParentRelations
@@ -83,19 +85,19 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
     }
 
 
-//    fun registerUser(baby: Baby) {
-//        viewModelScope.launch {
-//            _userRegistrationState.value = Resource.loading(null)
-//            try {
-//                val response = userRepository.registerUser(baby)
-//                if (response.isSuccessful && response.body() != null) {
-//                    _userRegistrationState.value = Resource.success(response.body())
-//                } else {
-//                    _userRegistrationState.value = Resource.error(response.errorBody().toString(), null)
-//                }
-//            } catch(e: Exception) {
-//                _userRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
-//            }
-//        }
-//    }
+    fun registerBaby(baby: Baby) {
+        viewModelScope.launch {
+            _babyRegistrationState.value = Resource.loading(null)
+            try {
+                val response = babyRepository.registerBaby(baby)
+                if (response.isSuccessful && response.body() != null) {
+                    _babyRegistrationState.value = Resource.success(response.body())
+                } else {
+                    _babyRegistrationState.value = Resource.error(response.errorBody().toString(), null)
+                }
+            } catch(e: Exception) {
+                _babyRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
+            }
+        }
+    }
 }
