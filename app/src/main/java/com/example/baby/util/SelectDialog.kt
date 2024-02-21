@@ -44,7 +44,7 @@ fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate("foodRegisterScreen")
+                            navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
                             onDismiss()
                         }
                         .padding(16.dp)
@@ -56,7 +56,50 @@ fun FoodSelectDialog(navController: NavController, onDismiss: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate("snackRegisterScreen")
+                            navController.navigate(NavigationRoutes.SnackRegisterScreen.route)
+                            onDismiss()
+                        }
+                        .padding(16.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun DiarySelectDialog(navController: NavController, onDismiss: () -> Unit) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
+            shape = RoundedCornerShape(15.dp),
+            modifier = Modifier.fillMaxWidth(0.4f),
+        ) {
+            Column(
+                modifier = Modifier.padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "육아 일기",
+                    color = colorResource(id = R.color.gray5),
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
+                            onDismiss()
+                        }
+                        .padding(16.dp)
+                )
+                Text("생활 패턴 기록",
+                    color = colorResource(id = R.color.gray5),
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate(NavigationRoutes.BabyPatternScreen.route)
                             onDismiss()
                         }
                         .padding(16.dp))
