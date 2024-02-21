@@ -18,3 +18,7 @@ data class Baby(
 data class BabyResponse(
     @SerializedName("state") val state: Boolean
 )
+
+data class BabyIdResponse(
+    @SerializedName("babyId") val babyId: String
+)

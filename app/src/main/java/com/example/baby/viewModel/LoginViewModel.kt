@@ -32,18 +32,18 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
     var loginResult = _loginResult.asSharedFlow()
 
     suspend fun hasData(user: FirebaseUser): Boolean {
-        var hasId = true
+        var hasId = false
 
         viewModelScope.launch {
-            val userResponse = UserDuplicateResponse(
+/*            val userResponse = UserDuplicateResponse(
                 state = false
-            )
-            //val userResponse = userRepository.checkDuplicateUserId(user.uid).body()
+            )*/
+            val userResponse = userRepository.checkDuplicateUserId(user.uid).body()
             // composable, activity 간의 이동 고민(베이비 등록 페이지 후 메인 페이지)
-//            if (userResponse?.state == true) {
-//                SharedPreferenceUtil(App.context()).setString("uid", user.uid)
-//                hasId = userResponse.state
-//            }
+            if (userResponse?.state == true) {
+                SharedPreferenceUtil(App.context()).setString("uid", user.uid)
+                hasId = userResponse.state
+            }
             Log.d("hasId", hasId.toString())
         }.join()
 

@@ -18,8 +18,6 @@ import java.time.LocalDate
 
 
 class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewModel() {
-
-
     var babyName = MutableStateFlow("")
     val birth = MutableStateFlow("")
     val gender = MutableStateFlow("남자")
@@ -30,11 +28,13 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
     val month = MutableStateFlow(LocalDate.now().monthValue)
     val day = MutableStateFlow(LocalDate.now().dayOfMonth)
 
-    val isFormValid: StateFlow<Boolean> = combine(babyName, birth, gender, weight, height) { name, birth, gender, weight, height ->
-        name.isNotBlank() && birth.isNotBlank() && gender.isNotBlank()&& weight.isNotBlank()&& height.isNotBlank()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    val isFormValid: StateFlow<Boolean> =
+        combine(babyName, birth, gender, weight, height) { name, birth, gender, weight, height ->
+            name.isNotBlank() && birth.isNotBlank() && gender.isNotBlank() && weight.isNotBlank() && height.isNotBlank()
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    private val _babyRegistrationState = MutableStateFlow<Resource<BabyResponse>>(Resource.loading(null))
+    private val _babyRegistrationState =
+        MutableStateFlow<Resource<BabyResponse>>(Resource.loading(null))
     val babyRegistrationState: StateFlow<Resource<BabyResponse>> = _babyRegistrationState
 
     private val _coParentRelations = mutableStateListOf<String>()
@@ -66,21 +66,36 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
         _coParentNicknames.removeAt(idx)
     }
 
-    fun setBabyInfoToSP(context: Context, name: String, birth: String, gender: String, height: String, weight: String){
+    fun setBabyInfoToSP(
+        context: Context,
+        name: String,
+        birth: String,
+        gender: String,
+        height: String,
+        weight: String,
+        userId: String
+    ) {
         viewModelScope.launch {
-            try{
+            try {
+                val response = babyRepository.checkDuplicateUserId(userId)
+
                 SharedPreferenceUtil(context).setString("babyName", name)
                 SharedPreferenceUtil(context).setString("birth", birth)
                 SharedPreferenceUtil(context).setString("gender", gender)
                 SharedPreferenceUtil(context).setString("height", height)
                 SharedPreferenceUtil(context).setString("weight", weight)
-                // babyId,
-                if(gender == "남자"){
+                if (response.babyId != null) {
+                    SharedPreferenceUtil(context).setString("babyId", response.babyId)
+                }
+
+                if (gender == "남자") {
                     SharedPreferenceUtil(context).setInt("genderIcon", R.drawable.man_icon)
-                } else{
+                } else {
                     SharedPreferenceUtil(context).setInt("genderIcon", R.drawable.woman_icon)
                 }
-            } catch (e: Exception){
+                var baby = SharedPreferenceUtil(context).getString("babyId", "bb")
+                Log.d("babyID", baby!!)
+            } catch (e: Exception) {
                 Log.d("babyRegister", e.toString())
             }
         }
@@ -95,11 +110,13 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
                 if (response.isSuccessful && response.body() != null) {
                     _babyRegistrationState.value = Resource.success(response.body())
                 } else {
-                    _babyRegistrationState.value = Resource.error(response.errorBody().toString(), null)
+                    _babyRegistrationState.value =
+                        Resource.error(response.errorBody().toString(), null)
                 }
                 Log.d("registerBaby", response.toString())
-            } catch(e: Exception) {
-                _babyRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
+            } catch (e: Exception) {
+                _babyRegistrationState.value =
+                    Resource.error(e.message ?: "An error occurred", null)
             }
         }
     }

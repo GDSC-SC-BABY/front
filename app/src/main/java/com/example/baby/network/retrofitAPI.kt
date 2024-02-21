@@ -22,6 +22,9 @@ interface ApiService {
     @PATCH("/user/addBaby")
     suspend fun addBabyCode(@Body babyCode: BabyCode): Response<UserDuplicateResponse>
 
+    @GET("user/getBaby")
+    suspend fun getBabyIdByUserId(@Query("userId") userId: String): Response<BabyIdResponse>
+
     // Baby
     @POST("baby")
     suspend fun registerBaby(@Body baby: Baby): Response<BabyResponse>

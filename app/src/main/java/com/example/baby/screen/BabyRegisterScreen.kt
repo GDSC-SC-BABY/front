@@ -28,9 +28,11 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.Baby
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.Resource
 import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.viewModel.BabyRegisterViewModel
+import com.example.baby.viewModel.LoginViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -42,6 +44,7 @@ import java.util.*
 fun BabyRegisterScreen(
     context: Context,
     viewModel: BabyRegisterViewModel,
+    loginViewModel: LoginViewModel,
     navController: NavController,
     userId: String
 ) {
@@ -97,11 +100,9 @@ fun BabyRegisterScreen(
             showDatePicker(viewModel)
             BabyRegisterButton(
                 viewModel = viewModel,
-                isNotNull = isFormValid,
                 text = "${appName} 시작하기",
-                route = "mainScreen",
-                navController = navController,
-                userId = userId
+                userId = userId,
+                loginViewModel = loginViewModel
             )
         }
     }
@@ -443,11 +444,9 @@ fun BabyInfoRegisterWidget(viewModel: BabyRegisterViewModel) {
 @Composable
 fun BabyRegisterButton(
     viewModel: BabyRegisterViewModel,
-    isNotNull: Boolean,
     text: String,
-    route: String,
-    navController: NavController,
-    userId: String
+    userId: String,
+    loginViewModel: LoginViewModel
 ) {
     val name by viewModel.babyName.collectAsState()
     val birth by viewModel.birth.collectAsState()
@@ -476,7 +475,6 @@ fun BabyRegisterButton(
         ),
         userId = userId
     )
-    Log.d("baby", baby.toString())
 
     Column(
         modifier = Modifier
@@ -488,7 +486,7 @@ fun BabyRegisterButton(
                 viewModel.registerBaby(
                     baby
                 )
-                viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height)
+                viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height, userId)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -512,7 +510,7 @@ fun BabyRegisterButton(
     LaunchedEffect(babyRegisterState) {
         when (babyRegisterState) {
             is Resource.Success -> {
-                navController.navigate(route)
+                loginViewModel.toMainActivity()
             }
             is Resource.Error -> {
                 // 오류가 발생한 경우 로그 출력
