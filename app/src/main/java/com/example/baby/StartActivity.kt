@@ -101,7 +101,7 @@ class StartActivity : ComponentActivity() {
                                     val navController = rememberNavController()
 
                                     // NavHost 로 네비게이션 결정
-                                    NavHost(navController, "registerScreen")
+                                    NavHost(navController, "memberTypeScreen")
                                     {
                                         composable(NavigationRoutes.RegisterScreen.route) {
                                             UserRegisterScreen(
@@ -115,7 +115,7 @@ class StartActivity : ComponentActivity() {
                                                 viewModel = babyRegisterViewModel,
                                                 navController = navController,
                                                 context = applicationContext,
-                                                onSuccess = toMainActivity()
+                                                onSuccess = Unit
                                             )
                                         }
                                         composable(NavigationRoutes.MemberTypeScreen.route) {
@@ -205,7 +205,6 @@ class StartActivity : ComponentActivity() {
             }
         }
     }
-
 
     private fun toMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))

@@ -295,7 +295,7 @@ fun RegisterButton(
             shape = RoundedCornerShape(12.dp),
             onClick = {
                 if (isNotNull) {
-                    viewModel.setUserInfoToSP(context, user.name, viewModel.coParentCode.value)
+                    viewModel.setUserInfoToSP(context, user.name)
                     viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }
             },
@@ -314,6 +314,8 @@ fun RegisterButton(
         LaunchedEffect(userRegistrationState) {
             when (userRegistrationState) {
                 is Resource.Success -> {
+                    Log.d("userRegisterScreen", "유저 등록 성공")
+                    Log.d("userRegisterScreen", route)
                     navController.navigate(route)
                 }
                 is Resource.Error -> {
@@ -324,21 +326,6 @@ fun RegisterButton(
                     // 필요한 경우 로딩 상태 처리
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun PhoneAuthWidget(route: String, navController: NavController) {
-    Box(
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        Button(
-            onClick = {
-                navController.navigate(route)
-            }
-        ) {
-            Text("휴대폰 인증")
         }
     }
 }

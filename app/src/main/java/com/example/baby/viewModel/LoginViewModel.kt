@@ -99,20 +99,5 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
         object ToMain : LoginEvent()
     }
 
-/*    suspend fun checkNickname() {
-        if (userNicknameInput.isEmpty()) {
-            isEmpty.value = true
-            availableNickname.value = false
-        }else{
-            isEmpty.value = false
-            val result = dbAccessModule.checkNickname(userNicknameInput)
-            availableNickname.value = if (!result) {
-                isOverlap.value = true
-                true
-            }else{
-                isOverlap.value = false
-                false
-            }}
-    }*/
 
 }
