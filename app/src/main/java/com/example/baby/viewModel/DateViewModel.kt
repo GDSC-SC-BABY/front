@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -38,5 +39,14 @@ class DateViewModel() : ViewModel() {
         val dateFormat = SimpleDateFormat("hh시 mm분")
 
         return dateFormat.format(date)
+    }
+
+    fun parseStringToLocalDateTime(dateTimeString: String): LocalDateTime? {
+        val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분")
+        return try {
+            LocalDateTime.parse(dateTimeString, formatter)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

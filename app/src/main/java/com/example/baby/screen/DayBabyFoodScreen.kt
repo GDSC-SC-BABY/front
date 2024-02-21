@@ -18,6 +18,9 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +48,7 @@ import com.example.baby.viewModel.UserRegisterViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayBabyFoodScreen(
     userViewModel: UserRegisterViewModel,
@@ -60,9 +64,8 @@ fun DayBabyFoodScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                backgroundColor = colorResource(id = R.color.sub_color),
-                elevation = 0.dp,
+            CenterAlignedTopAppBar(
+                modifier = Modifier.background(color = colorResource(id = R.color.sub_color)),
                 title = {
                     Text(
                         "이유식 일지",
@@ -71,6 +74,18 @@ fun DayBabyFoodScreen(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.fillMaxWidth()
                     )
+                },
+
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.previous_month_icon),
+                            contentDescription = "Back",
+                            tint = Color(R.color.secondary_color)
+                        )
+                    }
                 },
             )
         },

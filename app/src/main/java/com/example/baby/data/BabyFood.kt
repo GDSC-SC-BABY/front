@@ -1,16 +1,22 @@
 package com.example.baby.data
 
 import com.google.gson.annotations.SerializedName
+import java.time.LocalDateTime
 
 
 data class BabyFood(
     @SerializedName("babyId") val babyId: Int,
-    @SerializedName("dateTime") val dateTime: String,
+    @SerializedName("dateTime") val dateTime: LocalDateTime,
     @SerializedName("amount") val amount: Int,
     @SerializedName("imageUrl") val url: String,
     @SerializedName("specialNote") val note: String,
-    @SerializedName("basePorridge") val baseMeal: String,
+    @SerializedName("basePorridgeName") val baseMeal: String,
     @SerializedName("toppingList") val toppingList: List<Topping>,
+)
+
+data class Topping(
+    @SerializedName("name") val name: String,
+    @SerializedName("amount") val amount: Int
 )
 
 data class BabyFoodAllResponse(
@@ -34,7 +40,3 @@ data class BabyFoodInfo(
     @SerializedName("amount") val amount: Int
 )
 
-data class Topping(
-    @SerializedName("name") val name: String,
-    @SerializedName("toppingAmount") val amount: Int
-)

@@ -26,11 +26,6 @@ fun MainScreen(
 ) {
     Scaffold(
         bottomBar = { CustomBottomNavigation(navController = navController) },
-        floatingActionButton = {
-            ExpandableFloatingActionButton(navController = navController)
-        },
-        floatingActionButtonPosition = FabPosition.End, // 버튼의 위치 조정
-        isFloatingActionButtonDocked = false, // 하단바에 도킹할지 여부
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -46,50 +41,6 @@ fun MainScreen(
 //                }
 //            )
             CustomCalendarView(viewModel = viewModel, navController = navController)
-        }
-    }
-}
-
-@Composable
-fun ExpandableFloatingActionButton(navController: NavController) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column(
-        horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        // 첫 번째 추가 버튼
-        AnimatedVisibility(visible = expanded) {
-            FloatingActionButton(
-                onClick = {
-                    // 첫 번째 버튼 클릭 시 실행할 액션
-                },
-            ) {
-                Text("육아 기록 추가")
-            }
-        }
-
-        // 두 번째 추가 버튼
-        AnimatedVisibility(visible = expanded) {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(NavigationRoutes.BabyPatternRecordScreen.route)
-                },
-            ) {
-                Text("생활 패턴 추가")
-            }
-        }
-
-        // 메인 플로팅 액션 버튼
-        FloatingActionButton(
-            onClick = {
-                expanded = !expanded // 확장 상태 토글
-            },
-        ) {
-            Icon(
-                imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.Add,
-                contentDescription = "메인 버튼"
-            )
         }
     }
 }

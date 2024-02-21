@@ -1,6 +1,7 @@
 package com.example.baby.viewModel
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.baby.data.BabyFood
 import com.example.baby.data.BabyFoodResponse
+import com.example.baby.data.UserDuplicateResponse
 import com.example.baby.network.BabyFoodRepository
 import com.example.baby.network.Resource
 import kotlinx.coroutines.flow.*
@@ -76,8 +78,8 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
 
-    private val _babyFoodRegistrationState = MutableStateFlow<Resource<BabyFood>>(Resource.loading(null))
-    val babyFoodRegistrationState: StateFlow<Resource<BabyFood>> = _babyFoodRegistrationState
+    private val _babyFoodRegistrationState = MutableStateFlow<Resource<UserDuplicateResponse>>(Resource.loading(null))
+    val babyFoodRegistrationState: StateFlow<Resource<UserDuplicateResponse>> = _babyFoodRegistrationState
 
 
     private val _babyFoodInfoState = MutableStateFlow<Resource<BabyFoodResponse>>(Resource.loading(null))
@@ -92,9 +94,12 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
                 if (response.isSuccessful && response.body() != null) {
                     _babyFoodRegistrationState.value = Resource.success(response.body())
                 } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("API Error", "에러 응답: $errorBody")
                     _babyFoodRegistrationState.value = Resource.error(response.errorBody().toString(), null)
                 }
             } catch(e: Exception) {
+                Log.e("API Exception", "요청 중 예외 발생: ${e.message}")
                 _babyFoodRegistrationState.value = Resource.error(e.message ?: "An error occurred", null)
             }
         }

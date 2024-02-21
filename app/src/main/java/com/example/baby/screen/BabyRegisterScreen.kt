@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.util.Log
@@ -35,6 +36,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BabyRegisterScreen(

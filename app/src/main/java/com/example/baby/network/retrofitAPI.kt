@@ -64,7 +64,7 @@ interface ApiService {
     ): Response<List<Activity>>
 
     @POST("babyFood")
-    suspend fun registerBabyFood(@Body babyFood: BabyFood): Response<BabyFood>
+    suspend fun registerBabyFood(@Body babyFood: BabyFood): Response<UserDuplicateResponse>
 
     @GET("babyFood")
     suspend fun getAllBabyFoodByBabyId(@Query("babyId") babyId: Int) : Response<BabyFoodAllResponse>

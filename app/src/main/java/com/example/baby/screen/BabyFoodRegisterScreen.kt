@@ -65,6 +65,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.baby.R
 import com.example.baby.data.BabyFood
+import com.example.baby.data.NavigationRoutes
 import com.example.baby.data.Topping
 import com.example.baby.network.Resource
 import com.example.baby.util.CustomBottomNavigation
@@ -73,6 +74,8 @@ import com.example.baby.util.mealTimeList
 import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.ImageUploadViewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 @Composable
@@ -324,9 +327,9 @@ fun BaseMealSelectWidget(viewModel: BabyFoodViewModel) {
 @Composable
 fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
     val backgroundColor =
-        if (isSelected) colorResource(R.color.sub_color) else colorResource(id = R.color.background_gray)
+        if (isSelected) colorResource(R.color.brand_color) else colorResource(id = R.color.background_gray)
     val textColor =
-        if (isSelected) colorResource(R.color.gray6) else colorResource(id = R.color.gray3)
+        if (isSelected) colorResource(R.color.secondary_color) else colorResource(id = R.color.gray3)
 
     Card(
         modifier = Modifier
@@ -343,8 +346,8 @@ fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
             Text(
                 text = item,
                 color = textColor,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 14.sp,
+                fontWeight = FontWeight.ExtraBold
             )
         }
     }
@@ -501,15 +504,20 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(100.dp)
             .padding(10.dp),
     ) {
         Button(
             onClick = {
+                val dateStr = dateViewModel.getDateNow() + " " + viewModel.mealTime.value + " 33분"
+
+                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
+
+
                 url?.let {
                     BabyFood(
                         babyId = 1,
-                        dateTime = "${dateViewModel.getDateNow()} ${viewModel.mealTime}",
+                        dateTime = realDate!!,
                         amount = amount.toInt(),
                         url = it,
                         note = note,
@@ -532,7 +540,7 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
     LaunchedEffect(state) {
         when (state) {
             is Resource.Success -> {
-                navController.popBackStack()
+                navController.navigate(NavigationRoutes.MainScreen.route)
             }
             is Resource.Error -> {
                 // 오류가 발생한 경우 로그 출력
