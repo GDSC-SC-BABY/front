@@ -14,6 +14,7 @@ import com.example.baby.network.Resource
 import com.example.baby.util.SharedPreferenceUtil
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 
 class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewModel() {
@@ -25,9 +26,9 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
     val height = MutableStateFlow("")
     val weight = MutableStateFlow("")
 
-    val year = MutableStateFlow("")
-    val month = MutableStateFlow("")
-    val day = MutableStateFlow("")
+    val year = MutableStateFlow(LocalDate.now().year)
+    val month = MutableStateFlow(LocalDate.now().monthValue)
+    val day = MutableStateFlow(LocalDate.now().dayOfMonth)
 
     val isFormValid: StateFlow<Boolean> = combine(babyName, birth, gender, weight, height) { name, birth, gender, weight, height ->
         name.isNotBlank() && birth.isNotBlank() && gender.isNotBlank()&& weight.isNotBlank()&& height.isNotBlank()
