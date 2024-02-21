@@ -1,6 +1,7 @@
 package com.example.baby.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,8 @@ class CalendarViewModel : ViewModel() {
 
     private val calendar = Calendar.getInstance()
 
+    private val _currentYearAndMonth = mutableStateOf(getCurrentYearAndMonth())
+    val currentYearAndMonthState = _currentYearAndMonth
     init {
         updateCalendarDays()
     }
@@ -57,13 +60,13 @@ class CalendarViewModel : ViewModel() {
             dates.add(CalendarDate(calendar.time, isCurrentMonth = true))
         }
 
-        // 다음 달 날짜를 계산합니다.
-        calendar.set(year, month + 1, 1)
-        val daysToAddFromNextMonth = 7 - calendar.get(Calendar.DAY_OF_WEEK) + Calendar.SUNDAY
-        for (i in 1..daysToAddFromNextMonth) {
-            calendar.set(Calendar.DAY_OF_MONTH, i)
-            dates.add(CalendarDate(calendar.time, isCurrentMonth = false))
-        }
+//        // 다음 달 날짜를 계산합니다.
+//        calendar.set(year, month + 1, 1)
+//        val daysToAddFromNextMonth = 7 - calendar.get(Calendar.DAY_OF_WEEK) + Calendar.SUNDAY
+//        for (i in 1..daysToAddFromNextMonth) {
+//            calendar.set(Calendar.DAY_OF_MONTH, i)
+//            dates.add(CalendarDate(calendar.time, isCurrentMonth = false))
+//        }
 
         return dates
     }
@@ -71,20 +74,28 @@ class CalendarViewModel : ViewModel() {
     fun getCurrentYearAndMonth(): String {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
+        if(month==0) return String.format(Locale.getDefault(), "%d년 12월", year)
         return String.format(Locale.getDefault(), "%d년 %02d월", year, month)
     }
 
+
     fun previousMonth() {
-        calendar.add(Calendar.MONTH, -1)
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        calendar.set(year, month - 1, 1)
         updateCalendarDays()
-        Log.d("PreviousMonth", Calendar.MONTH.toString())
+        _currentYearAndMonth.value = getCurrentYearAndMonth()
     }
 
     fun nextMonth() {
-        calendar.add(Calendar.MONTH, 1)
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        calendar.set(year, month + 1, 1)
         updateCalendarDays()
-        Log.d("NextMonth", Calendar.MONTH.toString())
+        Log.d("CalendarAction", "Next Month: " + calendar.get(Calendar.MONTH).toString())
+        _currentYearAndMonth.value = getCurrentYearAndMonth()
     }
+
 
     fun convertDateToLocalDate(date: Date): LocalDate {
 

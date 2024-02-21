@@ -156,9 +156,11 @@ fun CustomCalendarLayout(
         }
     }
 }
+
 @Composable
 fun MonthWidget(viewModel: CalendarViewModel) {
-    val info = viewModel.getCurrentYearAndMonth()
+    val currentYearAndMonth by remember { viewModel.currentYearAndMonthState }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -175,9 +177,8 @@ fun MonthWidget(viewModel: CalendarViewModel) {
                     contentDescription = "달 -1"
                 )
             }
-
             Text(
-                text = info,
+                text = currentYearAndMonth,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = colorResource(id = R.color.secondary_color)
