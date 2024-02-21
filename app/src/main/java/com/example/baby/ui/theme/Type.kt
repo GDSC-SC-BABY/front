@@ -69,5 +69,15 @@ class MainFontStyle{
             fontFamily = nanumSquare,
             fontSize = 13.sp
         )
+        var body1 = TextStyle(
+            fontFamily = nanumSquare,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+        var body2 = TextStyle(
+            fontFamily = nanumSquare,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal
+        )
     }
 }

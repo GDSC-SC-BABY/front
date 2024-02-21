@@ -100,7 +100,7 @@ fun BabyPatternRecordPage(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                TabType.Pee -> Column {
+                TabType.Defecation -> Column {
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(text = "배변 상태", fontWeight = FontWeight.SemiBold)
                     TextField(
@@ -319,10 +319,11 @@ fun CustomTabRow(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
 }
 
 enum class TabType(val title: String, val content: String, val icon: Int, val backColor: Color) {
-    Pee("기저귀", "상세 내용을 작성해주세요.", R.drawable.icon_defecation, Color(0xFFF18CAE)),
-    Meal("이유식", "상세 내용을 작성해주세요.", R.drawable.icon_meal, Color(0xFF80C9E9)),
-    Medicine("복약", "상세 내용을 작성해주세요.", R.drawable.icon_medicine, Color(0xFFFA572A)),
-    Sleep("수면", "상세 내용을 작성해주세요.", R.drawable.icon_sleep, Color(0xFF00539C));
+    Defecation("배변 활동", "상세 내용을 작성해주세요.", R.drawable.icon_defecation, Color(0xFFF18CAE)),
+    BabyFood("이유식 섭취", "상세 내용을 작성해주세요.", R.drawable.icon_meal, Color(0xFF80C9E9)),
+    Medicine("투약 하기", "상세 내용을 작성해주세요.", R.drawable.icon_medicine, Color(0xFFFA572A)),
+    Sleep("수면 활동", "상세 내용을 작성해주세요.", R.drawable.icon_sleep, Color(0xFF00539C)),
+    Bath("목욕 하기", "상세 내용을 작성해주세요.", R.drawable.icon_bath, Color(0xFF0094D4));
 
     companion object {
         fun fromTitle(title: String): TabType? {

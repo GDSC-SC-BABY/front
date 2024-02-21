@@ -87,7 +87,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
                     "오늘의 육아 TIP 내용은 이거지롱~",
-                    style = MainFontStyle.tipText,
+                    style = MainFontStyle.body1,
                     color = Color(R.color.gray6),
                     fontWeight = FontWeight.ExtraBold
                 )
@@ -105,7 +105,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                     viewModel.getBabyPatternWithDate(selectedDate)
                 }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        painter = painterResource(R.drawable.arrow_back),
                         contentDescription = "전날",
                         tint = colorResource(id = R.color.secondary_color)
                     )
@@ -122,7 +122,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
 
                 }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
+                        painter = painterResource(R.drawable.arrow_forward),
                         contentDescription = "다음날",
                         tint = colorResource(id = R.color.secondary_color)
                     )
@@ -188,62 +188,78 @@ fun BabyPatternCard(activity: Activity) {
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp)
+            modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
+            OutlinedButton(
                 modifier = Modifier
-                    .padding(end = 20.dp)
-                    .weight(5f)
+                    .padding(horizontal = 3.dp)
+                    .size(50.dp)
+                    .clip(CircleShape),
+                onClick = { },
+                shape = CircleShape,
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = TabType.fromTitle(activity.activityType)?.backColor
+                        ?: colorResource(R.color.gray3),
+                    contentColor = Color.White,
+                    disabledContentColor = Color.White,
+                )
             ) {
-                OutlinedButton(
+                Icon(
+                    painter = painterResource(
+                        id = TabType.fromTitle(activity.activityType)?.icon
+                            ?: R.drawable.icon_sleep
+                    ),
+                    contentDescription = "Tab Icon",
+                    tint = Color.Unspecified,
                     modifier = Modifier
-                        .padding(horizontal = 3.dp)
-                        .size(50.dp)
-                        .clip(CircleShape),
-                    onClick = { },
-                    shape = CircleShape,
-                    elevation = ButtonDefaults.elevation(0.dp, 0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = TabType.fromTitle(activity.activityType)?.backColor
-                            ?: colorResource(R.color.gray3),
-                        contentColor = Color.White,
-                        disabledContentColor = Color.White,
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = TabType.fromTitle(activity.activityType)?.icon
-                                ?: R.drawable.icon_sleep
-                        ),
-                        contentDescription = "Tab Icon",
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .size(32.dp)
+                        .size(32.dp)
 //                                .padding(end = 5.dp)
-                        //.align(Alignment.Center)
-                    )
-                }
-                Spacer(modifier = Modifier.width(20.dp))
-                Column() {
-                    Text("${activity.activityType}", style = MaterialTheme.typography.h6)
-                    Text(
-                        "${activity.memo}", style = MaterialTheme.typography.body2,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                    //.align(Alignment.Center)
+                )
             }
-            Text(
-                "${formatTimestamp(activity.startTime)}",
-                style = MaterialTheme.typography.h6,
+            Spacer(modifier = Modifier.width(20.dp))
+            Column(
+                modifier = Modifier.weight(5f)
+            ) {
+                Text(
+                    "${activity.activityType}",
+                    style = MainFontStyle.body1,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "${activity.memo}", style = MainFontStyle.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Row(
                 modifier = Modifier.weight(2f)
-            )
+            ) {
+                Text(
+                    "${formatTimestampToTime(activity.startTime)}",
+                    style = MainFontStyle.body1,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    "${formatTimestampToAMPM(activity.startTime)}",
+                    style = MainFontStyle.body2,
+                    fontWeight = FontWeight.Light
+                )
+            }
         }
     }
 }
 
-fun formatTimestamp(localDateTime: LocalDateTime): String {
-    return localDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+fun formatTimestampToTime(localDateTime: LocalDateTime): String {
+    return localDateTime.format(DateTimeFormatter.ofPattern("hh:mm"))
+}
+
+fun formatTimestampToAMPM(localDateTime: LocalDateTime): String {
+    return localDateTime.format(DateTimeFormatter.ofPattern("a"))
 }
 
 @Composable
@@ -263,8 +279,9 @@ fun selectBabyPattern(onTabSelected: (Int) -> Unit) {
                 OutlinedButton(
                     modifier = Modifier
                         .padding(horizontal = 5.dp)
-                        .size(80.dp)
-                        .clip(CircleShape),
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .wrapContentSize(),
                     onClick = { onTabSelected(index) },
                     elevation = ButtonDefaults.elevation(0.dp, 0.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -278,10 +295,9 @@ fun selectBabyPattern(onTabSelected: (Int) -> Unit) {
                         contentDescription = "Tab Icon",
                         tint = Color.Unspecified,
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(70.dp)
                     )
                 }
-
             }
         }
     }

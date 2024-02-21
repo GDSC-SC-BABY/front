@@ -157,9 +157,9 @@ fun showDatePicker(
     val monthList = (12 downTo 1).map { it.toString() }
     val dayList = (31 downTo 1).map { it.toString() }
 
-    val selectedYearIndex = yearList.indexOf(year)
-    val selectedMonthIndex = monthList.indexOf(month)
-    val selectedDayIndex = dayList.indexOf(day)
+    val selectedYearIndex = yearList.indexOf(year.toString())
+    val selectedMonthIndex = monthList.indexOf(month.toString())
+    val selectedDayIndex = dayList.indexOf(day.toString())
 
 
     Row(
@@ -208,7 +208,7 @@ fun showDatePicker(
                 yearList.forEachIndexed { index, text ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.year.value = yearList[index]
+                            viewModel.year.value = yearList[index].toInt()
                             expandedYear = false
                         }
                     ) {
@@ -264,7 +264,7 @@ fun showDatePicker(
                 monthList.forEachIndexed { index, text ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.month.value = monthList[index]
+                            viewModel.month.value = monthList[index].toInt()
                             expandedMonth = false
                         }
                     ) {
@@ -321,7 +321,7 @@ fun showDatePicker(
                 dayList.forEachIndexed { index, text ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.day.value = dayList[index]
+                            viewModel.day.value = dayList[index].toInt()
                             expandedDay = false
                         }
                     ) {
@@ -461,7 +461,7 @@ fun BabyRegisterButton(
 
     val babyRegisterState = viewModel.babyRegistrationState.collectAsState().value
 
-    Log.d("year", year)
+    Log.d("year", year.toString())
 
     val context = LocalContext.current
 
@@ -481,9 +481,9 @@ fun BabyRegisterButton(
                         imageUrl = "",
                         dateTime = LocalDateTime.of(
                             LocalDate.of(
-                                viewModel.year.value.toInt(),
-                                viewModel.month.value.toInt(),
-                                viewModel.day.value.toInt()
+                                viewModel.year.value,
+                                viewModel.month.value,
+                                viewModel.day.value
                             ),
                             LocalTime.MIDNIGHT
                         )
