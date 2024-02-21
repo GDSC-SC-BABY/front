@@ -90,17 +90,6 @@ fun MyPageScreen(
                 CoParentInfoCard(viewModel = userViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
                 CoParentInfoCard(viewModel = userViewModel)
-//                Divider(thickness = 1.dp, color = Color.Black)
-//                Spacer(modifier = Modifier.height(10.dp))
-//                userCodeInfo()
-//                Spacer(modifier = Modifier.height(20.dp))
-//                Divider(thickness = 1.dp, color = Color.Black)
-//                Spacer(modifier = Modifier.height(10.dp))
-//                Co_parentInfo(viewModel)
-//                Spacer(modifier = Modifier.height(20.dp))
-//                Divider(thickness = 1.dp, color = Color.Black)
-//                Spacer(modifier = Modifier.height(20.dp))
-//                DarkModeSelect()
             }
         }
     }
@@ -127,26 +116,35 @@ fun babyInfoCard() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        SharedPreferenceUtil(context).getString("babyName", "").toString(),
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = R.color.secondary_color),
-                        fontSize = 25.sp
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Image(
-                        painter = painterResource(
-                            id = R.drawable.man_icon
+                    Row(){
+                        Text(
+                            SharedPreferenceUtil(context).getString("babyName", "").toString(),
+                            fontWeight = FontWeight.SemiBold,
+                            color = colorResource(id = R.color.secondary_color),
+                            fontSize = 25.sp
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Image(
+                            painter = painterResource(
+                                id = R.drawable.man_icon
 //                            SharedPreferenceUtil(context).getInt(
 //                                "genderIcon",
 //                                R.drawable.man_icon
 //                            )
-                        ),
-                        contentDescription = "gender",
-                        modifier = Modifier.size(23.dp)
-                    )
+                            ),
+                            contentDescription = "gender",
+                            modifier = Modifier.size(23.dp)
+                        )
+                    }
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = "edit baby", tint = colorResource(
+                            id = R.color.secondary_light
+                        ))
+                    }
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
@@ -169,13 +167,25 @@ fun babyInfoCard() {
                 }
                 Row() {
                     Text(
-                        "성장 단계",
+                        "키",
                         color = colorResource(id = R.color.secondary_light),
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(Modifier.width(5.dp))
                     Text(
-                        "이유식 초기",
+                        "${SharedPreferenceUtil(context).getString("height", "")}cm",
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.width(20.dp))
+                    Text(
+                        "몸무게",
+                        color = colorResource(id = R.color.secondary_light),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        "${SharedPreferenceUtil(context).getString("weight", "").toString()}kg",
                         color = colorResource(id = R.color.secondary_color),
                         fontWeight = FontWeight.SemiBold
                     )
@@ -203,78 +213,81 @@ fun UserInfoCard(viewModel: UserRegisterViewModel) {
 
         is Resource.Success -> {
             val userInfo = (userInfoState as Resource.Success<UserResponse>).data
-    Column() {
-        Text(
-            "내 정보는요",
-            fontWeight = FontWeight.SemiBold,
-            color = colorResource(id = R.color.secondary_color),
-            fontSize = 20.sp
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            backgroundColor = Color.White,
-            modifier = Modifier.fillMaxWidth(),
-            elevation = 2.dp
-        ) {
-            Row(modifier = Modifier.padding(10.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.teddy_bear),
-                    contentDescription = "babyPhoto",
-                    modifier = Modifier.size(100.dp)
+            Column() {
+                Text(
+                    "내 정보는요",
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorResource(id = R.color.secondary_color),
+                    fontSize = 20.sp
                 )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column(
-                    verticalArrangement = Arrangement.Center
+                Spacer(modifier = Modifier.height(10.dp))
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    backgroundColor = Color.White,
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = 2.dp
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            userInfo!!.name,
-//                        SharedPreferenceUtil(context).getString("nickname", "").toString(),
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorResource(id = R.color.secondary_color),
-                            fontSize = 20.sp
+                    Row(modifier = Modifier.padding(10.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.teddy_bear),
+                            contentDescription = "babyPhoto",
+                            modifier = Modifier.size(100.dp)
                         )
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "edit profile",
-                                tint = colorResource(
-                                    id = R.color.gray2
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    userInfo!!.name,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = colorResource(id = R.color.secondary_color),
+                                    fontSize = 20.sp
                                 )
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "edit profile",
+                                        tint = colorResource(
+                                            id = R.color.gray2
+                                        )
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.height(5.dp))
+                            Text(
+                                "${
+                                    SharedPreferenceUtil(context).getString("babyName", "")
+                                        .toString()
+                                } ${
+                                    SharedPreferenceUtil(context).getString("relation", "")
+                                        .toString()
+                                }",
+                                color = colorResource(id = R.color.secondary_color),
+                                fontWeight = FontWeight.SemiBold
                             )
+                            Row() {
+                                Text(
+                                    "고유 코드",
+                                    color = colorResource(id = R.color.secondary_light),
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    "3v8duaod88u7",
+                                    color = colorResource(id = R.color.secondary_color),
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
-                    }
-                    Spacer(Modifier.height(5.dp))
-                    Text(
-                        "${
-                            SharedPreferenceUtil(context).getString("babyName", "").toString()
-                        } ${SharedPreferenceUtil(context).getString("relation", "").toString()}",
-                        color = colorResource(id = R.color.secondary_color),
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Row() {
-                        Text(
-                            "고유 코드",
-                            color = colorResource(id = R.color.secondary_light),
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(Modifier.width(5.dp))
-                        Text(
-                            "3v8duaod88u7",
-                            color = colorResource(id = R.color.secondary_color),
-                            fontWeight = FontWeight.SemiBold
-                        )
                     }
                 }
             }
         }
-    }
-}
 
         is Resource.Error -> {
             Column {

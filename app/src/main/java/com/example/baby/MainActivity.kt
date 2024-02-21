@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
                     )
                     ) { entry ->
                         DayBabyFoodScreen(
-                            userViewModel = userRegisterViewModel, // ViewModel 인스턴스
+                            userViewModel = userRegisterViewModel,
                         navController = navController,
                         year = entry.arguments?.getInt("year")!!,
                         month = entry.arguments?.getInt("month")!!,
