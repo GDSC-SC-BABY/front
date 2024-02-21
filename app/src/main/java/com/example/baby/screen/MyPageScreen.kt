@@ -141,7 +141,7 @@ fun babyInfoCard() {
                         )
                     }
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Default.Edit, contentDescription = "edit baby", tint = colorResource(
+                        Icon(painter = painterResource(id = R.drawable.edit_icon), contentDescription = "edit baby", tint = colorResource(
                             id = R.color.secondary_light
                         ))
                     }

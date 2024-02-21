@@ -43,6 +43,7 @@ import com.example.baby.viewModel.BabyRegisterViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.UserRegisterViewModel
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun DayBabyFoodScreen(
@@ -105,6 +106,7 @@ fun DayBabyFoodScreen(
 @Composable
 fun SelectDayWidget(year: Int, month: Int, day: Int){
     var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
+    val formatter = DateTimeFormatter.ofPattern("MM월 dd일")
 
     Row(
         modifier = Modifier
@@ -117,10 +119,12 @@ fun SelectDayWidget(year: Int, month: Int, day: Int){
             selectedDate = selectedDate.minusDays(1)
 //            viewModel.getBabyPatternWithDate(selectedDate)
         }) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "전날")
+            Icon(painter = painterResource(id = R.drawable.previous_day), contentDescription = "전날", tint = colorResource(
+                id = R.color.secondary_light
+            ))
         }
         Text(
-            "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
+            formatter.format(selectedDate),
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(start = 30.dp)
         )
@@ -128,7 +132,9 @@ fun SelectDayWidget(year: Int, month: Int, day: Int){
             selectedDate = selectedDate.plusDays(1)
 //            viewModel.getBabyPatternWithDate(selectedDate)
         }) {
-            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "다음날")
+            Icon(painter = painterResource(id = R.drawable.next_day), contentDescription = "다음날", tint = colorResource(
+                id = R.color.secondary_light
+            ))
         }
     }
 }

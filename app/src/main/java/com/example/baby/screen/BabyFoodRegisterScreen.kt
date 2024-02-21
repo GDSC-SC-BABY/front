@@ -370,7 +370,7 @@ fun ToppingSelectWidget(viewModel: BabyFoodViewModel) {
                 viewModel.addTopping()
                 viewModel.addToppingAmount()
             }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
+                Icon(painter = painterResource(id = R.drawable.plus_icon), contentDescription = "updateUserIcon")
             }
         }
 
@@ -400,7 +400,6 @@ fun ToppingField(index: Int, topping: String, viewModel: BabyFoodViewModel) {
             modifier = Modifier
                 .height(50.dp)
                 .weight(0.6f)
-                .padding(horizontal = 15.dp)
                 .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
             colors = TextFieldDefaults.textFieldColors(
                 textColor = colorResource(R.color.secondary_color),
