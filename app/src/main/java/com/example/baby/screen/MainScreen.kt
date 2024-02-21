@@ -34,7 +34,6 @@ fun MainScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .background(color = colorResource(id = R.color.sub_color))
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {

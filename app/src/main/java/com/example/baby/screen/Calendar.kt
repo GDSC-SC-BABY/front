@@ -1,18 +1,33 @@
 package com.example.baby.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -21,8 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
@@ -32,6 +49,8 @@ import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.CalendarDate
 import com.example.baby.util.RecordSelectDialog
+import com.example.baby.util.SharedPreferenceUtil
+import com.example.baby.viewModel.BabySnackRegisterViewModel
 import com.example.baby.viewModel.CalendarViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -46,21 +65,56 @@ fun CustomCalendarView(
     val daysInMonth by viewModel.calendarDays.observeAsState(emptyList())
 
     val dateFormatter = SimpleDateFormat("dd", Locale.getDefault())
-
-    Column() {
-        MonthWidget(viewModel = viewModel)
-        WeekDayHeaders()
-        CustomCalendarLayout(textHeight = textHeight) {
-            daysInMonth.forEach { calendarDay ->
-                DateCell(calendarDay, dateFormatter) {
-                    showDialog.value = true
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                backgroundColor = colorResource(id = R.color.sub_color),
+                elevation = 0.dp,
+                title = {
+                    Text(
+                        "맘마타임",
+                        textAlign = TextAlign.Center,
+                        color = colorResource(id = R.color.secondary_color),
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+            )
+        },
+    ) { innerPadding ->
+        BoxWithConstraints {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Column(
+                    Modifier.background(color = colorResource(id = R.color.background_main))
+                ){
+                    MonthWidget(viewModel = viewModel)
+                    WeekDayHeaders()
+                    CustomCalendarLayout(textHeight = textHeight) {
+                        daysInMonth.forEach { calendarDay ->
+                            DateCell(calendarDay, dateFormatter) {
+                                showDialog.value = true
+                            }
+                        }
+                    }
+                }
+                Box(Modifier.padding(horizontal = 15.dp, vertical = 15.dp)){
+                    WriteMemo()
                 }
             }
-        }
-    }
 
-    if (showDialog.value) {
-        RecordSelectDialog(navController = navController, onDismiss = { showDialog.value = false })
+            if (showDialog.value) {
+                RecordSelectDialog(
+                    navController = navController,
+                    onDismiss = { showDialog.value = false })
+            }
+        }
     }
 }
 
@@ -73,23 +127,28 @@ fun CustomCalendarLayout(
     Layout(
         content = content,
         modifier = modifier.padding(horizontal = 2.dp)
-    ) { measurable, constraints ->
+    ) { measurables, constraints ->
+        // 날짜 셀의 기본 너비와 높이를 정의합니다.
         val cellWidth = constraints.maxWidth / 7
-        val cellHeight = constraints.maxHeight / 6
+        val cellHeight = constraints.maxWidth / 5
 
-        val placeable = measurable.map { measurable ->
-            measurable.measure(Constraints.fixed(cellWidth, cellHeight))
+        // 각 measurables을 지정된 cellWidth와 cellHeight로 측정합니다.
+        val placeables = measurables.map { measurable ->
+            measurable.measure(Constraints.fixed(width = cellWidth, height = cellHeight))
         }
 
-        layout(constraints.maxWidth, constraints.maxHeight) {
+        // 캘린더의 전체 높이를 계산합니다. 예를 들어, 한 달이 최대 6주까지 있을 수 있다고 가정합니다.
+        val calendarHeight = cellHeight * (placeables.size / 7)
+
+        layout(constraints.maxWidth, calendarHeight) {
             var xPosition = 0
             var yPosition = 0
 
-            placeable.forEachIndexed { index, placeable ->
-                placeable.placeRelative(x = xPosition, y = yPosition)
+            placeables.forEachIndexed { index, placeable ->
+                placeable.place(x = xPosition, y = yPosition)
 
                 xPosition += cellWidth
-                if (index % 7 == 6) {
+                if (index % 7 == 6) { // 한 주의 끝에 도달했을 때, 위치를 리셋합니다.
                     xPosition = 0
                     yPosition += cellHeight
                 }
@@ -97,7 +156,6 @@ fun CustomCalendarLayout(
         }
     }
 }
-
 @Composable
 fun MonthWidget(viewModel: CalendarViewModel) {
     val info = viewModel.getCurrentYearAndMonth()
@@ -157,7 +215,7 @@ fun WeekDayHeaders() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 2.dp), // CustomCalendarLayout의 패딩과 일치
+            .padding(horizontal = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         daysOfWeek.forEach { day ->
@@ -175,6 +233,73 @@ fun WeekDayHeaders() {
                     .weight(1f)
                     .padding(vertical = 4.dp),
             )
+        }
+    }
+}
+
+@Composable
+fun WriteMemo() {
+    val context = LocalContext.current
+    val memo = remember {
+        mutableStateOf(SharedPreferenceUtil(context).getString("memo", ""))
+    }
+
+    Box(
+        modifier = Modifier
+            .background(
+                colorResource(id = R.color.sub_color),
+                shape = RoundedCornerShape(15.dp)
+            )
+            .fillMaxWidth()
+            .height(180.dp)
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    "Memo",
+                    color = colorResource(id = R.color.secondary_color),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 15.dp, top = 20.dp)
+                )
+                IconButton({
+                    SharedPreferenceUtil(context).setString("memo", "")
+                }) {
+                    Icon(imageVector = Icons.Default.Clear, contentDescription = "delete memo")
+                }
+            }
+            memo.value?.let {
+                TextField(
+                    value = it,
+                    onValueChange = { newText ->
+                        memo.value = newText
+                        SharedPreferenceUtil(context).setString("memo", newText)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
+                    placeholder = {
+                        Text(
+                            "메모할 것들을 적어요!",
+                            fontSize = 14.sp,
+                            color = colorResource(id = R.color.secondary_light)
+                        )
+                    },
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = colorResource(id = R.color.secondary_color)
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
+                    ),
+                    singleLine = false,
+                    maxLines = 6
+                )
+            }
         }
     }
 }

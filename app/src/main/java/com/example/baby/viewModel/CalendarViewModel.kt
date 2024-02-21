@@ -14,7 +14,6 @@ class CalendarViewModel : ViewModel() {
     private val calendar = Calendar.getInstance()
 
     init {
-        // 초기 날짜 데이터를 로드합니다.
         updateCalendarDays()
     }
 
@@ -24,7 +23,6 @@ class CalendarViewModel : ViewModel() {
 
     private fun generateCalendarDays(): List<CalendarDate> {
         val dates = mutableListOf<CalendarDate>()
-
         calendar.apply {
             firstDayOfWeek = Calendar.SUNDAY
             set(Calendar.DAY_OF_MONTH, 1)
@@ -32,7 +30,6 @@ class CalendarViewModel : ViewModel() {
 
         val firstDayOfMonthWeekday = calendar.get(Calendar.DAY_OF_WEEK)
         val daysToAddFromPreviousMonth = firstDayOfMonthWeekday - Calendar.SUNDAY
-
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         // 이전 달의 날짜를 추가합니다.
@@ -50,10 +47,6 @@ class CalendarViewModel : ViewModel() {
             }
         }
 
-        calendar.set(Calendar.YEAR, year)
-        calendar.set(Calendar.MONTH, month)
-
-        // 이번 달의 날짜를 추가합니다.
         calendar.set(year, month, 1)
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         for (i in 1..daysInMonth) {
@@ -72,7 +65,6 @@ class CalendarViewModel : ViewModel() {
         return dates
     }
 
-    // 현재 연도와 월을 문자열로 반환하는 함수
     fun getCurrentYearAndMonth(): String {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
@@ -82,13 +74,12 @@ class CalendarViewModel : ViewModel() {
     fun previousMonth() {
         calendar.add(Calendar.MONTH, -1)
         updateCalendarDays()
+        Log.d("PreviousMonth", Calendar.MONTH.toString())
     }
 
     fun nextMonth() {
         calendar.add(Calendar.MONTH, 1)
         updateCalendarDays()
+        Log.d("NextMonth", Calendar.MONTH.toString())
     }
-
-
 }
-
