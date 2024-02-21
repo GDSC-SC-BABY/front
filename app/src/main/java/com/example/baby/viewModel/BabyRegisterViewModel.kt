@@ -73,6 +73,7 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
                 SharedPreferenceUtil(context).setString("gender", gender)
                 SharedPreferenceUtil(context).setString("height", height)
                 SharedPreferenceUtil(context).setString("weight", weight)
+                // babyId,
                 if(gender == "남자"){
                     SharedPreferenceUtil(context).setInt("genderIcon", R.drawable.man_icon)
                 } else{

@@ -476,8 +476,8 @@ fun BabyRegisterButton(
                     Baby(
                         name = name,
                         gender = gender,
-                        birthWeight = weight.toInt(),
-                        birthHeight = height.toInt(),
+                        birthWeight = weight,
+                        birthHeight = height,
                         imageUrl = "",
                         dateTime = LocalDateTime.of(
                             LocalDate.of(
