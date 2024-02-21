@@ -21,7 +21,7 @@ class BabyPatternViewModel(private val babyPatternRepository: BabyPatternReposit
             startTime = LocalDateTime.of(2024, 2, 15, 13, 16, 53, 203_000_000),
             endTime = LocalDateTime.of(2024, 2, 15, 14, 16, 53, 203_000_000),
             specificStatus = "Status 1",
-            memo = "Memo 1"
+            memo = "Memo 1aaaaaaasdfasfasdfsadfsadfasdgasdgasd1aaaaaaasdfasfasdfsadfsadfasdgasdgasd1aaaaaaasdfasfasdfsadfsadfasdgasdgasd1aaaaaaasdfasfasdfsadfsadfasdgasdgasd"
         ),
         Activity(
             activityId = 2,
@@ -42,7 +42,7 @@ class BabyPatternViewModel(private val babyPatternRepository: BabyPatternReposit
 
     )
 
-    private val _patternDataState = MutableStateFlow<Resource<List<Activity>>>(Resource.loading(null))
+    private val _patternDataState = MutableStateFlow<Resource<List<Activity>>>(Resource.Success(null))
     val patternDataState: StateFlow<Resource<List<Activity>>> = _patternDataState
 
 

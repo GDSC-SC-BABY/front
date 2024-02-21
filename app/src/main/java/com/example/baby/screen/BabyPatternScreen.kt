@@ -2,89 +2,73 @@ package com.example.baby.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.Activity
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.network.Resource
+import com.example.baby.ui.theme.MainFontStyle
+import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.viewModel.BabyPatternViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavController) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val selectedMonth = selectedDate.monthValue
     val selectedDay = selectedDate.dayOfMonth
 
+
     Scaffold(
-        content = { innerPadding ->
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxSize()
-                    .padding(
-                        top = 20.dp,
-                        bottom = innerPadding.calculateBottomPadding(),
-                        start = 10.dp,
-                        end = 10.dp
-                    )
-            ) {
-                Text(
-                    "우리 아이 생활 패턴",
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(start = 30.dp),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    "우리 아이 생활 패턴 팁!!",
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(start = 30.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 15.dp, horizontal = 10.dp)
-                        .fillMaxWidth(fraction = 1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {
-                        selectedDate = selectedDate.minusDays(1)
-                        viewModel.getBabyPatternWithDate(selectedDate)
-                    }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "전날")
-                    }
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
                     Text(
-                        "${selectedMonth}월 ${selectedDay}일",
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.padding(start = 30.dp)
+                        text = "생활 패턴 모아 보기",
+                        style = StartFontStyle.startButton,
+                        color = colorResource(id = R.color.secondary_color),
+                        //modifier = Modifier.align(Alignment.CenterVertically)
                     )
+                },
+                navigationIcon = {
                     IconButton(onClick = {
-                        selectedDate = selectedDate.plusDays(1)
-                        viewModel.getBabyPatternWithDate(selectedDate)
 
                     }) {
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "다음날")
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            contentDescription = "Back",
+                            tint = Color(R.color.secondary_color)
+                        )
                     }
-                }
-
-                Spacer(modifier = Modifier.height(30.dp))
-                BabyPatternCardList(viewModel)
-            }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = colorResource(id = R.color.sub_color))
+            )
         },
         bottomBar = {
             selectBabyPattern { selectedIndex ->
@@ -93,27 +77,99 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 )
             }
         }
-    )
+    ) {
+        Column() {
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 15.dp, horizontal = 30.dp),
+            ) {
+                Text("오늘의 육아 TIP:", style = MainFontStyle.tipText, color = Color(R.color.gray6))
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(
+                    "오늘의 육아 TIP 내용은 이거지롱~",
+                    style = MainFontStyle.tipText,
+                    color = Color(R.color.gray6),
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 10.dp)
+                    .fillMaxWidth(fraction = 1f)
+                    .background(color = colorResource(id = R.color.background_main)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                IconButton(onClick = {
+                    selectedDate = selectedDate.minusDays(1)
+                    viewModel.getBabyPatternWithDate(selectedDate)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "전날",
+                        tint = colorResource(id = R.color.secondary_color)
+                    )
+                }
+                Text(
+                    "${selectedMonth}월 ${selectedDay}일",
+                    modifier = Modifier.padding(start = 30.dp),
+                    style = StartFontStyle.startButton,
+                    color = colorResource(id = R.color.secondary_color)
+                )
+                IconButton(onClick = {
+                    selectedDate = selectedDate.plusDays(1)
+                    viewModel.getBabyPatternWithDate(selectedDate)
+
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "다음날",
+                        tint = colorResource(id = R.color.secondary_color)
+                    )
+                }
+            }
+            BabyPatternCardList(viewModel)
+        }
+    }
 }
 
 @Composable
 fun BabyPatternCardList(viewModel: BabyPatternViewModel) {
-    val babyPatternData = viewModel.patternDataState.collectAsState().value
 
-    when (babyPatternData) {
+    when (val babyPatternData = viewModel.patternDataState.collectAsState().value) {
         is Resource.Loading -> {
-            // 로딩 상태일 때 UI 표시
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            Text(
+                "생활 패턴을 입력해주세요",
+                style = StartFontStyle.startBody1,
+                color = Color(R.color.gray6),
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                textAlign = TextAlign.Center,
+            )
         }
         is Resource.Success -> {
-            // 성공적으로 데이터를 받아온 경우 UI 표시
-            val patternData = babyPatternData.data
-            // patternData를 사용하여 UI를 구성하는 코드 작성
+            val patternData = /*babyPatternData.data*/ viewModel.dummy
+            if (patternData != null) {
+                LazyColumn {
+                    items(patternData) { activity ->
+                        BabyPatternCard(activity)
+                    }
+                }
+            } else {
+                Text(
+                    "생활 패턴을 입력해주세요",
+                    style = StartFontStyle.startBody1,
+                    color = Color(R.color.gray6),
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    textAlign = TextAlign.Center,
+                )
+            }
+
         }
         is Resource.Error -> {
             // 오류 발생 시 UI 표시
@@ -124,49 +180,77 @@ fun BabyPatternCardList(viewModel: BabyPatternViewModel) {
 }
 
 @Composable
-fun BabyPatternCard(activity: Activity){
+fun BabyPatternCard(activity: Activity) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-        //.padding(start = 20.dp, end = 20.dp)
         //.border(width = 0.dp)
     ) {
-
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .padding(start = 20.dp, end = 20.dp)
+                    .padding(end = 20.dp)
+                    .weight(5f)
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.meal_icon),
-                    contentDescription = "Tab Icon",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(40.dp)
-                )
+                OutlinedButton(
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .size(50.dp)
+                        .clip(CircleShape),
+                    onClick = { },
+                    shape = CircleShape,
+                    elevation = ButtonDefaults.elevation(0.dp, 0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = TabType.fromTitle(activity.activityType)?.backColor
+                            ?: colorResource(R.color.gray3),
+                        contentColor = Color.White,
+                        disabledContentColor = Color.White,
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = TabType.fromTitle(activity.activityType)?.icon
+                                ?: R.drawable.icon_sleep
+                        ),
+                        contentDescription = "Tab Icon",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(32.dp)
+//                                .padding(end = 5.dp)
+                        //.align(Alignment.Center)
+                    )
+                }
                 Spacer(modifier = Modifier.width(20.dp))
-                Column {
-                    Text("감기약", style = MaterialTheme.typography.h6)
-                    Text("오늘은 상태가 어쩌구", style = MaterialTheme.typography.body2)
+                Column() {
+                    Text("${activity.activityType}", style = MaterialTheme.typography.h6)
+                    Text(
+                        "${activity.memo}", style = MaterialTheme.typography.body2,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
-            Text("04:42 PM", style = MaterialTheme.typography.h6)
+            Text(
+                "${formatTimestamp(activity.startTime)}",
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.weight(2f)
+            )
         }
     }
 }
 
+fun formatTimestamp(localDateTime: LocalDateTime): String {
+    return localDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+}
+
 @Composable
 fun selectBabyPattern(onTabSelected: (Int) -> Unit) {
-    val iconList = listOf(
-        R.drawable.pee_icon,
-        R.drawable.meal_icon,
-        R.drawable.medicine_icon,
-        R.drawable.sleep_icon,
-    )
 
     Column {
-        Divider()
+        Divider(color = colorResource(R.color.gray4), thickness = 0.6.dp)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -174,20 +258,30 @@ fun selectBabyPattern(onTabSelected: (Int) -> Unit) {
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            iconList.forEachIndexed { index, drawable ->
+            TabType.values().forEachIndexed { index, tabType ->
 
-                IconButton(
-                    onClick = { onTabSelected(index) }
+                OutlinedButton(
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp)
+                        .size(80.dp)
+                        .clip(CircleShape),
+                    onClick = { onTabSelected(index) },
+                    elevation = ButtonDefaults.elevation(0.dp, 0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = tabType.backColor,
+                        contentColor = Color.White,
+                        disabledContentColor = Color.White,
+                    )
                 ) {
                     Icon(
-                        painter = painterResource(id = drawable),
+                        painter = painterResource(id = tabType.icon),
                         contentDescription = "Tab Icon",
                         tint = Color.Unspecified,
                         modifier = Modifier
-                            .size(45.dp)
-                            .padding(end = 5.dp)
+                            .size(80.dp)
                     )
                 }
+
             }
         }
     }
