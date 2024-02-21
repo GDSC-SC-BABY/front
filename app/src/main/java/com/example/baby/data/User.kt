@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class User(
     @SerializedName("userId") val userId: String,
-    @SerializedName("name") val name: String
+    @SerializedName("name") val name: String,
+/*    @SerializedName("relation") val relation: String,
+    @SerializedName("userImage") val userImage: String*/
 )
 
 data class UserResponse(

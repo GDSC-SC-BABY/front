@@ -62,3 +62,12 @@ class StartFontStyle{
         )
     }
 }
+
+class MainFontStyle{
+    companion object{
+        var tipText = TextStyle(
+            fontFamily = nanumSquare,
+            fontSize = 13.sp
+        )
+    }
+}
