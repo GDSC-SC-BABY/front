@@ -69,6 +69,9 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
         },
         bottomBar = {
             selectBabyPattern { selectedIndex ->
+                if (TabType.values()[selectedIndex] == TabType.BabyFood){
+                    navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
+                }
                 navController.navigate(
                     route = "${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex"
                 )
