@@ -93,7 +93,6 @@ import java.util.Date
 fun BabyFoodRegisterScreen(
     viewModel: ImageUploadViewModel,
     babyFoodViewModel: BabyFoodViewModel,
-    dateViewModel: DateViewModel,
     imageViewModel: ImageUploadViewModel,
     navController: NavController
 ) {
@@ -116,7 +115,6 @@ fun BabyFoodRegisterScreen(
         bottomBar = {
             AddMealButton(
                 viewModel = babyFoodViewModel,
-                dateViewModel = dateViewModel,
                 imageViewModel = imageViewModel,
                 navController = navController
             )
@@ -189,7 +187,7 @@ fun RegisterBaseMealAmount(viewModel: BabyFoodViewModel) {
             }
         },
         singleLine = true,
-        placeholder = { Text("죽 무게 작성 (g)", fontSize = 14.sp, textAlign = TextAlign.Center) },
+        placeholder = { Text("죽 무게 작성 (g)", fontSize = 15.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
@@ -200,7 +198,13 @@ fun RegisterBaseMealAmount(viewModel: BabyFoodViewModel) {
             backgroundColor = colorResource(R.color.background_main),
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            placeholderColor = colorResource(R.color.gray3)
+            placeholderColor = colorResource(R.color.gray3),
+        ),
+        textStyle = TextStyle(
+            fontFamily = nanumSquare,
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center,
+            fontSize = 18.sp
         ),
         shape = RoundedCornerShape(12.dp)
     )
@@ -227,9 +231,6 @@ fun ImagePickerBox(viewModel: ImageUploadViewModel) {
         contentAlignment = Alignment.Center
     ) {
         imageUrl?.let { url ->
-            Box(
-                modifier = Modifier.size(100.dp)
-            ) {
                 Image(
                     painter = rememberAsyncImagePainter(url),
                     contentDescription = "Uploaded Image",
@@ -238,7 +239,6 @@ fun ImagePickerBox(viewModel: ImageUploadViewModel) {
                         .clip(RoundedCornerShape(15.dp)),
                     contentScale = ContentScale.FillBounds
                 )
-            }
         } ?: Icon(
             painter = painterResource(id = R.drawable.image_picker_icon),
             contentDescription = "Add Image",
@@ -519,13 +519,12 @@ fun WriteSignificant(viewModel: BabyFoodViewModel) {
 @Composable
 fun AddMealButton(
     viewModel: BabyFoodViewModel,
-    dateViewModel: DateViewModel,
     imageViewModel: ImageUploadViewModel,
     navController: NavController
 ) {
     val state = viewModel.babyFoodRegistrationState.collectAsState().value
     val amount = viewModel.amount.collectAsState().value
-    val url = /*imageViewModel.imageUrl.observeAsState().value*/"https://tuk-planet.s3.ap-northeast-2.amazonaws.com/images/1b066b61-f69a-45c1-830a-67f953c92437-%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-10-17%20195842.png"
+    val url = imageViewModel.imageUrl.observeAsState().value
     val note = viewModel.significant.collectAsState().value
     val baseMeal = viewModel.baseMeal.collectAsState().value
     val toppingList = viewModel.toppings.zip(viewModel.toppingAmounts) { topping, amount ->
@@ -541,9 +540,6 @@ fun AddMealButton(
         Button(
             onClick = {
                 val dateStr = LocalDate.now()
-
-//                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
-
                 val realDate = LocalDateTime.of(
                     dateStr,
                     java.time.LocalTime.of(viewModel.hour.value, viewModel.minute.value)
@@ -563,8 +559,9 @@ fun AddMealButton(
                         toppingList = toppingList
                     )
                 }?.let {
-                Log.d("registerFood", "등록")
-                    viewModel.registerBabyFood(it) }
+                    Log.d("registerFood", "등록")
+                    viewModel.registerBabyFood(it)
+                }
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.brand_color),
@@ -582,10 +579,12 @@ fun AddMealButton(
             is Resource.Success -> {
                 navController.navigate(NavigationRoutes.MainScreen.route)
             }
+
             is Resource.Error -> {
                 // 오류가 발생한 경우 로그 출력
                 Log.d("RegisterButton", "API 오류: ${state.message}")
             }
+
             is Resource.Loading -> {
                 // 필요한 경우 로딩 상태 처리
             }
@@ -598,87 +597,94 @@ fun SelectMealTime(viewModel: BabyFoodViewModel) {
     val hour by viewModel.hour.collectAsState()
     val minute by viewModel.minute.collectAsState()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(
-                colorResource(id = R.color.background_gray),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .border(
-                width = 0.dp,
-                color = colorResource(id = R.color.background_gray),
-                shape = RoundedCornerShape(12.dp)
-            )
+    Box(
+        Modifier.padding(horizontal = 15.dp)
     ) {
-        OutlinedTextField(
-            value = if (hour != 0) hour.toString() else "",
-            onValueChange = { newValue ->
-                if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
-                    val newHour = newValue.toIntOrNull()
-                    if (newHour != null && newHour in 0..23) {
-                        viewModel.hour.value = newHour
-                    } else if (newValue.isEmpty()) {
-                        viewModel.hour.value = 0
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .background(
+                    colorResource(id = R.color.background_main),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .border(
+                    width = 0.dp,
+                    color = colorResource(id = R.color.background_main),
+                    shape = RoundedCornerShape(12.dp)
+                )
+        ) {
+            OutlinedTextField(
+                value = if (hour != 0) hour.toString() else "",
+                onValueChange = { newValue ->
+                    if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
+                        val newHour = newValue.toIntOrNull()
+                        if (newHour != null && newHour in 0..23) {
+                            viewModel.hour.value = newHour
+                        } else if (newValue.isEmpty()) {
+                            viewModel.hour.value = 0
+                        }
                     }
-                }
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = colorResource(id = R.color.background_gray),
-                focusedBorderColor = Color.Unspecified,
-                cursorColor = Color.Unspecified,
-                unfocusedBorderColor = Color.Unspecified,
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = colorResource(id = R.color.background_main),
+                    focusedBorderColor = Color.Unspecified,
+                    cursorColor = Color.Unspecified,
+                    unfocusedBorderColor = Color.Unspecified,
 
-                textColor = colorResource(id = R.color.secondary_color)
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            keyboardActions = KeyboardActions(
-                onDone = {
+                    textColor = colorResource(id = R.color.secondary_color)
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(
+                    onDone = {
 
-                }
-            ),
-            textStyle = TextStyle(
-                fontFamily = nanumSquare,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 18.sp
-            ),
-            shape = RoundedCornerShape(12.dp),
-            singleLine = true,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            ":",
-            style = StartFontStyle.startSubtitle,
-            color = colorResource(id = R.color.secondary_color),
-        )
-        OutlinedTextField(
-            value = if (minute != 0) minute.toString() else "",
-            onValueChange = { newValue ->
-                if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
-                    val newMinute = newValue.toIntOrNull()
-                    if (newMinute != null && newMinute in 0..59) {
-                        viewModel.minute.value = newMinute
-                    } else if (newValue.isEmpty()) {
-                        viewModel.minute.value = 0
                     }
-                }
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = colorResource(id = R.color.background_gray),
-                focusedBorderColor = Color.Unspecified,
-                cursorColor = Color.Unspecified,
-                unfocusedBorderColor = Color.Unspecified,
-                textColor = colorResource(id = R.color.secondary_color)
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    // Handle keyboard 'Done' action if needed
-                }
-            ),
-            textStyle = StartFontStyle.startSubtitle,
-            singleLine = true,
-            modifier = Modifier.weight(1f)
-        )
+                ),
+                textStyle = TextStyle(
+                    fontFamily = nanumSquare,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.End
+                ),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                ":",
+                style = StartFontStyle.startSubtitle,
+                color = colorResource(id = R.color.secondary_color),
+            )
+            OutlinedTextField(
+                value = if (minute != 0) minute.toString() else "",
+                onValueChange = { newValue ->
+                    if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
+                        val newMinute = newValue.toIntOrNull()
+                        if (newMinute != null && newMinute in 0..59) {
+                            viewModel.minute.value = newMinute
+                        } else if (newValue.isEmpty()) {
+                            viewModel.minute.value = 0
+                        }
+                    }
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = colorResource(id = R.color.background_main),
+                    focusedBorderColor = Color.Unspecified,
+                    cursorColor = Color.Unspecified,
+                    unfocusedBorderColor = Color.Unspecified,
+                    textColor = colorResource(id = R.color.secondary_color)
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // Handle keyboard 'Done' action if needed
+                    }
+                ),
+                textStyle = StartFontStyle.startSubtitle,
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
     }
 }

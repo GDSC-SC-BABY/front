@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -43,6 +44,9 @@ class BabySnackRegisterViewModel(private val snackRepository: BabySnackRepositor
 
     private val _selectedImage = MutableLiveData<Uri?>()
     val selectedImage: LiveData<Uri?> = _selectedImage
+
+    val hour = MutableStateFlow(LocalDateTime.now().hour)
+    val minute = MutableStateFlow(LocalDateTime.now().minute)
 
     fun onImagePicked(uri: Uri?) {
         _selectedImage.value = uri
