@@ -3,6 +3,7 @@ package com.example.baby.screen
 import android.annotation.SuppressLint
 import android.os.Looper
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -109,28 +110,34 @@ fun GuideScreen(viewModel: GuideViewModel, navController: NavController) {
 @Composable
 fun guideCard(guideData: Guide) {
     Card(
+        border = BorderStroke(1.dp, colorResource(id = R.color.gray1)),
+        modifier = Modifier.height(100.dp)
+            .padding(10.dp)
     ) {
-        Row() {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ){
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.weight(3f).padding(start = 20.dp)
             ) {
-                Text(guideData.age.toString(), style = StartFontStyle.startBody1, color = Color(R.color.gray4))
+                Text("${guideData.age}개월", style = StartFontStyle.startBody1, color = Color(R.color.gray4))
                 Text(
                     guideData.title, style = StartFontStyle.startButton,
                     color = colorResource(id = R.color.secondary_color)
                 )
             }
-            Box(
-            ) {
-                AsyncImage(
-                    model = guideData.imageUrl,
-                    contentDescription = "image",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(15.dp)),
-                    //contentScale = ContentScale.FillBounds
-                )
-            }
+            Spacer(modifier = Modifier.weight(1f))
+            AsyncImage(
+                model = guideData.imageUrl,
+                contentDescription = "image",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(15.dp))
+                    .weight(1f)
+                //contentScale = ContentScale.FillBounds
+            )
         }
     }
 
