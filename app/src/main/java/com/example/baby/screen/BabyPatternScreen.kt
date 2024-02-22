@@ -7,8 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.Activity
@@ -36,14 +35,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavController) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val selectedMonth = selectedDate.monthValue
     val selectedDay = selectedDate.dayOfMonth
-
 
     Scaffold(
         topBar = {
@@ -88,6 +85,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 Text(
                     "오늘의 육아 TIP 내용은 이거지롱~",
                     style = MainFontStyle.body1,
+                    fontSize = 17.sp,
                     color = Color(R.color.gray6),
                     fontWeight = FontWeight.ExtraBold
                 )
@@ -228,7 +226,7 @@ fun BabyPatternCard(activity: Activity) {
                     style = MainFontStyle.body1,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "${activity.memo}", style = MainFontStyle.body2,
                     maxLines = 1,
@@ -244,6 +242,7 @@ fun BabyPatternCard(activity: Activity) {
                     style = MainFontStyle.body1,
                     fontWeight = FontWeight.Bold
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "${formatTimestampToAMPM(activity.startTime)}",
                     style = MainFontStyle.body2,
