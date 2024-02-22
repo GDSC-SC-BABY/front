@@ -34,7 +34,6 @@ data class MedicineDetails(
 
 data class DefecationPattern(
     val startTime: String,
-    val defecationStatus: String?,
     val memo: String?,
     val babyId: Int
 ): BabyPattern()

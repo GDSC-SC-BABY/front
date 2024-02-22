@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -43,6 +46,7 @@ import com.example.baby.ui.theme.MainFontStyle
 import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.util.SharedPreferenceUtil
+import com.example.baby.util.baseMealList
 import com.example.baby.viewModel.BabyPatternRecordViewModel
 import java.text.SimpleDateFormat
 import java.time.*
@@ -61,10 +65,9 @@ fun BabyPatternRecordPage(
     var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
     var startTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
     var endTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
-    var memo: String? by remember { mutableStateOf("") }
     var medicineType: String? by remember { mutableStateOf("") }
-    var defecationStatus: String? by remember { mutableStateOf("") }
 
+    val memo by viewModel.memo.collectAsState()
 
     Scaffold(
         topBar = {
@@ -111,52 +114,32 @@ fun BabyPatternRecordPage(
             ) {
                 PatternTitle(selectedTab)
                 Spacer(modifier = Modifier.height(20.dp))
-                BabyPatternTime(viewModel)
-                when (selectedTab) {
-                    TabType.Sleep -> Box() {
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // endTime
-                    }
-                    TabType.Medicine -> Column {
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Text(text = "투약 종류", fontWeight = FontWeight.SemiBold)
-                        TextField(
-                            value = medicineType ?: "",
-                            onValueChange = {
-                                medicineType = it
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    TabType.Defecation -> Column {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Text(text = "배변 상태", fontWeight = FontWeight.SemiBold)
-                        TextField(
-                            value = defecationStatus ?: "",
-                            onValueChange = {
-                                defecationStatus = it
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    else -> {
-
-                    }
-/*                        TabType.Pee -> DefecationPattern(
-                    LocalDateTime.of(selectedDate),
-                    "Pee", // or any other defecation status as per your requirement
-                    memo,
-                    babyId
+                Text(
+                    "언제 했나요?",
+                    style = StartFontStyle.startSubtitle,
+                    fontWeight = FontWeight.Bold
                 )
-                TabType.Food -> {
-
-                }*/
-
-                }
                 Spacer(modifier = Modifier.height(20.dp))
-//            WriteSignificant()
+                RegisterInfo(selectedTab, viewModel)
+                Spacer(modifier = Modifier.height(20.dp))
+                TextField(
+                    value = memo,
+                    onValueChange = { newText ->
+                        viewModel.memo.value = newText
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = colorResource(id = R.color.secondary_color)
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = colorResource(id = R.color.background_main),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent
+                    ),
+                    singleLine = false,
+                    minLines = 8,
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
@@ -191,12 +174,22 @@ fun BabyPatternRecordPage(
                         }*/
 
                         }
-                        viewModel.registerPattern(pattern)
-                        navController.popBackStack()
                     },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = colorResource(id = R.color.brand_color),
+                        contentColor = colorResource(id = R.color.secondary_color),
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = ButtonDefaults.elevation(0.dp, 0.dp)
                 ) {
-                    Text("등록하기")
+                    Text(
+                        "저장하기",
+                        style = StartFontStyle.startButton,
+                        color = colorResource(id = R.color.secondary_color)
+                    )
                 }
             }
 
@@ -244,23 +237,136 @@ fun PatternTitle(selectedTab: TabType) {
 }
 
 @Composable
-fun ExtraInfo(
+fun RegisterInfo(
     selectedTab: TabType,
-    onValueChanged: (String) -> Unit
+    viewModel: BabyPatternRecordViewModel
 ) {
+    val dataList = (0..7).map { medicineList[it] }
+    val selectedMedicine by viewModel.medicineType.collectAsState()
 
+
+
+    when (selectedTab) {
+        TabType.Sleep -> Box() {
+            Column{
+                Row(
+                ){
+                    DateAndTimePicker(viewModel)
+                    Text("부터")
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(){
+                    DateAndTimePicker(viewModel)
+                    Text("까지",modifier = Modifier.width(10.dp))
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    TabType.Sleep.memoTitle,
+                    style = StartFontStyle.startSubtitle,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        TabType.Medicine -> Column {
+            Column(){
+                DateAndTimePicker(viewModel)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    TabType.Medicine.memoTitle,
+                    style = StartFontStyle.startSubtitle,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(110.dp)
+                        .background(
+                            color = colorResource(id = R.color.background_main),
+                            shape = RoundedCornerShape(15.dp)
+                        )
+                ) {
+                    LazyVerticalGrid(
+                        GridCells.Fixed(4),
+                        contentPadding = PaddingValues(4.dp),
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        items(dataList) { item ->
+                            MedicineGridItem(item, selectedMedicine == item) {
+                                viewModel.setMedicine(item)
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+        TabType.Defecation -> Column {
+            Column{
+                DateAndTimePicker(viewModel)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    TabType.Defecation.memoTitle,
+                    style = StartFontStyle.startSubtitle,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        TabType.Bath -> Column {
+            Column{
+                Row(
+                ){
+                    DateAndTimePicker(viewModel)
+                    Text("부터")
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(){
+                    DateAndTimePicker(viewModel)
+                    Text("까지",modifier = Modifier.width(10.dp))
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    TabType.Bath.memoTitle,
+                    style = StartFontStyle.startSubtitle,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        else -> {
+
+        }
+    }
 }
 
 @Composable
-fun BabyPatternTime(
-    viewModel: BabyPatternRecordViewModel
-) {
-    Column {
-        Text(text = "생활패턴 시간", fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(10.dp))
-        DateAndTimePicker(viewModel)
+fun MedicineGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
+    val backgroundColor =
+        if (isSelected) colorResource(R.color.brand_color) else colorResource(id = R.color.background_gray)
+    val textColor =
+        if (isSelected) colorResource(R.color.secondary_color) else colorResource(id = R.color.gray3)
+
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .size(width = 110.dp, height = 40.dp)
+            .clickable(onClick = onClick),
+        backgroundColor = backgroundColor,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(
+                text = item,
+                color = textColor,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -268,7 +374,6 @@ fun DateAndTimePicker(
     viewModel: BabyPatternRecordViewModel,
 ) {
     val date by viewModel.date.collectAsState()
-
     val hour by viewModel.hour.collectAsState()
     val minute by viewModel.minute.collectAsState()
 
@@ -281,7 +386,7 @@ fun DateAndTimePicker(
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            //odifier = Modifier.fillMaxWidth()
         ) {
             TextField(
                 value = "${date.year}/${date.monthValue}/${date.dayOfMonth}",
@@ -530,14 +635,29 @@ enum class TabType(
     val title: String,
     val keyword: String,
     val content: String,
+    val memoTitle: String,
     val icon: Int,
     val backColor: Color
 ) {
-    Defecation("배변 활동", "Defecation", "기저귀 교체", R.drawable.icon_defecation, Color(0xFFF18CAE)),
-    BabyFood("맘마 타임", "BabyFood", "상세 내용을 작성해주세요.", R.drawable.icon_meal, Color(0xFF80C9E9)),
-    Medicine("투약 하기", "Medicine", "약 먹여주기", R.drawable.icon_medicine, Color(0xFFFA572A)),
-    Sleep("수면 활동", "Sleep", "잠 재우기", R.drawable.icon_sleep, Color(0xFF00539C)),
-    Bath("목욕 하기", "Bath", "깨끗이 씻겨주기", R.drawable.icon_bath, Color(0xFF0094D4));
+    Defecation(
+        "배변 활동",
+        "Defecation",
+        "기저귀 교체",
+        "배변 상태는 어떤가요?",
+        R.drawable.icon_defecation,
+        Color(0xFFF18CAE)
+    ),
+    BabyFood("맘마 타임", "BabyFood", "상세 내용을 작성해주세요.", "", R.drawable.icon_meal, Color(0xFF80C9E9)),
+    Medicine(
+        "투약 하기",
+        "Medicine",
+        "약 먹여주기",
+        "어떤 약을 먹었나요?",
+        R.drawable.icon_medicine,
+        Color(0xFFFA572A)
+    ),
+    Sleep("수면 활동", "Sleep", "잠 재우기", "수면 상태는 어떤가요?", R.drawable.icon_sleep, Color(0xFF00539C)),
+    Bath("목욕 하기", "Bath", "깨끗이 씻겨주기", "위생 상태는 어떤가요?", R.drawable.icon_bath, Color(0xFF0094D4));
 
     companion object {
         fun fromTitle(title: String): TabType? {
@@ -546,3 +666,5 @@ enum class TabType(
     }
 }
 
+
+val medicineList : List<String> = listOf("유산균", "비타민", "단백질", "감기약", "해열제", "면역제", "칼슘제", "직접 추가")

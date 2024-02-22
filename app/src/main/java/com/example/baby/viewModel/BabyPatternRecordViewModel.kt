@@ -1,5 +1,9 @@
 package com.example.baby.viewModel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,13 +30,18 @@ class BabyPatternRecordViewModel(private val babyPatternRepository: BabyPatternR
         _selectedDate.value = date
     }
 
-    val year = MutableStateFlow(LocalDate.now().year)
-    val month = MutableStateFlow(LocalDate.now().monthValue)
-    val day = MutableStateFlow(LocalDate.now().dayOfMonth)
     val date = MutableStateFlow(LocalDate.now())
-
     val hour = MutableStateFlow(LocalTime.now().hour)
     val minute = MutableStateFlow(LocalTime.now().minute)
+
+    val memo = MutableStateFlow("")
+
+    var medicineType = MutableStateFlow("")
+
+
+    fun setMedicine(medicine: String) {
+        medicineType.value = medicine
+    }
 
     fun registerPattern(pattern: Any) {
         viewModelScope.launch {
