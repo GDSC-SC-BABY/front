@@ -83,7 +83,7 @@ fun BabyPatternRecordPage(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-
+                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
@@ -675,8 +675,8 @@ enum class TabType(
     Bath("목욕 하기", "Bath", "깨끗이 씻겨주기", "위생 상태는 어떤가요?", R.drawable.icon_bath, Color(0xFF0094D4));
 
     companion object {
-        fun fromTitle(title: String): TabType? {
-            return values().find { it.title == title }
+        fun fromTitle(keyword: String): TabType? {
+            return values().find { it.keyword == keyword }
         }
     }
 }

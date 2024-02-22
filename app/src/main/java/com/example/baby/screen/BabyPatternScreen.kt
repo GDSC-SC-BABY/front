@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +43,10 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
     val selectedMonth = selectedDate.monthValue
     val selectedDay = selectedDate.dayOfMonth
 
+    LaunchedEffect(Unit) {
+        viewModel.getBabyPatternWithDate(babyId, selectedDate)
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -55,7 +60,11 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-
+                        navController.navigate(NavigationRoutes.MainScreen.route){
+                            popUpTo(NavigationRoutes.MainScreen.route) {
+                                inclusive = true
+                            }
+                        }
                     }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
@@ -140,29 +149,23 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
 
 @Composable
 fun BabyPatternCardList(viewModel: BabyPatternViewModel) {
+    val patternDataState by viewModel.patternDataState.collectAsState()
 
-    when (val babyPatternData = viewModel.patternDataState.collectAsState().value) {
+
+    when (val state = patternDataState) {
         is Resource.Loading -> {
-            Text(
-                "생활 패턴을 입력해주세요",
-                style = StartFontStyle.startBody1,
-                color = Color(R.color.gray6),
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                textAlign = TextAlign.Center,
-            )
         }
         is Resource.Success -> {
-            val patternData = /*babyPatternData.data*/ viewModel.dummy
-            if (patternData != null) {
+            val patternData = state.data
+            Log.d("patternData", state.data.toString())
+            if (patternData != null && patternData.isNotEmpty()) {
                 LazyColumn {
                     items(patternData) { activity ->
                         BabyPatternCard(activity)
                     }
                 }
             } else {
+                Spacer(modifier= Modifier.height(20.dp))
                 Text(
                     "생활 패턴을 입력해주세요",
                     style = StartFontStyle.startBody1,
@@ -177,15 +180,24 @@ fun BabyPatternCardList(viewModel: BabyPatternViewModel) {
 
         }
         is Resource.Error -> {
-            // 오류 발생 시 UI 표시
-            val errorMessage = babyPatternData.message ?: "An error occurred"
-            // errorMessage를 사용하여 오류 메시지를 표시하는 UI 작성
+            Text(
+                "생활 패턴을 입력해주세요",
+                style = StartFontStyle.startBody1,
+                color = Color(R.color.gray6),
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
 
 @Composable
 fun BabyPatternCard(activity: Activity) {
+
+    var tabType: TabType = TabType.fromTitle(activity.activityType) ?: TabType.Sleep
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -196,6 +208,7 @@ fun BabyPatternCard(activity: Activity) {
             modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+
             OutlinedButton(
                 modifier = Modifier
                     .padding(horizontal = 3.dp)
@@ -205,16 +218,14 @@ fun BabyPatternCard(activity: Activity) {
                 shape = CircleShape,
                 elevation = ButtonDefaults.elevation(0.dp, 0.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = TabType.fromTitle(activity.activityType)?.backColor
-                        ?: colorResource(R.color.gray3),
+                    backgroundColor = tabType.backColor,
                     contentColor = Color.White,
                     disabledContentColor = Color.White,
                 )
             ) {
                 Icon(
                     painter = painterResource(
-                        id = TabType.fromTitle(activity.activityType)?.icon
-                            ?: R.drawable.icon_sleep
+                        id = tabType.icon
                     ),
                     contentDescription = "Tab Icon",
                     tint = Color.Unspecified,
@@ -229,7 +240,7 @@ fun BabyPatternCard(activity: Activity) {
                 modifier = Modifier.weight(5f)
             ) {
                 Text(
-                    "${activity.activityType}",
+                    "${tabType.title}",
                     style = MainFontStyle.body1,
                     fontWeight = FontWeight.Bold
                 )
@@ -242,7 +253,8 @@ fun BabyPatternCard(activity: Activity) {
             }
 
             Row(
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(2f),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     "${formatTimestampToTime(activity.startTime)}",
