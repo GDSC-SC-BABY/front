@@ -29,6 +29,9 @@ interface ApiService {
     @POST("baby")
     suspend fun registerBaby(@Body baby: Baby): Response<BabyResponse>
 
+    @GET("baby/{babyId}")
+    suspend fun getBabyInfoByBabyId(@Path("babyId") babyId: Int): Response<BabyInfo>
+
     // Sleep Pattern
     @POST("sleep")
     suspend fun registerSleepPattern(@Body sleepPattern: SleepPattern):Response<PatternResponse>
@@ -87,4 +90,7 @@ interface ApiService {
     @Multipart
     @POST("Image")
     suspend fun uploadImage(@Part image: MultipartBody.Part): Response<ResponseBody>
+
+    @GET("baby/{babyId}/parents")
+    suspend fun getCoParentByBabyId(@Path("babyId") babyId: Int): Response<List<CoParents>>
 }
