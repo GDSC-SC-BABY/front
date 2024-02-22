@@ -50,9 +50,12 @@ fun MyPageScreen(
 
     var coParents by remember { mutableStateOf<List<CoParents>?>(null) }
 
-    LaunchedEffect(true) {
-        15?.let {
+    val babyId = SharedPreferenceUtil(context).getString("babyId", "")!!.toInt()
+
+    LaunchedEffect(babyId) {
+        babyId.let {
             coParents = viewModel.getCoParentsByBabyId(it)
+            userViewModel.getUserInfo(SharedPreferenceUtil(context).getString("uid", "").toString())
             viewModel.getBabyInfoByBabyId(it)
         }
     }
@@ -91,7 +94,6 @@ fun MyPageScreen(
                         top = 20.dp,
                         bottom = innerPadding.calculateBottomPadding() + 10.dp
                     )
-                    .verticalScroll(rememberScrollState())
             ) {
                 babyInfoCard(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
@@ -112,7 +114,6 @@ fun MyPageScreen(
 
 @Composable
 fun babyInfoCard(viewModel: BabyRegisterViewModel) {
-    val context = LocalContext.current
 
     val state by viewModel.babyInfoGetState.collectAsState()
 
@@ -321,7 +322,7 @@ fun UserInfoCard(viewModel: UserRegisterViewModel, babyViewModel: BabyRegisterVi
                                 )
                                 Spacer(Modifier.width(5.dp))
                                 Text(
-                                    "3v8duaod88u7",
+                                    babyViewModel.babyCode.value.toString(),
                                     color = colorResource(id = R.color.secondary_color),
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -353,7 +354,7 @@ fun CoParentInfoCard(viewModel: BabyRegisterViewModel, coParents: List<CoParents
     val babyId = try {
         if (babyIdStr!!.all { it.isDigit() }) babyIdStr.toInt() else null
     } catch (e: NumberFormatException) {
-        Log.d("애기", e.toString())
+        Log.d("애기 오류", e.toString())
     }
 
     val state by viewModel.coParentsGetState.collectAsState()

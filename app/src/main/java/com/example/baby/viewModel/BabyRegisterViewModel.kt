@@ -59,6 +59,9 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
     private val _babyName = MutableStateFlow<String?>(null)
     val name: StateFlow<String?> = _babyName.asStateFlow()
 
+    private val _babyCode = MutableStateFlow<String?>(null)
+    val babyCode: StateFlow<String?> = _babyCode.asStateFlow()
+
 
 
     fun addCoParentRelation(relation: String) {
@@ -163,6 +166,7 @@ class BabyRegisterViewModel(private val babyRepository: BabyRepository) : ViewMo
             if (response.isSuccessful && response.body() != null) {
                 _babyInfoGetState.value = Resource.success(response.body())
                 _babyName.value = response.body()?.name
+                _babyCode.value = response.body()?.babyCode
                 response.body()
             } else {
                 val errorBody = response.errorBody()?.string() ?: "Unknown error"
