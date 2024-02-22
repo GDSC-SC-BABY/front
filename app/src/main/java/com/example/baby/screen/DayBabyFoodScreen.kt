@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.baby.R
@@ -176,11 +177,11 @@ fun BabyFoodCard(babyFood: BabyFoodInfo, navController: NavController) {
         ) {
             Box(
                 modifier = Modifier
-                    .weight(0.6f)
+                    .weight(0.6f).height(80.dp)
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter("https://storage.googleapis.com/gdsc_solution_challenge/f0ad6597-c797-41bf-8fba-d9b283110813"),
-                    contentDescription = "babyFoodPhoto",
+                AsyncImage(
+                    model = babyFood.imageUrl,
+                    contentDescription = "babyFood image",
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -201,12 +202,12 @@ fun BabyFoodCard(babyFood: BabyFoodInfo, navController: NavController) {
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                        Text(
-                            formattedTime,
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorResource(id = R.color.secondary_light),
-                            fontSize = 17.sp
-                        )
+                    Text(
+                        formattedTime,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colorResource(id = R.color.secondary_light),
+                        fontSize = 17.sp
+                    )
                 }
                 Box(
                     modifier = Modifier

@@ -52,8 +52,8 @@ fun MyPageScreen(
 
     val babyId = SharedPreferenceUtil(context).getString("babyId", "")!!.toInt()
 
-    LaunchedEffect(babyId) {
-        babyId.let {
+    LaunchedEffect(38) {
+        38.let {
             coParents = viewModel.getCoParentsByBabyId(it)
             userViewModel.getUserInfo(SharedPreferenceUtil(context).getString("uid", "").toString())
             viewModel.getBabyInfoByBabyId(it)
@@ -346,6 +346,7 @@ fun UserInfoCard(viewModel: UserRegisterViewModel, babyViewModel: BabyRegisterVi
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun CoParentInfoCard(viewModel: BabyRegisterViewModel, coParents: List<CoParents>?) {
     val context = LocalContext.current
@@ -381,7 +382,7 @@ fun CoParentInfoCard(viewModel: BabyRegisterViewModel, coParents: List<CoParents
                 )
             } else {
                 LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(vertical = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
 
@@ -434,7 +435,7 @@ fun CoParentInfoCard(viewModel: BabyRegisterViewModel, coParents: List<CoParents
                                         )
                                         Spacer(Modifier.width(5.dp))
                                         Text(
-                                            "3v8duaod88u7",
+                                            viewModel.babyCode.value.toString(),
                                             color = colorResource(id = R.color.secondary_color),
                                             fontWeight = FontWeight.SemiBold
                                         )
