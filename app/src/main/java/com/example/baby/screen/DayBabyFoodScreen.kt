@@ -1,66 +1,54 @@
 package com.example.baby.screen
 
 import android.util.Log
-import android.widget.ListView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.baby.R
+import com.example.baby.data.BabyFoodAllResponse
+import com.example.baby.data.BabyFoodInfo
 import com.example.baby.data.NavigationRoutes
-import com.example.baby.data.UserResponse
-import com.example.baby.network.Resource
 import com.example.baby.util.CustomBottomNavigation
-import com.example.baby.util.SharedPreferenceUtil
-import com.example.baby.viewModel.BabyRegisterViewModel
-import com.example.baby.viewModel.DateViewModel
-import com.example.baby.viewModel.UserRegisterViewModel
+import com.example.baby.viewModel.BabyFoodViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayBabyFoodScreen(
-    userViewModel: UserRegisterViewModel,
+    viewModel: BabyFoodViewModel,
     navController: NavController,
     year: Int,
     month: Int,
     day: Int
 ) {
+    val babyId = 1
+    var babyFoodResponse by remember { mutableStateOf<BabyFoodAllResponse?>(null) }
 
-    LaunchedEffect(true) {
-        userViewModel.getUserInfo("ztg4NhVNvgXpWMhxw3bx7k3p4SC2")
+    LaunchedEffect(babyId) {
+        babyFoodResponse = viewModel.getAllBabyFoodByBabyId(babyId)
     }
+
 
     Scaffold(
         topBar = {
@@ -109,8 +97,10 @@ fun DayBabyFoodScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(5) {
-                        BabyFoodCard(navController = navController)
+                    babyFoodResponse?.babyFoodGetResList?.let { babyFoods ->
+                        items(babyFoods.size) { index ->
+                            BabyFoodCard(babyFood = babyFoods[index], navController = navController)
+                        }
                     }
                 }
             }
@@ -119,7 +109,7 @@ fun DayBabyFoodScreen(
 }
 
 @Composable
-fun SelectDayWidget(year: Int, month: Int, day: Int){
+fun SelectDayWidget(year: Int, month: Int, day: Int) {
     var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
     val formatter = DateTimeFormatter.ofPattern("MM월 dd일")
 
@@ -134,9 +124,13 @@ fun SelectDayWidget(year: Int, month: Int, day: Int){
             selectedDate = selectedDate.minusDays(1)
 //            viewModel.getBabyPatternWithDate(selectedDate)
         }) {
-            Icon(painter = painterResource(id = R.drawable.previous_day), contentDescription = "전날", tint = colorResource(
-                id = R.color.secondary_light
-            ))
+            Icon(
+                painter = painterResource(id = R.drawable.previous_day),
+                contentDescription = "전날",
+                tint = colorResource(
+                    id = R.color.secondary_light
+                )
+            )
         }
         Text(
             formatter.format(selectedDate),
@@ -147,16 +141,25 @@ fun SelectDayWidget(year: Int, month: Int, day: Int){
             selectedDate = selectedDate.plusDays(1)
 //            viewModel.getBabyPatternWithDate(selectedDate)
         }) {
-            Icon(painter = painterResource(id = R.drawable.next_day), contentDescription = "다음날", tint = colorResource(
-                id = R.color.secondary_light
-            ))
+            Icon(
+                painter = painterResource(id = R.drawable.next_day),
+                contentDescription = "다음날",
+                tint = colorResource(
+                    id = R.color.secondary_light
+                )
+            )
         }
     }
 }
 
 @Composable
-fun BabyFoodCard(navController: NavController) {
+fun BabyFoodCard(babyFood: BabyFoodInfo, navController: NavController) {
     val context = LocalContext.current
+
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    val formattedTime = babyFood.dateTime.format(formatter)
+
+    Log.d("babyFood", babyFood.imageUrl)
 
     Card(
         shape = RoundedCornerShape(20.dp),
@@ -176,7 +179,7 @@ fun BabyFoodCard(navController: NavController) {
                     .weight(0.6f)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.image),
+                    painter = rememberAsyncImagePainter("https://storage.googleapis.com/gdsc_solution_challenge/f0ad6597-c797-41bf-8fba-d9b283110813"),
                     contentDescription = "babyFoodPhoto",
                     modifier = Modifier.fillMaxSize()
                 )
@@ -198,23 +201,12 @@ fun BabyFoodCard(navController: NavController) {
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(7.dp)
-                    ) {
                         Text(
-                            "07",
+                            formattedTime,
                             fontWeight = FontWeight.SemiBold,
                             color = colorResource(id = R.color.secondary_light),
                             fontSize = 17.sp
                         )
-                        Text(
-                            "시",
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorResource(id = R.color.gray5),
-                            fontSize = 17.sp
-                        )
-                    }
                 }
                 Box(
                     modifier = Modifier
@@ -227,7 +219,7 @@ fun BabyFoodCard(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "당근죽",
+                        babyFood.baseMeal,
                         fontWeight = FontWeight.SemiBold,
                         color = colorResource(id = R.color.secondary_light),
                         fontSize = 17.sp,

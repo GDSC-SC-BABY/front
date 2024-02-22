@@ -23,6 +23,16 @@ data class BabyFoodAllResponse(
     @SerializedName("babyFoodGetResList") val babyFoodGetResList: List<BabyFoodInfo>
 )
 
+data class BabyFoodInfo(
+    @SerializedName("babyFoodId") val babyFoodId: Int,
+    @SerializedName("dateTime") val dateTime: LocalDateTime,
+    @SerializedName("imageUrl") val imageUrl: String,
+    @SerializedName("amount") val amount: Int,
+    @SerializedName("basePorridgeName") val baseMeal: String
+
+)
+
+
 data class BabyFoodResponse(
     @SerializedName("dateTime") val dateTime: String,
     @SerializedName("amount") val amount: String,
@@ -30,13 +40,5 @@ data class BabyFoodResponse(
     @SerializedName("specialNote") val note: String,
     @SerializedName("basePorridge") val baseMeal: String,
     @SerializedName("toppingList") val toppingList: List<Topping>,
-)
-
-
-data class BabyFoodInfo(
-    @SerializedName("babyFoodId") val babyFoodId: Int,
-    @SerializedName("dateTime") val dateTime: String,
-    @SerializedName("imageUrl") val imageUrl: String,
-    @SerializedName("amount") val amount: Int
 )
 
