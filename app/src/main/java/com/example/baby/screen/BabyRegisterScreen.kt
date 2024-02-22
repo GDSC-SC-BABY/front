@@ -173,7 +173,9 @@ fun showDatePicker(
             OutlinedTextField(
                 textStyle = StartFontStyle.startButton,
                 value = yearList.getOrElse(selectedYearIndex) { LocalDate.now().year.toString() },
-                onValueChange = { },
+                onValueChange = {
+                    viewModel.year.value = it.toInt()
+                },
                 readOnly = true,
                 trailingIcon = {
                     Icon(
@@ -285,7 +287,7 @@ fun showDatePicker(
         ) {
             OutlinedTextField(
                 textStyle = StartFontStyle.startButton,
-                value = monthList.getOrElse(selectedDayIndex) { LocalDate.now().dayOfMonth.toString() },
+                value = dayList.getOrElse(selectedDayIndex) { LocalDate.now().dayOfMonth.toString() },
                 onValueChange = { },
                 readOnly = true, // This makes the TextField not editable
                 trailingIcon = {
@@ -487,6 +489,7 @@ fun BabyRegisterButton(
                     baby
                 )
                 viewModel.setBabyInfoToSP(context, name, birth, gender, weight, height, userId)
+                Log.d("baby", baby.toString())
             },
             modifier = Modifier
                 .fillMaxWidth()
