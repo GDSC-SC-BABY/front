@@ -230,8 +230,8 @@ fun showDatePicker(
         ) {
             OutlinedTextField(
                 textStyle = StartFontStyle.startButton,
-                value = monthList.getOrElse(selectedMonthIndex) { LocalDate.now().month.value.toString() },
-                onValueChange = { },
+                value = monthList.getOrElse(selectedMonthIndex) { LocalDate.now().monthValue.toString() },
+                onValueChange = {},
                 readOnly = true, // This makes the TextField not editable
                 trailingIcon = {
                     Icon(
@@ -264,7 +264,7 @@ fun showDatePicker(
                 monthList.forEachIndexed { index, text ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.month.value = monthList[index].toInt()
+                            viewModel.month.value = text.toInt()
                             expandedMonth = false
                         }
                     ) {
@@ -279,7 +279,7 @@ fun showDatePicker(
         }
         Spacer(modifier = Modifier.width(9.dp))
         ExposedDropdownMenuBox(
-            expanded = expandedMonth,
+            expanded = expandedDay,
             onExpandedChange = {
                 expandedDay = !expandedDay
             },
@@ -288,8 +288,8 @@ fun showDatePicker(
             OutlinedTextField(
                 textStyle = StartFontStyle.startButton,
                 value = dayList.getOrElse(selectedDayIndex) { LocalDate.now().dayOfMonth.toString() },
-                onValueChange = { },
-                readOnly = true, // This makes the TextField not editable
+                onValueChange = {},
+                readOnly = true,
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
@@ -321,7 +321,10 @@ fun showDatePicker(
                 dayList.forEachIndexed { index, text ->
                     DropdownMenuItem(
                         onClick = {
-                            viewModel.day.value = dayList[index].toInt()
+                            Log.d("day index", index.toString())
+                            Log.d("day text", text.toString())
+                            viewModel.day.value = text.toInt()
+                            Log.d("day value", viewModel.day.value.toString())
                             expandedDay = false
                         }
                     ) {
@@ -456,10 +459,13 @@ fun BabyRegisterButton(
     val weight by viewModel.weight.collectAsState()
     val height by viewModel.height.collectAsState()
     val year by viewModel.year.collectAsState()
+    val month by viewModel.month.collectAsState()
+    val day by viewModel.day.collectAsState()
 
     val babyRegisterState = viewModel.babyRegistrationState.collectAsState().value
 
     val context = LocalContext.current
+
 
     val baby = Baby(
         name = name,
@@ -469,9 +475,9 @@ fun BabyRegisterButton(
         imgUrl = "a",
         dateTime = LocalDateTime.of(
             LocalDate.of(
-                viewModel.year.value,
-                viewModel.month.value,
-                viewModel.day.value
+                year,
+                month,
+                day
             ),
             LocalTime.MIDNIGHT
         ),
