@@ -20,7 +20,7 @@ class BabySnackRepository {
         return RetrofitClient.service.getSnackDetailBySnackId(snackId = snackId)
     }
 
-    suspend fun getSnacksByDate(babyId: Int, date: String):Response<SnackInfo>{
+    suspend fun getSnacksByDate(babyId: Int, date: String):Response<SnackAllResponse>{
         return RetrofitClient.service.getSnacksByDate(babyId = babyId, date = date)
     }
 }

@@ -101,13 +101,13 @@ interface ApiService {
     suspend fun getSnacksByDate(
         @Query("babyId") babyId: Int,
         @Query("date") date: String
-    ): Response<SnackInfo>
+    ): Response<SnackAllResponse>
 
     @GET("babyFoodList")
     suspend fun getBabyFoodByDate(
         @Query("babyId") babyId: Int,
         @Query("date") date: String
-    ): Response<BabyFoodInfo>
+    ): Response<BabyFoodAllResponse>
 
     @Multipart
     @POST("Image")

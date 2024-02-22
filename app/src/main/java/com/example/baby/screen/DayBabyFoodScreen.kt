@@ -28,6 +28,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.baby.R
+import com.example.baby.data.BabyFood
 import com.example.baby.data.BabyFoodAllResponse
 import com.example.baby.data.BabyFoodInfo
 import com.example.baby.data.NavigationRoutes
@@ -48,8 +49,11 @@ fun DayBabyFoodScreen(
     val babyId = 1
     var babyFoodResponse by remember { mutableStateOf<BabyFoodAllResponse?>(null) }
 
-    LaunchedEffect(babyId) {
-        babyFoodResponse = viewModel.getAllBabyFoodByBabyId(babyId)
+    var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
+    val selectedDateString = selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+    LaunchedEffect(selectedDate) {
+        babyFoodResponse = viewModel.getAllBabyFoodByBabyId(babyId, selectedDateString)
     }
 
 
@@ -95,7 +99,9 @@ fun DayBabyFoodScreen(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SelectDayWidget(year, month, day)
+                SelectDayWidget(year, month, day, onDateChange = { newDate ->
+                    selectedDate = newDate
+                })
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -112,9 +118,10 @@ fun DayBabyFoodScreen(
 }
 
 @Composable
-fun SelectDayWidget(year: Int, month: Int, day: Int) {
+fun SelectDayWidget(year: Int, month: Int, day: Int, onDateChange: (LocalDate) -> Unit) {
     var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
     val formatter = DateTimeFormatter.ofPattern("MM월 dd일")
+    val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     Row(
         modifier = Modifier
@@ -125,7 +132,7 @@ fun SelectDayWidget(year: Int, month: Int, day: Int) {
     ) {
         IconButton(onClick = {
             selectedDate = selectedDate.minusDays(1)
-//            viewModel.getBabyPatternWithDate(selectedDate)
+            onDateChange(selectedDate)
         }) {
             Icon(
                 painter = painterResource(id = R.drawable.previous_day),
@@ -142,7 +149,7 @@ fun SelectDayWidget(year: Int, month: Int, day: Int) {
         )
         IconButton(onClick = {
             selectedDate = selectedDate.plusDays(1)
-//            viewModel.getBabyPatternWithDate(selectedDate)
+            onDateChange(selectedDate)
         }) {
             Icon(
                 painter = painterResource(id = R.drawable.next_day),

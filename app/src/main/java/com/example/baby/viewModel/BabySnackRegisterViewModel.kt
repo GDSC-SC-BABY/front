@@ -132,9 +132,9 @@ class BabySnackRegisterViewModel(private val snackRepository: BabySnackRepositor
         }
     }
 
-    suspend fun getAllSnackByBabyId(snackId: Int): SnackAllResponse? {
+    suspend fun getAllSnackByBabyId(snackId: Int, date: String): SnackAllResponse? {
         return try {
-            val response = snackRepository.getAllSnackByBabyId(snackId)
+            val response = snackRepository.getSnacksByDate(snackId, date)
             if (response.isSuccessful && response.body() != null) {
                 _allSnackInfoState.value = Resource.success(response.body())
                 response.body()

@@ -51,10 +51,12 @@ fun DaySnackScreen(
     val babyId = 38
     var snackList by remember { mutableStateOf<SnackAllResponse?>(null) }
 
-    LaunchedEffect(babyId) {
-        snackList = viewModel.getAllSnackByBabyId(babyId)
-    }
+    var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
+    val selectedDateString = selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
 
+    LaunchedEffect(selectedDate) {
+        snackList = viewModel.getAllSnackByBabyId(babyId, selectedDateString)
+    }
 
     Scaffold(
         topBar = {
@@ -98,7 +100,9 @@ fun DaySnackScreen(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SelectSnackDayWidget(year, month, day)
+                SelectDayWidget(year, month, day, onDateChange = { newDate ->
+                    selectedDate = newDate
+                })
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)

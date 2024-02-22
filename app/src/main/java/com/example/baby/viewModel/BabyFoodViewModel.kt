@@ -129,9 +129,9 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
         }
     }
 
-    suspend fun getAllBabyFoodByBabyId(babyId: Int): BabyFoodAllResponse? {
+    suspend fun getAllBabyFoodByBabyId(babyId: Int, date: String): BabyFoodAllResponse? {
         return try {
-            val response = babyFoodRepository.getAllBabyFoodByBabyId(babyId)
+            val response = babyFoodRepository.getBabyFoodsByDate(babyId, date)
             if (response.isSuccessful && response.body() != null) {
                 _allBabyFoodInfoState.value = Resource.success(response.body())
                 response.body()

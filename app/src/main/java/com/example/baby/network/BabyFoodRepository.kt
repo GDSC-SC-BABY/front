@@ -19,7 +19,7 @@ class BabyFoodRepository {
     suspend fun getBabyFoodInfoByBabyFoodId(babyFoodId: Int):Response<BabyFoodResponse>{
         return RetrofitClient.service.getBabyFoodDetailByBabyFoodId(babyFoodId = babyFoodId)
     }
-    suspend fun getBabyFoodsByDate(babyId: Int, date: String):Response<BabyFoodInfo>{
+    suspend fun getBabyFoodsByDate(babyId: Int, date: String):Response<BabyFoodAllResponse>{
         return RetrofitClient.service.getBabyFoodByDate(babyId = babyId, date = date)
     }
 }
