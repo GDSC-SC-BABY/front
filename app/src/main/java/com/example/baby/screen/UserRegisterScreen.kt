@@ -104,7 +104,7 @@ fun UserRegisterScreen(
             RegisterButton(
                 isNotNull = isFormValid,
                 viewModel = viewModel,
-                user = User(userId = userId, viewModel.nickname.value),
+                user = User(userId = userId, viewModel.nickname.value, viewModel.relationship.value, ""),
                 text = "회원 정보를 모두 입력했어요",
                 route = NavigationRoutes.BabyRegisterScreen.route,
                 navController = navController
@@ -295,7 +295,7 @@ fun RegisterButton(
             shape = RoundedCornerShape(12.dp),
             onClick = {
                 if (isNotNull) {
-                    viewModel.setUserInfoToSP(context, user.name)
+                    viewModel.setUserInfoToSP(context, user)
                     viewModel.registerUser(user) // 버튼 클릭 시 사용자 등록 함수 호출
                 }
             },

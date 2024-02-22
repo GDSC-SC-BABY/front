@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class User(
     @SerializedName("userId") val userId: String,
     @SerializedName("name") val name: String,
-    /*    @SerializedName("relation") val relation: String,
-        @SerializedName("userImage") val userImage: String*/
+    @SerializedName("relation") val relation: String,
+    @SerializedName("imageUri") val imageUri: String
 )
 
 data class UserResponse(
@@ -24,7 +24,7 @@ data class BabyCode(
 )
 
 data class CoParentResponse(
-    val coParentResponse : List<CoParents>
+    val coParentResponse: List<CoParents>
 )
 
 data class CoParents(

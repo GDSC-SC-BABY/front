@@ -85,10 +85,12 @@ class UserRegisterViewModel(private val userRepository: UserRepository) : ViewMo
         }
     }
 
-    fun setUserInfoToSP(context: Context, nickname: String) {
+    fun setUserInfoToSP(context: Context, user: User) {
         viewModelScope.launch {
             try {
-                SharedPreferenceUtil(context).setString("nickname", nickname)
+                SharedPreferenceUtil(context).setString("nickname", user.name)
+                SharedPreferenceUtil(context).setString("uid", user.userId)
+                SharedPreferenceUtil(context).setString("relation", user.relation)
             } catch (e: Exception) {
                 Log.d("babyRegister", e.toString())
             }
