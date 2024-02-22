@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -60,7 +61,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(NavigationRoutes.MainScreen.route){
+                        navController.navigate(NavigationRoutes.MainScreen.route) {
                             popUpTo(NavigationRoutes.MainScreen.route) {
                                 inclusive = true
                             }
@@ -165,7 +166,7 @@ fun BabyPatternCardList(viewModel: BabyPatternViewModel) {
                     }
                 }
             } else {
-                Spacer(modifier= Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     "생활 패턴을 입력해주세요",
                     style = StartFontStyle.startBody1,
@@ -209,30 +210,22 @@ fun BabyPatternCard(activity: Activity) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
 
-            OutlinedButton(
+            IconButton(
+                onClick = {  },
+                enabled = false,
                 modifier = Modifier
-                    .padding(horizontal = 3.dp)
+                    .padding(horizontal = 5.dp)
+                    .background(tabType.backColor, shape = CircleShape)
                     .size(50.dp)
-                    .clip(CircleShape),
-                onClick = { },
-                shape = CircleShape,
-                elevation = ButtonDefaults.elevation(0.dp, 0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = tabType.backColor,
-                    contentColor = Color.White,
-                    disabledContentColor = Color.White,
-                )
+                    .clip(CircleShape)
+                    .wrapContentSize()
             ) {
                 Icon(
-                    painter = painterResource(
-                        id = tabType.icon
-                    ),
+                    painter = painterResource(id = tabType.icon),
                     contentDescription = "Tab Icon",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(32.dp)
-//                                .padding(end = 5.dp)
-                    //.align(Alignment.Center)
+                        .size(35.dp)
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
@@ -294,29 +287,25 @@ fun selectBabyPattern(onTabSelected: (Int) -> Unit) {
         ) {
             TabType.values().forEachIndexed { index, tabType ->
 
-                OutlinedButton(
+                IconButton(
+                    onClick = { onTabSelected(index) },
                     modifier = Modifier
                         .padding(horizontal = 5.dp)
-                        .size(50.dp)
+                        .background(tabType.backColor, shape = CircleShape)
+                        .size(55.dp)
                         .clip(CircleShape)
-                        .wrapContentSize(),
-                    onClick = { onTabSelected(index) },
-                    elevation = ButtonDefaults.elevation(0.dp, 0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = tabType.backColor,
-                        contentColor = Color.White,
-                        disabledContentColor = Color.White,
-                    )
+                        .wrapContentSize()
                 ) {
                     Icon(
                         painter = painterResource(id = tabType.icon),
                         contentDescription = "Tab Icon",
                         tint = Color.Unspecified,
                         modifier = Modifier
-                            .size(70.dp)
+                            .size(35.dp)
                     )
                 }
             }
         }
     }
 }
+
