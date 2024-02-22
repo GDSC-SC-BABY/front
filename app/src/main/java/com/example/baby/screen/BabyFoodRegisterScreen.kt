@@ -84,6 +84,7 @@ import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.ImageUploadViewModel
 import org.threeten.bp.LocalTime
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -113,7 +114,12 @@ fun BabyFoodRegisterScreen(
             )
         },
         bottomBar = {
-            AddMealButton(viewModel = babyFoodViewModel, dateViewModel = dateViewModel, imageViewModel = imageViewModel, navController = navController)
+            AddMealButton(
+                viewModel = babyFoodViewModel,
+                dateViewModel = dateViewModel,
+                imageViewModel = imageViewModel,
+                navController = navController
+            )
         }
     ) { innerPadding ->
         BoxWithConstraints {
@@ -223,10 +229,10 @@ fun ImagePickerBox(viewModel: ImageUploadViewModel) {
         imageUrl?.let { url ->
             Box(
                 modifier = Modifier.size(100.dp)
-            ){
-                    Image(
-                        painter = rememberAsyncImagePainter(url),
-                        contentDescription = "Uploaded Image",
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(url),
+                    contentDescription = "Uploaded Image",
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(15.dp)),
@@ -390,7 +396,10 @@ fun ToppingSelectWidget(viewModel: BabyFoodViewModel) {
                 viewModel.addTopping()
                 viewModel.addToppingAmount()
             }) {
-                Icon(painter = painterResource(id = R.drawable.plus_icon), contentDescription = "updateUserIcon")
+                Icon(
+                    painter = painterResource(id = R.drawable.plus_icon),
+                    contentDescription = "updateUserIcon"
+                )
             }
         }
 
@@ -508,10 +517,15 @@ fun WriteSignificant(viewModel: BabyFoodViewModel) {
 }
 
 @Composable
-fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, imageViewModel: ImageUploadViewModel, navController: NavController) {
+fun AddMealButton(
+    viewModel: BabyFoodViewModel,
+    dateViewModel: DateViewModel,
+    imageViewModel: ImageUploadViewModel,
+    navController: NavController
+) {
     val state = viewModel.babyFoodRegistrationState.collectAsState().value
     val amount = viewModel.amount.collectAsState().value
-    val url = imageViewModel.imageUrl.observeAsState().value
+    val url = /*imageViewModel.imageUrl.observeAsState().value*/"https://tuk-planet.s3.ap-northeast-2.amazonaws.com/images/1b066b61-f69a-45c1-830a-67f953c92437-%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-10-17%20195842.png"
     val note = viewModel.significant.collectAsState().value
     val baseMeal = viewModel.baseMeal.collectAsState().value
     val toppingList = viewModel.toppings.zip(viewModel.toppingAmounts) { topping, amount ->
@@ -526,14 +540,14 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
     ) {
         Button(
             onClick = {
-                val dateStr = dateViewModel.getDateNow()
+                val dateStr = LocalDate.now()
 
 //                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
 
-                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)?.let { dateTime ->
-                    // ViewModel의 hour와 minute 값을 가져와 realDate에 설정
-                    dateTime.withHour(viewModel.hour.value).withMinute(viewModel.minute.value)
-                }
+                val realDate = LocalDateTime.of(
+                    dateStr,
+                    java.time.LocalTime.of(viewModel.hour.value, viewModel.minute.value)
+                )
 
                 Log.d("지금 시간은", realDate!!.toString())
 
@@ -547,9 +561,11 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
                         note = note,
                         baseMeal = baseMeal,
                         toppingList = toppingList
-                        )
-                }?.let { viewModel.registerBabyFood(it) }
-                 },
+                    )
+                }?.let {
+                Log.d("registerFood", "등록")
+                    viewModel.registerBabyFood(it) }
+            },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.brand_color),
                 contentColor = colorResource(id = R.color.secondary_color),
@@ -578,7 +594,7 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
 }
 
 @Composable
-fun SelectMealTime(viewModel : BabyFoodViewModel){
+fun SelectMealTime(viewModel: BabyFoodViewModel) {
     val hour by viewModel.hour.collectAsState()
     val minute by viewModel.minute.collectAsState()
 
