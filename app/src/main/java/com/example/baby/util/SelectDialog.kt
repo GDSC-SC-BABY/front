@@ -134,7 +134,7 @@ fun RecordSelectDialog(navController: NavController, selectedDate: LocalDate, on
                     textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate(NavigationRoutes.DayBabyFoodScreen.route)
+                            navController.navigate(NavigationRoutes.DaySnackScreen.createRoute(selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth))
                             onDismiss()
                         }
                         .padding(16.dp))

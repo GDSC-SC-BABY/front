@@ -72,20 +72,21 @@ interface ApiService {
     @POST("babyFood")
     suspend fun registerBabyFood(@Body babyFood: BabyFood): Response<UserDuplicateResponse>
 
+
+    @POST("Snack")
+    suspend fun registerBabySnack(@Body snack: Snack): Response<UserDuplicateResponse>
+
     @GET("babyFood")
     suspend fun getAllBabyFoodByBabyId(@Query("babyId") babyId: Int) : Response<BabyFoodAllResponse>
 
     @GET("babyFood/{babyFoodId}")
     suspend fun getBabyFoodDetailByBabyFoodId(@Path("babyFoodId") babyFoodId: Int): Response<BabyFoodResponse>
 
-    @POST("snack")
-    suspend fun registerSnack(@Body snack: BabyFood): Response<BabyFood>
+    @GET("Snack")
+    suspend fun getAllSnackByBabyId(@Query("babyId") babyId: Int) : Response<SnackAllResponse>
 
-    @GET("snack")
-    suspend fun getAllSnackByBabyId(@Query("babyId") babyId: Int) : Response<BabyFoodAllResponse>
-
-    @GET("snack/{snackId}")
-    suspend fun getSnackDetailBySnackId(@Path("snackId") snackId: Int): Response<BabyFoodResponse>
+    @GET("Snack/{snackId}")
+    suspend fun getSnackDetailBySnackId(@Path("snackId") snackId: Int): Response<SnackResponse>
 
     @Multipart
     @POST("Image")

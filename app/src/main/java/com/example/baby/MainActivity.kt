@@ -16,6 +16,7 @@ import com.example.baby.network.AuthRepository
 import com.example.baby.network.BabyFoodRepository
 import com.example.baby.network.BabyPatternRepository
 import com.example.baby.network.BabyRepository
+import com.example.baby.network.BabySnackRepository
 import com.example.baby.network.ImageRepository
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.*
@@ -54,7 +55,9 @@ class MainActivity : ComponentActivity() {
         BabyPatternViewModelFactory(BabyPatternRepository())
     }
 
-    private val babySnackRegisterViewModel by viewModels<BabySnackRegisterViewModel>()
+    private val babySnackRegisterViewModel by viewModels<BabySnackRegisterViewModel> {
+        SnackViewModelFactory(BabySnackRepository())
+    }
 
     private val userRegisterViewModel: UserRegisterViewModel by viewModels {
         UserViewModelFactory(UserRepository())
@@ -109,6 +112,20 @@ class MainActivity : ComponentActivity() {
                         day = entry.arguments?.getInt("day")!!
                         )
                     }
+                    composable(NavigationRoutes.DaySnackScreen.route, arguments = listOf(
+                        navArgument("year") { type = NavType.IntType },
+                        navArgument("month") { type = NavType.IntType },
+                        navArgument("day") { type = NavType.IntType }
+                    )
+                    ) { entry ->
+                        DaySnackScreen(
+                            viewModel = babySnackRegisterViewModel,
+                            navController = navController,
+                            year = entry.arguments?.getInt("year")!!,
+                            month = entry.arguments?.getInt("month")!!,
+                            day = entry.arguments?.getInt("day")!!
+                        )
+                    }
                     composable(NavigationRoutes.FoodRegisterScreen.route) {
                         BabyFoodRegisterScreen(
                             viewModel = imageUploadViewModel,
@@ -121,6 +138,7 @@ class MainActivity : ComponentActivity() {
                     composable(NavigationRoutes.SnackRegisterScreen.route) {
                         BabySnackRegisterScreen(
                             viewModel = imageUploadViewModel,
+                            dateViewModel = dateViewModel,
                             babySnackViewModel = babySnackRegisterViewModel,
                             navController = navController
                         )
