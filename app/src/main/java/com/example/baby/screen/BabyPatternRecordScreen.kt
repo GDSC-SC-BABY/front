@@ -258,13 +258,13 @@ fun BabyPatternTime(
     Column {
         Text(text = "생활패턴 시간", fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
-        DatePickerWithButton(viewModel)
+        DateAndTimePicker(viewModel)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerWithButton(
+fun DateAndTimePicker(
     viewModel: BabyPatternRecordViewModel,
 ) {
     val date by viewModel.date.collectAsState()
@@ -319,7 +319,10 @@ fun DatePickerWithButton(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .background(colorResource(id = R.color.background_gray), shape = RoundedCornerShape(12.dp))
+                        .background(
+                            colorResource(id = R.color.background_gray),
+                            shape = RoundedCornerShape(12.dp)
+                        )
                         .border(
                             width = 0.dp,
                             color = colorResource(id = R.color.background_gray),
@@ -327,11 +330,15 @@ fun DatePickerWithButton(
                         )
                 ) {
                     OutlinedTextField(
-                        value = hour.toString(),
+                        value = if (hour != 0) hour.toString() else "",
                         onValueChange = { newValue ->
-                            val newHour = newValue.toIntOrNull()
-                            if (newHour != null && newHour in 0..23) {
-                                viewModel.hour.value = newHour
+                            if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
+                                val newHour = newValue.toIntOrNull()
+                                if (newHour != null && newHour in 0..23) {
+                                    viewModel.hour.value = newHour
+                                } else if (newValue.isEmpty()) {
+                                    viewModel.hour.value = 0 // 텍스트 필드가 비어있을 때 0으로 설정
+                                }
                             }
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -353,17 +360,25 @@ fun DatePickerWithButton(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 18.sp
                         ),
-                        shape =  RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(12.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
-                    Text(":")
+                    Text(
+                        ":",
+                        style = StartFontStyle.startSubtitle,
+                        color = colorResource(id = R.color.secondary_color),
+                    )
                     OutlinedTextField(
-                        value = minute.toString(),
+                        value = if (minute != 0) minute.toString() else "",
                         onValueChange = { newValue ->
-                            val newMinute = newValue.toIntOrNull()
-                            if (newMinute != null && newMinute in 0..59) {
-                                viewModel.minute.value = newMinute
+                            if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
+                                val newMinute = newValue.toIntOrNull()
+                                if (newMinute != null && newMinute in 0..59) {
+                                    viewModel.minute.value = newMinute
+                                } else if (newValue.isEmpty()) {
+                                    viewModel.minute.value = 0 // 텍스트 필드가 비어있을 때 0으로 설정
+                                }
                             }
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
