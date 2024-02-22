@@ -71,10 +71,11 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
             selectBabyPattern { selectedIndex ->
                 if (TabType.values()[selectedIndex] == TabType.BabyFood){
                     navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
+                } else{
+                    navController.navigate(
+                        route = "${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex"
+                    )
                 }
-                navController.navigate(
-                    route = "${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex"
-                )
             }
         }
     ) {
