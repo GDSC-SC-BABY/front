@@ -5,6 +5,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
+import java.time.LocalDateTime
 import java.util.regex.Pattern
 
 interface ApiService {
@@ -96,10 +97,22 @@ interface ApiService {
     @GET("Snack/{snackId}")
     suspend fun getSnackDetailBySnackId(@Path("snackId") snackId: Int): Response<SnackResponse>
 
+    @GET("snackList")
+    suspend fun getSnacksByDate(
+        @Query("babyId") babyId: Int,
+        @Query("date") date: String
+    ): Response<SnackInfo>
+
+    @GET("babyFoodList")
+    suspend fun getBabyFoodByDate(
+        @Query("babyId") babyId: Int,
+        @Query("date") date: String
+    ): Response<BabyFoodInfo>
+
     @Multipart
     @POST("Image")
     suspend fun uploadImage(@Part image: MultipartBody.Part): Response<ResponseBody>
 
-    @GET("baby/{babyId}/parents")
-    suspend fun getCoParentByBabyId(@Path("babyId") babyId: Int): Response<List<CoParents>>
+    @GET("guide")
+    suspend fun getGuide(@Path("babyId") babyId: Int): Response<List<CoParents>>
 }

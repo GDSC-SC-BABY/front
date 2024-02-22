@@ -2,16 +2,9 @@
 package com.example.baby.network
 
 
-import com.example.baby.data.BabyFood
-import com.example.baby.data.BabyFoodAllResponse
-import com.example.baby.data.BabyFoodResponse
-import com.example.baby.data.Snack
-import com.example.baby.data.SnackAllResponse
-import com.example.baby.data.SnackResponse
-import com.example.baby.data.User
-import com.example.baby.data.UserDuplicateResponse
-import com.example.baby.data.UserResponse
+import com.example.baby.data.*
 import retrofit2.Response
+import java.time.LocalDateTime
 
 class BabySnackRepository {
 
@@ -25,5 +18,9 @@ class BabySnackRepository {
 
     suspend fun getSnackInfoByBabyFoodId(snackId: Int):Response<SnackResponse>{
         return RetrofitClient.service.getSnackDetailBySnackId(snackId = snackId)
+    }
+
+    suspend fun getSnacksByDate(babyId: Int, date: String):Response<SnackInfo>{
+        return RetrofitClient.service.getSnacksByDate(babyId = babyId, date = date)
     }
 }
