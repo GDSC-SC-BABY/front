@@ -50,7 +50,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -211,11 +213,18 @@ fun ImagePickerBox(viewModel: ImageUploadViewModel) {
         contentAlignment = Alignment.Center
     ) {
         imageUrl?.let { url ->
-            Image(
-                painter = rememberAsyncImagePainter(url),
-                contentDescription = "Uploaded Image",
-                modifier = Modifier.fillMaxSize()
-            )
+            Box(
+                modifier = Modifier.size(100.dp)
+            ){
+                    Image(
+                        painter = rememberAsyncImagePainter(url),
+                        contentDescription = "Uploaded Image",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(15.dp)),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
         } ?: Icon(
             painter = painterResource(id = R.drawable.image_picker_icon),
             contentDescription = "Add Image",

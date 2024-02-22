@@ -19,4 +19,8 @@ sealed class NavigationRoutes(val route: String) {
     object DayBabyFoodScreen : NavigationRoutes("dayBabyFoodScreen/{year}/{month}/{day}") {
         fun createRoute(year: Int, month: Int, day: Int) = "dayBabyFoodScreen/$year/$month/$day"
     }
+
+    object DaySnackScreen : NavigationRoutes("daySnackScreen/{year}/{month}/{day}") {
+        fun createRoute(year: Int, month: Int, day: Int) = "daySnackScreen/$year/$month/$day"
+    }
 }

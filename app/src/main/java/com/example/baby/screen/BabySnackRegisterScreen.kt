@@ -1,6 +1,7 @@
 package com.example.baby.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,9 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -23,7 +26,12 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.example.baby.R
 import com.example.baby.data.BabyFood
+import com.example.baby.data.NavigationRoutes
+import com.example.baby.data.Snack
+import com.example.baby.data.Topping
+import com.example.baby.network.Resource
 import com.example.baby.util.CustomBottomNavigation
+import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.util.mealTimeList
 import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.BabySnackRegisterViewModel
@@ -34,6 +42,7 @@ import com.example.baby.viewModel.ImageUploadViewModel
 @Composable
 fun BabySnackRegisterScreen(
     viewModel: ImageUploadViewModel,
+    dateViewModel: DateViewModel,
     babySnackViewModel: BabySnackRegisterViewModel,
     navController: NavController
 ) {
@@ -54,7 +63,12 @@ fun BabySnackRegisterScreen(
             )
         },
         bottomBar = {
-            AddSnackButton(navController = navController)
+            AddSnackButton(
+                viewModel = babySnackViewModel,
+                dateViewModel = dateViewModel,
+                imageViewModel = viewModel,
+                navController = navController
+            )
         }
     ) { innerPadding ->
         BoxWithConstraints {
@@ -72,15 +86,10 @@ fun BabySnackRegisterScreen(
             ) {
                 BabySnackRegisterInfo(viewModel = viewModel, foodViewModel = babySnackViewModel)
                 Spacer(modifier = Modifier.height(25.dp))
-//                    BaseMealSelectWidget(height = height)
-//                    Spacer(modifier = Modifier.height(10.dp))
                 SnackSelectWidget(viewModel = babySnackViewModel)
-                Spacer(modifier = Modifier.height(10.dp))
-                DrinkSelectWidget(viewModel = babySnackViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
                 WriteSnackSignificant(babySnackViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
-//                AddMealButton(navController)
             }
         }
     }
@@ -91,9 +100,9 @@ fun BabySnackRegisterInfo(
     viewModel: ImageUploadViewModel,
     foodViewModel: BabySnackRegisterViewModel
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
@@ -101,24 +110,25 @@ fun BabySnackRegisterInfo(
                     color = Color.LightGray,
                     shape = RoundedCornerShape(15.dp)
                 )
-                .weight(0.8f)
-                .height(100.dp)
+                .fillMaxWidth()
+                .height(200.dp)
         ) {
             ImagePickerBox(viewModel = viewModel)
         }
-//        Spacer(modifier = Modifier.width(20.dp))
-        Column(
-            modifier = Modifier.weight(1f)
+        Spacer(Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            SnackTimeSelectDropDownMenu(foodViewModel)
-            Spacer(Modifier.height(10.dp))
-            RegisterSnackAmount(foodViewModel)
+            SnackTimeSelectDropDownMenu(foodViewModel, Modifier.weight(1f))
+            Spacer(Modifier.width(10.dp))
+            RegisterSnackAmount(foodViewModel, Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-fun RegisterSnackAmount(viewModel: BabySnackRegisterViewModel) {
+fun RegisterSnackAmount(viewModel: BabySnackRegisterViewModel, modifier: Modifier) {
     var text by remember { mutableStateOf("") }
     TextField(
         value = text,
@@ -130,11 +140,10 @@ fun RegisterSnackAmount(viewModel: BabySnackRegisterViewModel) {
         },
         singleLine = true,
         placeholder = { Text("간식 용량 작성 (g)", fontSize = 14.sp, textAlign = TextAlign.Center) },
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(50.dp)
-            .padding(horizontal = 15.dp)
             .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
+
         colors = TextFieldDefaults.textFieldColors(
             textColor = colorResource(R.color.secondary_color),
             backgroundColor = colorResource(R.color.background_main),
@@ -146,39 +155,9 @@ fun RegisterSnackAmount(viewModel: BabySnackRegisterViewModel) {
     )
 }
 
-//@Composable
-//fun ImagePickerBox(viewModel: BabyFoodRegisterViewModel) {
-//    val context = LocalContext.current
-//    val launcher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent()
-//    ) { uri: Uri? ->
-//        viewModel.onImagePicked(uri)
-//    }
-//
-//    Box(
-//        modifier = Modifier
-//            .background(
-//                color = Color.LightGray,
-//                shape = RoundedCornerShape(15.dp)
-//            )
-//            .size(100.dp)
-//            .clickable {
-//                launcher.launch("image/*")
-//            },
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Icon(imageVector = Icons.Default.Add, contentDescription = "Add Image")
-//    }
-//
-//    val selectedImageUri by viewModel.selectedImage.observeAsState()
-//    selectedImageUri?.let { uri ->
-//        Image(painter = rememberAsyncImagePainter(uri), contentDescription = null)
-//    }
-//}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SnackTimeSelectDropDownMenu(viewModel: BabySnackRegisterViewModel) {
+fun SnackTimeSelectDropDownMenu(viewModel: BabySnackRegisterViewModel, modifier: Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val items = mealTimeList
     val time by viewModel.snackTime.collectAsState()
@@ -186,10 +165,8 @@ fun SnackTimeSelectDropDownMenu(viewModel: BabySnackRegisterViewModel) {
 
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(50.dp)
-            .padding(horizontal = 15.dp)
             .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp))
     ) {
         Row(
@@ -240,82 +217,6 @@ fun SnackTimeSelectDropDownMenu(viewModel: BabySnackRegisterViewModel) {
     }
 }
 
-//@Composable
-//fun BaseMealSelectWidget(height: Dp) {
-//    val dataList = (0..7).map { baseMealList[it] }
-//    val selectedMeal = remember { mutableStateOf<String?>(null) }
-//
-//    Column() {
-//        Text(text = "베이스 죽", fontWeight = FontWeight.SemiBold)
-//        Spacer(modifier = Modifier.height(10.dp))
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(height)
-//                .background(color = Color.LightGray, shape = RoundedCornerShape(15.dp))
-//        ) {
-//            LazyVerticalGrid(
-//                GridCells.Fixed(4),
-//                contentPadding = PaddingValues(4.dp),
-//                modifier = Modifier.align(Alignment.Center)
-//            ) {
-//                items(dataList) { item ->
-//                    BaseMealGridItem(item, selectedMeal.value == item) {
-//                        selectedMeal.value = item
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
-//@Composable
-//fun BaseMealGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
-//    val borderColor = if (isSelected) Color.Cyan else Color.Transparent
-//
-//    Box(
-//        modifier = Modifier
-//            .padding(4.dp)
-//            .size(width = 100.dp, height = 30.dp),
-//        contentAlignment = Alignment.Center,
-//    ) {
-//        OutlinedButton(
-//            onClick = onClick,
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            border = BorderStroke(1.dp, borderColor)
-//        ) {
-//            Text(item, color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
-//        }
-//    }
-//}
-
-//@Composable
-//fun SnackSelectWidget(viewModel: BabySnackRegisterViewModel) {
-//    Column {
-//
-//        Row(
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically,
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text(text = "간식", fontWeight = FontWeight.SemiBold)
-//
-//            // 토핑 추가 버튼
-//            Button(onClick = { viewModel.addSnack() }) {
-//                Text(text = "+")
-//            }
-//
-//        }
-//
-//        // 동적으로 생성된 토핑 필드들
-//        viewModel.snacks.forEachIndexed { index, topping ->
-//            SnackField(index, topping, viewModel)
-//            Spacer(modifier = Modifier.height(10.dp))
-//        }
-//    }
-//}
-
 @Composable
 fun SnackSelectWidget(viewModel: BabySnackRegisterViewModel) {
     Column {
@@ -348,7 +249,7 @@ fun SnackSelectWidget(viewModel: BabySnackRegisterViewModel) {
 }
 
 @Composable
-fun SnackField(index: Int, topping: String, viewModel: BabySnackRegisterViewModel) {
+fun SnackField(index: Int, snack: String, viewModel: BabySnackRegisterViewModel) {
     var amount by remember { mutableStateOf("") }
 
     Row(
@@ -357,7 +258,7 @@ fun SnackField(index: Int, topping: String, viewModel: BabySnackRegisterViewMode
         modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
-            value = topping,
+            value = snack,
             onValueChange = { updatedTopping ->
                 viewModel.updateSnack(index, updatedTopping)
             },
@@ -404,96 +305,6 @@ fun SnackField(index: Int, topping: String, viewModel: BabySnackRegisterViewMode
         )
     }
 }
-
-@Composable
-fun DrinkSelectWidget(viewModel: BabySnackRegisterViewModel) {
-    Column {
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "어떤 음료인가요?",
-                color = colorResource(id = R.color.secondary_light),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp
-            )
-
-            IconButton(onClick = {
-                viewModel.addDrink()
-                viewModel.addDrinkAmounts()
-            }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "updateUserIcon")
-            }
-        }
-
-        viewModel.drinks.forEachIndexed { index, drink ->
-            DrinkField(index, drink, viewModel)
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-    }
-}
-
-@Composable
-fun DrinkField(index: Int, drink: String, viewModel: BabySnackRegisterViewModel) {
-    var amount by remember { mutableStateOf("") }
-
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        TextField(
-            value = drink,
-            onValueChange = { drink ->
-                viewModel.updateDrink(index, drink)
-            },
-            singleLine = true,
-            placeholder = { Text("음료 이름", fontSize = 14.sp, textAlign = TextAlign.Center) },
-            modifier = Modifier
-                .height(50.dp)
-                .weight(0.6f)
-                .padding(horizontal = 15.dp)
-                .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = colorResource(R.color.secondary_color),
-                backgroundColor = colorResource(R.color.background_gray),
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                placeholderColor = colorResource(R.color.gray3)
-            ),
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        TextField(
-            value = amount,
-            onValueChange = { gram ->
-                if (gram.all { it.isDigit() }) {
-                    amount = gram
-                    viewModel.updateDrinkAmounts(index, gram.toInt())
-                }
-            },
-            singleLine = true,
-            placeholder = { Text("용량", fontSize = 14.sp, textAlign = TextAlign.Center) },
-            modifier = Modifier
-                .height(50.dp)
-                .weight(0.4f)
-                .padding(horizontal = 15.dp)
-                .background(colorResource(R.color.background_main), RoundedCornerShape(12.dp)),
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = colorResource(R.color.secondary_color),
-                backgroundColor = colorResource(R.color.background_gray),
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                placeholderColor = colorResource(R.color.gray3)
-            ),
-            shape = RoundedCornerShape(12.dp)
-        )
-    }
-}
-
 
 @Composable
 fun WriteSnackSignificant(viewModel: BabySnackRegisterViewModel) {
@@ -545,16 +356,47 @@ fun WriteSnackSignificant(viewModel: BabySnackRegisterViewModel) {
 }
 
 @Composable
-fun AddSnackButton(navController: NavController) {
+fun AddSnackButton(
+    viewModel: BabySnackRegisterViewModel,
+    dateViewModel: DateViewModel,
+    imageViewModel: ImageUploadViewModel,
+    navController: NavController
+) {
+    val state = viewModel.snackRegisterState.collectAsState().value
+    val amount = viewModel.amount.collectAsState().value
+    val url ="https://tuk-planet.s3.ap-northeast-2.amazonaws.com/images/1b066b61-f69a-45c1-830a-67f953c92437-%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-10-17%20195842.png"
+        // imageViewModel.imageUrl.observeAsState().value
+    val note = viewModel.significant.collectAsState().value
+    val snackList = viewModel.snacks.zip(viewModel.snackAmounts) { snack, amount ->
+        Topping(name = snack, amount = amount)
+    }
+
+    val context = LocalContext.current
+
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(100.dp)
             .padding(10.dp),
     ) {
         Button(
             onClick = {
-                      navController.popBackStack()
+                val dateStr = dateViewModel.getDateNow() + " " + viewModel.snackTime.value + " 33분"
+
+                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
+
+                url?.let {
+                    Snack(
+                        babyId = 38,
+//                        SharedPreferenceUtil(context).getString("babyId", "").toString(),
+                        dateTime = realDate!!,
+                        amount = amount.toInt(),
+                        url = it,
+                        note = note,
+                        toppingList = snackList
+                    )
+                }?.let { viewModel.registerBabyFood(it) }
             },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.brand_color),
@@ -564,6 +406,23 @@ fun AddSnackButton(navController: NavController) {
             shape = RoundedCornerShape(36.dp)
         ) {
             Text("저장하기", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+
+    LaunchedEffect(state) {
+        when (state) {
+            is Resource.Success -> {
+                navController.navigate(NavigationRoutes.MainScreen.route)
+            }
+
+            is Resource.Error -> {
+                // 오류가 발생한 경우 로그 출력
+                Log.d("RegisterButton", "API 오류: ${state.message}")
+            }
+
+            is Resource.Loading -> {
+                // 필요한 경우 로딩 상태 처리
+            }
         }
     }
 }

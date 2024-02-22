@@ -18,7 +18,9 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -52,8 +54,8 @@ fun MyPageScreen(
 
     val babyId = SharedPreferenceUtil(context).getString("babyId", "")!!.toInt()
 
-    LaunchedEffect(38) {
-        38.let {
+    LaunchedEffect(babyId) {
+        babyId.let {
             coParents = viewModel.getCoParentsByBabyId(it)
             userViewModel.getUserInfo(SharedPreferenceUtil(context).getString("uid", "").toString())
             viewModel.getBabyInfoByBabyId(it)
@@ -143,11 +145,18 @@ fun babyInfoCard(viewModel: BabyRegisterViewModel) {
                 elevation = 2.dp
             ) {
                 Row(modifier = Modifier.padding(10.dp)) {
-                    Image(
-                        painter = painterResource(id = R.drawable.teddy_bear),
-                        contentDescription = "babyPhoto",
+                    Box(
                         modifier = Modifier.size(100.dp)
-                    )
+                    ){
+                        Image(
+                            painter = painterResource(id = R.drawable.teddy_bear),
+                            contentDescription = "babyPhoto",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(15.dp)),
+                            contentScale = ContentScale.FillBounds
+                        )
+                    }
                     Spacer(modifier = Modifier.width(10.dp))
                     Column(
                         verticalArrangement = Arrangement.Center
@@ -278,11 +287,18 @@ fun UserInfoCard(viewModel: UserRegisterViewModel, babyViewModel: BabyRegisterVi
                     elevation = 2.dp
                 ) {
                     Row(modifier = Modifier.padding(10.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.teddy_bear),
-                            contentDescription = "babyPhoto",
+                        Box(
                             modifier = Modifier.size(100.dp)
-                        )
+                        ){
+                            Image(
+                                painter = painterResource(id = R.drawable.teddy_bear),
+                                contentDescription = "babyPhoto",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(15.dp)),
+                                contentScale = ContentScale.FillBounds
+                            )
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
                         Column(
                             verticalArrangement = Arrangement.Center
@@ -394,11 +410,18 @@ fun CoParentInfoCard(viewModel: BabyRegisterViewModel, coParents: List<CoParents
                             elevation = 2.dp
                         ) {
                             Row(modifier = Modifier.padding(10.dp)) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.teddy_bear),
-                                    contentDescription = "babyPhoto",
+                                Box(
                                     modifier = Modifier.size(100.dp)
-                                )
+                                ){
+                                    Image(
+                                        painter = painterResource(id = R.drawable.teddy_bear),
+                                        contentDescription = "babyPhoto",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(RoundedCornerShape(15.dp)),
+                                        contentScale = ContentScale.FillBounds
+                                    )
+                                }
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column(
                                     verticalArrangement = Arrangement.Center

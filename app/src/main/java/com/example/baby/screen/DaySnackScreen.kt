@@ -31,25 +31,28 @@ import com.example.baby.R
 import com.example.baby.data.BabyFoodAllResponse
 import com.example.baby.data.BabyFoodInfo
 import com.example.baby.data.NavigationRoutes
+import com.example.baby.data.SnackAllResponse
+import com.example.baby.data.SnackInfo
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.viewModel.BabyFoodViewModel
+import com.example.baby.viewModel.BabySnackRegisterViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayBabyFoodScreen(
-    viewModel: BabyFoodViewModel,
+fun DaySnackScreen(
+    viewModel: BabySnackRegisterViewModel,
     navController: NavController,
     year: Int,
     month: Int,
     day: Int
 ) {
-    val babyId = 1
-    var babyFoodResponse by remember { mutableStateOf<BabyFoodAllResponse?>(null) }
+    val babyId = 38
+    var snackList by remember { mutableStateOf<SnackAllResponse?>(null) }
 
     LaunchedEffect(babyId) {
-        babyFoodResponse = viewModel.getAllBabyFoodByBabyId(babyId)
+        snackList = viewModel.getAllSnackByBabyId(babyId)
     }
 
 
@@ -59,7 +62,7 @@ fun DayBabyFoodScreen(
                 modifier = Modifier.background(color = colorResource(id = R.color.sub_color)),
                 title = {
                     Text(
-                        "이유식 일지",
+                        "간식 일지",
                         textAlign = TextAlign.Center,
                         color = colorResource(id = R.color.secondary_color),
                         fontWeight = FontWeight.SemiBold,
@@ -95,14 +98,14 @@ fun DayBabyFoodScreen(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SelectDayWidget(year, month, day)
+                SelectSnackDayWidget(year, month, day)
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    babyFoodResponse?.babyFoodGetResList?.let { babyFoods ->
-                        items(babyFoods.size) { index ->
-                            BabyFoodCard(babyFood = babyFoods[index], navController = navController)
+                    snackList?.snackGetResList?.let { snacks ->
+                        items(snacks.size) { index ->
+                            SnackCard(babyFood = snacks[index], navController = navController)
                         }
                     }
                 }
@@ -112,7 +115,7 @@ fun DayBabyFoodScreen(
 }
 
 @Composable
-fun SelectDayWidget(year: Int, month: Int, day: Int) {
+fun SelectSnackDayWidget(year: Int, month: Int, day: Int) {
     var selectedDate by remember { mutableStateOf(LocalDate.of(year, month, day)) }
     val formatter = DateTimeFormatter.ofPattern("MM월 dd일")
 
@@ -156,7 +159,7 @@ fun SelectDayWidget(year: Int, month: Int, day: Int) {
 }
 
 @Composable
-fun BabyFoodCard(babyFood: BabyFoodInfo, navController: NavController) {
+fun SnackCard(babyFood: SnackInfo, navController: NavController) {
     val context = LocalContext.current
 
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
@@ -226,7 +229,7 @@ fun BabyFoodCard(babyFood: BabyFoodInfo, navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "${babyFood.baseMeal}죽",
+                        "${babyFood.amount}g",
                         fontWeight = FontWeight.SemiBold,
                         color = colorResource(id = R.color.secondary_light),
                         fontSize = 17.sp,
