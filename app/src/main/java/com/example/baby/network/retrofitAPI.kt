@@ -115,4 +115,7 @@ interface ApiService {
 
     @GET("guide")
     suspend fun getGuide(@Path("babyId") babyId: Int): Response<List<CoParents>>
+
+    @GET("baby/{babyId}/parents")
+    suspend fun getCoParentByBabyId(@Path("babyId") babyId: Int): Response<List<CoParents>>
 }
