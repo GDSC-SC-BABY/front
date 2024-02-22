@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -33,6 +36,7 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -58,6 +62,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -70,12 +75,15 @@ import com.example.baby.data.BabyFood
 import com.example.baby.data.NavigationRoutes
 import com.example.baby.data.Topping
 import com.example.baby.network.Resource
+import com.example.baby.ui.theme.StartFontStyle
+import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.util.CustomBottomNavigation
 import com.example.baby.util.baseMealList
 import com.example.baby.util.mealTimeList
 import com.example.baby.viewModel.BabyFoodViewModel
 import com.example.baby.viewModel.DateViewModel
 import com.example.baby.viewModel.ImageUploadViewModel
+import org.threeten.bp.LocalTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -155,7 +163,7 @@ fun BabyFoodRegisterInfo(viewModel: ImageUploadViewModel, foodViewModel: BabyFoo
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            MealTimeSelectDropDownMenu(foodViewModel)
+            SelectMealTime(foodViewModel)
             Spacer(Modifier.height(10.dp))
             RegisterBaseMealAmount(foodViewModel)
         }
@@ -518,9 +526,17 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
     ) {
         Button(
             onClick = {
-                val dateStr = dateViewModel.getDateNow() + " " + viewModel.mealTime.value + " 33분"
+                val dateStr = dateViewModel.getDateNow()
 
-                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
+//                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)
+
+                val realDate = dateViewModel.parseStringToLocalDateTime(dateStr)?.let { dateTime ->
+                    // ViewModel의 hour와 minute 값을 가져와 realDate에 설정
+                    dateTime.withHour(viewModel.hour.value).withMinute(viewModel.minute.value)
+                }
+
+                Log.d("지금 시간은", realDate!!.toString())
+
 
                 url?.let {
                     BabyFood(
@@ -558,5 +574,95 @@ fun AddMealButton(viewModel: BabyFoodViewModel, dateViewModel: DateViewModel, im
                 // 필요한 경우 로딩 상태 처리
             }
         }
+    }
+}
+
+@Composable
+fun SelectMealTime(viewModel : BabyFoodViewModel){
+    val hour by viewModel.hour.collectAsState()
+    val minute by viewModel.minute.collectAsState()
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .background(
+                colorResource(id = R.color.background_gray),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .border(
+                width = 0.dp,
+                color = colorResource(id = R.color.background_gray),
+                shape = RoundedCornerShape(12.dp)
+            )
+    ) {
+        OutlinedTextField(
+            value = if (hour != 0) hour.toString() else "",
+            onValueChange = { newValue ->
+                if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
+                    val newHour = newValue.toIntOrNull()
+                    if (newHour != null && newHour in 0..23) {
+                        viewModel.hour.value = newHour
+                    } else if (newValue.isEmpty()) {
+                        viewModel.hour.value = 0
+                    }
+                }
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = colorResource(id = R.color.background_gray),
+                focusedBorderColor = Color.Unspecified,
+                cursorColor = Color.Unspecified,
+                unfocusedBorderColor = Color.Unspecified,
+
+                textColor = colorResource(id = R.color.secondary_color)
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardActions = KeyboardActions(
+                onDone = {
+
+                }
+            ),
+            textStyle = TextStyle(
+                fontFamily = nanumSquare,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp
+            ),
+            shape = RoundedCornerShape(12.dp),
+            singleLine = true,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            ":",
+            style = StartFontStyle.startSubtitle,
+            color = colorResource(id = R.color.secondary_color),
+        )
+        OutlinedTextField(
+            value = if (minute != 0) minute.toString() else "",
+            onValueChange = { newValue ->
+                if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
+                    val newMinute = newValue.toIntOrNull()
+                    if (newMinute != null && newMinute in 0..59) {
+                        viewModel.minute.value = newMinute
+                    } else if (newValue.isEmpty()) {
+                        viewModel.minute.value = 0
+                    }
+                }
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                backgroundColor = colorResource(id = R.color.background_gray),
+                focusedBorderColor = Color.Unspecified,
+                cursorColor = Color.Unspecified,
+                unfocusedBorderColor = Color.Unspecified,
+                textColor = colorResource(id = R.color.secondary_color)
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    // Handle keyboard 'Done' action if needed
+                }
+            ),
+            textStyle = StartFontStyle.startSubtitle,
+            singleLine = true,
+            modifier = Modifier.weight(1f)
+        )
     }
 }

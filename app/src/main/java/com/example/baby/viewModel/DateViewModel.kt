@@ -42,7 +42,7 @@ class DateViewModel() : ViewModel() {
     }
 
     fun parseStringToLocalDateTime(dateTimeString: String): LocalDateTime? {
-        val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분")
+        val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
         return try {
             LocalDateTime.parse(dateTimeString, formatter)
         } catch (e: Exception) {

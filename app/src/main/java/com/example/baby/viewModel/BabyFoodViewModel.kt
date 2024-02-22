@@ -15,6 +15,7 @@ import com.example.baby.network.BabyFoodRepository
 import com.example.baby.network.Resource
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 
 class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : ViewModel() {
@@ -23,6 +24,9 @@ class BabyFoodViewModel(private val babyFoodRepository: BabyFoodRepository) : Vi
     val mealTime = MutableStateFlow("")
     val baseMeal = MutableStateFlow("")
     val significant = MutableStateFlow("")
+
+    val hour = MutableStateFlow(LocalDateTime.now().hour)
+    val minute = MutableStateFlow(LocalDateTime.now().minute)
 
     private val _toppings = mutableStateListOf<String>()
     val toppings: List<String> = _toppings
