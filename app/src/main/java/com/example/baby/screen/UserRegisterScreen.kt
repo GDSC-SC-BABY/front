@@ -104,7 +104,7 @@ fun UserRegisterScreen(
             RegisterButton(
                 isNotNull = isFormValid,
                 viewModel = viewModel,
-                user = User(userId = userId, viewModel.nickname.toString()),
+                user = User(userId = userId, viewModel.nickname.value),
                 text = "회원 정보를 모두 입력했어요",
                 route = NavigationRoutes.BabyRegisterScreen.route,
                 navController = navController
