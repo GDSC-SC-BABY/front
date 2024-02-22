@@ -14,6 +14,18 @@ data class Baby(
     @SerializedName("userId") val userId: String
 )
 
+data class BabyInfo(
+    @SerializedName("babyId") val babyId: Int,
+    @SerializedName("name") val name: String,
+    @SerializedName("gender") val gender: String,
+    @SerializedName("imgUrl") val imgUrl: String,
+    @SerializedName("dateTime") val dateTime: LocalDateTime,
+    @SerializedName("birthHeight") val birthHeight: String,
+    @SerializedName("birthWeight") val birthWeight: String,
+    @SerializedName("babyCode") val babyCode: String
+)
+
+
 
 data class BabyResponse(
     @SerializedName("state") val state: Boolean
