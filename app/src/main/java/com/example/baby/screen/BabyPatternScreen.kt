@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavController) {
+fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavController, babyId: Int) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val selectedMonth = selectedDate.monthValue
     val selectedDay = selectedDate.dayOfMonth
@@ -69,9 +69,9 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
         },
         bottomBar = {
             selectBabyPattern { selectedIndex ->
-                if (TabType.values()[selectedIndex] == TabType.BabyFood){
+                if (TabType.values()[selectedIndex] == TabType.BabyFood) {
                     navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
-                } else{
+                } else {
                     navController.navigate(
                         route = "${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex"
                     )
@@ -104,7 +104,10 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
             ) {
                 IconButton(onClick = {
                     selectedDate = selectedDate.minusDays(1)
-                    viewModel.getBabyPatternWithDate(selectedDate)
+                    viewModel.getBabyPatternWithDate(
+                        babyId,
+                        selectedDate
+                    )
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.arrow_back),
@@ -120,7 +123,7 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 )
                 IconButton(onClick = {
                     selectedDate = selectedDate.plusDays(1)
-                    viewModel.getBabyPatternWithDate(selectedDate)
+                    viewModel.getBabyPatternWithDate(babyId, selectedDate)
 
                 }) {
                     Icon(

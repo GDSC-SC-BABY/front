@@ -21,6 +21,7 @@ import com.example.baby.network.ImageRepository
 import com.example.baby.network.UserRepository
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
+import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.viewModel.*
 import com.google.firebase.FirebaseApp
 
@@ -167,13 +168,15 @@ class MainActivity : ComponentActivity() {
                         BabyPatternRecordPage(
                             viewModel = babyPatternRecordViewModel,
                             navController = navController,
-                            selectedIndex = selectedIndex
+                            selectedIndex = selectedIndex,
+                            babyId = SharedPreferenceUtil(applicationContext).getString("babyId", "1")?.toInt()?:1
                         )
                     }
                     composable(NavigationRoutes.BabyPatternScreen.route) {
                         BabyPatternPage(
                             viewModel = babyPatternViewModel,
-                            navController = navController
+                            navController = navController,
+                            babyId = SharedPreferenceUtil(applicationContext).getString("babyId", "1")?.toInt()?:1
                         )
                     }
 

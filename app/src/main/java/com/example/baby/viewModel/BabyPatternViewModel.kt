@@ -41,18 +41,18 @@ class BabyPatternViewModel(private val babyPatternRepository: BabyPatternReposit
         )
     )
 
-    private val _patternDataState = MutableStateFlow<Resource<List<Activity>>>(Resource.Success(null))
+    private val _patternDataState = MutableStateFlow<Resource<List<Activity>>>(Resource.loading(null))
     val patternDataState: StateFlow<Resource<List<Activity>>> = _patternDataState
 
 
-    fun getBabyPatternWithDate(date: LocalDate) {
+    fun getBabyPatternWithDate(babyId: Int, date: LocalDate) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         //var babyId =
         viewModelScope.launch {
             _patternDataState.value = Resource.loading(null)
             try {
-                val response = babyPatternRepository.getActivitiesByDate(babyId = 1, date.format(formatter))
+                val response = babyPatternRepository.getActivitiesByDate(babyId = babyId, date.format(formatter))
                 if (response.isSuccessful && response.body() != null) {
                     _patternDataState.value = Resource.success(response.body())
                 } else {

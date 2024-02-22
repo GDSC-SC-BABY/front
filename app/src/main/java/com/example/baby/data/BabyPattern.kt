@@ -33,16 +33,16 @@ data class MedicineDetails(
 )
 
 data class DefecationPattern(
-    val startTime: String,
-    val memo: String?,
-    val babyId: Int
+    @SerializedName("startTime") val startTime: LocalDateTime,
+    @SerializedName("memo") val memo: String?,
+    @SerializedName("babyId") val babyId: Int
 ): BabyPattern()
 
 data class BathPattern(
-    val startTime: String,
-    val endTime: String,
-    val memo: String?,
-    val babyId: Int
+    @SerializedName("startTime") val startTime: LocalDateTime,
+    @SerializedName("endTime") val endTime: LocalDateTime,
+    @SerializedName("memo") val memo: String?,
+    @SerializedName("babyId") val babyId: Int
 ): BabyPattern()
 
 data class PatternResponse(

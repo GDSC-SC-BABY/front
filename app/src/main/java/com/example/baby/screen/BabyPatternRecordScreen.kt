@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.R
 import com.example.baby.data.*
+import com.example.baby.network.Resource
 import com.example.baby.ui.theme.MainFontStyle
 import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.ui.theme.nanumSquare
@@ -58,16 +59,16 @@ import java.util.*
 fun BabyPatternRecordPage(
     viewModel: BabyPatternRecordViewModel,
     navController: NavController,
-    selectedIndex: Int
+    selectedIndex: Int,
+    babyId: Int
 ) {
     // 현재 선택된 탭의 인덱스를 저장하는 상태 변수
     var selectedTab by remember { mutableStateOf(TabType.values()[selectedIndex]) }
-    var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
-    var startTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
-    var endTime: LocalTime by remember { mutableStateOf(LocalTime.now()) }
-    var medicineType: String? by remember { mutableStateOf("") }
 
     val memo by viewModel.memo.collectAsState()
+
+    val patternRegisterState = viewModel.registerState.collectAsState().value
+
 
     Scaffold(
         topBar = {
@@ -143,37 +144,7 @@ fun BabyPatternRecordPage(
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
-                        //val babyId = SharedPreferenceUtil(context).getInt("")
-                        var babyId = 1
-                        val pattern = when (selectedTab) {
-                            TabType.Sleep -> SleepPattern(
-                                LocalDateTime.of(selectedDate, startTime),
-                                LocalDateTime.of(selectedDate, endTime),
-                                memo,
-                                babyId
-                            )
-                            TabType.Medicine -> {
-                                MedicinePattern(
-                                    LocalDateTime.of(selectedDate, startTime),
-                                    medicineType = medicineType,
-                                    memo = memo,
-                                    babyId = babyId
-                                )
-                            }
-                            else -> {
-
-                            }
-/*                        TabType.Pee -> DefecationPattern(
-                            LocalDateTime.of(selectedDate),
-                            "Pee", // or any other defecation status as per your requirement
-                            memo,
-                            babyId
-                        )
-                        TabType.Food -> {
-
-                        }*/
-
-                        }
+                        viewModel.registerPattern(babyId, selectedTab)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -193,6 +164,22 @@ fun BabyPatternRecordPage(
                 }
             }
 
+        }
+
+        LaunchedEffect(patternRegisterState) {
+            when (patternRegisterState) {
+                is Resource.Success -> {
+                    navController.navigate(NavigationRoutes.BabyPatternScreen.route)
+                }
+                is Resource.Error -> {
+                    // 오류가 발생한 경우 로그 출력
+                    Log.d("RegisterButton", "API 오류: ${patternRegisterState.data}")
+                    Log.d("RegisterButton", "API 오류: ${patternRegisterState.message}")
+                }
+                is Resource.Loading -> {
+                    // 필요한 경우 로딩 상태 처리
+                }
+            }
         }
     }
 }
@@ -243,21 +230,27 @@ fun RegisterInfo(
 ) {
     val dataList = (0..7).map { medicineList[it] }
     val selectedMedicine by viewModel.medicineType.collectAsState()
+    val startTime by viewModel.startTime.collectAsState()
+    val endTime by viewModel.endTime.collectAsState()
 
 
 
     when (selectedTab) {
         TabType.Sleep -> Box() {
-            Column{
+            Column {
                 Row(
-                ){
-                    DateAndTimePicker(viewModel)
+                ) {
+                    DateAndTimePicker(viewModel) {
+                        viewModel.startTime.value = it
+                    }
                     Text("부터")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Row(){
-                    DateAndTimePicker(viewModel)
-                    Text("까지",modifier = Modifier.width(10.dp))
+                Row() {
+                    DateAndTimePicker(viewModel) {
+                        viewModel.endTime.value = it
+                    }
+                    Text("까지", modifier = Modifier.width(10.dp))
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -268,8 +261,10 @@ fun RegisterInfo(
             }
         }
         TabType.Medicine -> Column {
-            Column(){
-                DateAndTimePicker(viewModel)
+            Column() {
+                DateAndTimePicker(viewModel) {
+                    viewModel.startTime.value = it
+                }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     TabType.Medicine.memoTitle,
@@ -302,8 +297,11 @@ fun RegisterInfo(
             }
         }
         TabType.Defecation -> Column {
-            Column{
-                DateAndTimePicker(viewModel)
+            Column {
+                DateAndTimePicker(viewModel) {
+                    viewModel.startTime.value = it
+                    Log.d("startTime", it.toString())
+                }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     TabType.Defecation.memoTitle,
@@ -313,16 +311,22 @@ fun RegisterInfo(
             }
         }
         TabType.Bath -> Column {
-            Column{
+            Column {
                 Row(
-                ){
-                    DateAndTimePicker(viewModel)
+                ) {
+                    DateAndTimePicker(viewModel) {
+                        viewModel.startTime.value = it
+                        Log.d("startTime", viewModel.startTime.value.toString())
+                    }
                     Text("부터")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Row(){
-                    DateAndTimePicker(viewModel)
-                    Text("까지",modifier = Modifier.width(10.dp))
+                Row() {
+                    DateAndTimePicker(viewModel) {
+                        viewModel.endTime.value = it
+                        Log.d("endTime", viewModel.endTime.value.toString())
+                    }
+                    Text("까지", modifier = Modifier.width(10.dp))
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -372,25 +376,36 @@ fun MedicineGridItem(item: String, isSelected: Boolean, onClick: () -> Unit) {
 @Composable
 fun DateAndTimePicker(
     viewModel: BabyPatternRecordViewModel,
+    onDateTimeSelected: (LocalDateTime) -> Unit
 ) {
-    val date by viewModel.date.collectAsState()
+    //val date by viewModel.date.collectAsState()
+/*
     val hour by viewModel.hour.collectAsState()
     val minute by viewModel.minute.collectAsState()
+*/
 
     var showDatePicker by remember {
         mutableStateOf(false)
     }
+    var selectedDate: LocalDate by remember { mutableStateOf(LocalDate.now()) }
+
+    var hour: Int by remember { mutableStateOf(LocalTime.now().hour) }
+    var minute: Int by remember { mutableStateOf(LocalTime.now().minute) }
 
     var isAM by remember { mutableStateOf(true) }
+
+    LaunchedEffect(selectedDate, hour, minute, isAM) {
+        onDateTimeSelected(LocalDateTime.of(selectedDate, LocalTime.of(if (isAM) hour % 12 else (hour % 12) + 12, minute)))
+    }
 
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            //odifier = Modifier.fillMaxWidth()
         ) {
             TextField(
-                value = "${date.year}/${date.monthValue}/${date.dayOfMonth}",
-                onValueChange = { },
+                value = "${selectedDate.year}/${selectedDate.monthValue}/${selectedDate.dayOfMonth}",
+                onValueChange = {
+                },
                 readOnly = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = colorResource(id = R.color.background_gray),
@@ -439,10 +454,10 @@ fun DateAndTimePicker(
                         onValueChange = { newValue ->
                             if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
                                 val newHour = newValue.toIntOrNull()
-                                if (newHour != null && newHour in 0..23) {
-                                    viewModel.hour.value = newHour
+                                if (newHour != null && newHour in 0..12) {
+                                    hour = newHour
                                 } else if (newValue.isEmpty()) {
-                                    viewModel.hour.value = 0 // 텍스트 필드가 비어있을 때 0으로 설정
+                                    hour = 0 // 텍스트 필드가 비어있을 때 0으로 설정
                                 }
                             }
                         },
@@ -480,9 +495,9 @@ fun DateAndTimePicker(
                             if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
                                 val newMinute = newValue.toIntOrNull()
                                 if (newMinute != null && newMinute in 0..59) {
-                                    viewModel.minute.value = newMinute
+                                    minute = newMinute
                                 } else if (newValue.isEmpty()) {
-                                    viewModel.minute.value = 0 // 텍스트 필드가 비어있을 때 0으로 설정
+                                    minute = 0 // 텍스트 필드가 비어있을 때 0으로 설정
                                 }
                             }
                         },
@@ -520,7 +535,7 @@ fun DateAndTimePicker(
     if (showDatePicker) {
         DatePickerDialog(
             onDateSelected = {
-                viewModel.date.value = it
+                selectedDate = it
             },
 
             onDismiss = { showDatePicker = false }
@@ -667,4 +682,4 @@ enum class TabType(
 }
 
 
-val medicineList : List<String> = listOf("유산균", "비타민", "단백질", "감기약", "해열제", "면역제", "칼슘제", "직접 추가")
+val medicineList: List<String> = listOf("유산균", "비타민", "단백질", "감기약", "해열제", "면역제", "칼슘제", "직접 추가")

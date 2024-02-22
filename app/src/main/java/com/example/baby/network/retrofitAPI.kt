@@ -69,6 +69,14 @@ interface ApiService {
         @Query("date") date: String
     ): Response<List<Activity>>
 
+    // Defection
+    @POST("/defecation")
+    suspend fun registerDefecation(@Body request: DefecationPattern): Response<PatternResponse>
+
+    //Bath
+    @POST("/bath")
+    suspend fun registerBath(@Body request: BathPattern): Response<PatternResponse>
+
     @POST("babyFood")
     suspend fun registerBabyFood(@Body babyFood: BabyFood): Response<UserDuplicateResponse>
 
