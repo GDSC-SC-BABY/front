@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 class BabyPatternRecordViewModel(private val babyPatternRepository: BabyPatternRepository): ViewModel() {
 
@@ -25,7 +26,13 @@ class BabyPatternRecordViewModel(private val babyPatternRepository: BabyPatternR
         _selectedDate.value = date
     }
 
+    val year = MutableStateFlow(LocalDate.now().year)
+    val month = MutableStateFlow(LocalDate.now().monthValue)
+    val day = MutableStateFlow(LocalDate.now().dayOfMonth)
+    val date = MutableStateFlow(LocalDate.now())
 
+    val hour = MutableStateFlow(LocalTime.now().hour)
+    val minute = MutableStateFlow(LocalTime.now().minute)
 
     fun registerPattern(pattern: Any) {
         viewModelScope.launch {
