@@ -1,5 +1,6 @@
 package com.example.baby.screen
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,8 +46,19 @@ fun MyPageScreen(
     userViewModel: UserRegisterViewModel,
     navController: NavController
 ) {
+    val context = LocalContext.current
+
+    var coParents by remember { mutableStateOf<List<CoParents>?>(null) }
+
     LaunchedEffect(true) {
-        userViewModel.getUserInfo("ztg4NhVNvgXpWMhxw3bx7k3p4SC2")
+        15?.let {
+            coParents = viewModel.getCoParentsByBabyId(it)
+            viewModel.getBabyInfoByBabyId(it)
+        }
+    }
+
+    LaunchedEffect(true) {
+        userViewModel.getUserInfo(SharedPreferenceUtil(context).getString("uid", "").toString())
         viewModel.getBabyInfoByBabyId(15)
     }
 
@@ -83,7 +95,7 @@ fun MyPageScreen(
             ) {
                 babyInfoCard(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
-                UserInfoCard(userViewModel)
+                UserInfoCard(userViewModel, viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     "공동양육자예요",
@@ -92,7 +104,7 @@ fun MyPageScreen(
                     fontSize = 20.sp
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                CoParentInfoCard(viewModel = viewModel)
+                CoParentInfoCard(viewModel = viewModel, coParents = coParents)
             }
         }
     }
@@ -103,12 +115,6 @@ fun babyInfoCard(viewModel: BabyRegisterViewModel) {
     val context = LocalContext.current
 
     val state by viewModel.babyInfoGetState.collectAsState()
-
-//    val babyId = SharedPreferenceUtil(context).getString("babyId", "").toString()
-
-    LaunchedEffect(true) {
-        viewModel.getBabyInfoByBabyId(15)
-    }
 
     when (state) {
         is Resource.Loading -> {
@@ -238,9 +244,9 @@ fun babyInfoCard(viewModel: BabyRegisterViewModel) {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun UserInfoCard(viewModel: UserRegisterViewModel) {
-    val context = LocalContext.current
+fun UserInfoCard(viewModel: UserRegisterViewModel, babyViewModel: BabyRegisterViewModel) {
 
     val userInfoState by viewModel.userInfoState.collectAsState()
 
@@ -303,13 +309,7 @@ fun UserInfoCard(viewModel: UserRegisterViewModel) {
                             }
                             Spacer(Modifier.height(5.dp))
                             Text(
-                                "${
-                                    SharedPreferenceUtil(context).getString("babyName", "")
-                                        .toString()
-                                } ${
-                                    SharedPreferenceUtil(context).getString("relation", "")
-                                        .toString()
-                                }",
+                                "${babyViewModel.name.value} ${userInfo!!.relation}",
                                 color = colorResource(id = R.color.secondary_color),
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -346,7 +346,7 @@ fun UserInfoCard(viewModel: UserRegisterViewModel) {
 }
 
 @Composable
-fun CoParentInfoCard(viewModel: BabyRegisterViewModel) {
+fun CoParentInfoCard(viewModel: BabyRegisterViewModel, coParents: List<CoParents>?) {
     val context = LocalContext.current
 
     val babyIdStr = SharedPreferenceUtil(context).getString("babyId", "")
@@ -354,14 +354,6 @@ fun CoParentInfoCard(viewModel: BabyRegisterViewModel) {
         if (babyIdStr!!.all { it.isDigit() }) babyIdStr.toInt() else null
     } catch (e: NumberFormatException) {
         Log.d("애기", e.toString())
-    }
-
-    var coParents by remember { mutableStateOf<List<CoParents>?>(null) }
-
-    LaunchedEffect(babyId) {
-        babyId?.let {
-            coParents = viewModel.getCoParentsByBabyId(it)
-        }
     }
 
     val state by viewModel.coParentsGetState.collectAsState()
@@ -381,14 +373,11 @@ fun CoParentInfoCard(viewModel: BabyRegisterViewModel) {
         is Resource.Success -> {
             val coParents = (state as Resource.Success<List<CoParents>>).data
             if (coParents?.size == 0) {
-                Column {
-                    Text(
-                        "공동양육자예요", fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = R.color.secondary_color),
-                        fontSize = 20.sp
-                    )
-                    Text("공동양육자 조회에 실패했습니다.\n잠시 후 다시 시도해 주세요.")
-                }
+                Text(
+                    "아직 공동양육자가 없어요!", fontWeight = FontWeight.SemiBold,
+                    color = colorResource(id = R.color.secondary_color),
+                    fontSize = 16.sp
+                )
             } else {
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),

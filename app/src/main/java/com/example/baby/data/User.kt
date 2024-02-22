@@ -10,7 +10,8 @@ data class User(
 )
 
 data class UserResponse(
-    @SerializedName("name") val name: String
+    @SerializedName("name") val name: String,
+    @SerializedName("relation") val relation: String
 )
 
 data class UserDuplicateResponse(
