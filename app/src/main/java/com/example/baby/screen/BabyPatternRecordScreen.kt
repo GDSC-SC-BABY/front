@@ -169,7 +169,11 @@ fun BabyPatternRecordPage(
         LaunchedEffect(patternRegisterState) {
             when (patternRegisterState) {
                 is Resource.Success -> {
-                    navController.navigate(NavigationRoutes.BabyPatternScreen.route)
+                    navController.navigate(NavigationRoutes.BabyPatternScreen.route) {
+                        popUpTo(NavigationRoutes.BabyPatternScreen.route) {
+                            inclusive = true
+                        }
+                    }
                 }
                 is Resource.Error -> {
                     // 오류가 발생한 경우 로그 출력
@@ -392,11 +396,13 @@ fun DateAndTimePicker(
     var hour: Int by remember { mutableStateOf(LocalTime.now().hour) }
     var minute: Int by remember { mutableStateOf(LocalTime.now().minute) }
 
-    var isAM by remember { mutableStateOf(true) }
+    var isAM by remember { mutableStateOf(false) }
 
+    Log.d("hour", hour.toString())
     LaunchedEffect(selectedDate, hour, minute, isAM) {
-        onDateTimeSelected(LocalDateTime.of(selectedDate, LocalTime.of(if (isAM) hour % 12 else (hour % 12) + 12, minute)))
+        onDateTimeSelected(LocalDateTime.of(selectedDate, LocalTime.of(hour, minute)))
     }
+
 
     Column {
         Row(
@@ -454,7 +460,7 @@ fun DateAndTimePicker(
                         onValueChange = { newValue ->
                             if (newValue.isEmpty() || (newValue.length <= 2 && newValue.all { it.isDigit() })) {
                                 val newHour = newValue.toIntOrNull()
-                                if (newHour != null && newHour in 0..12) {
+                                if (newHour != null && newHour in 0..23) {
                                     hour = newHour
                                 } else if (newValue.isEmpty()) {
                                     hour = 0 // 텍스트 필드가 비어있을 때 0으로 설정

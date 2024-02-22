@@ -82,9 +82,14 @@ fun BabyPatternPage(viewModel: BabyPatternViewModel, navController: NavControlle
                 if (TabType.values()[selectedIndex] == TabType.BabyFood) {
                     navController.navigate(NavigationRoutes.FoodRegisterScreen.route)
                 } else {
-                    navController.navigate(
+/*                    navController.navigate(
                         route = "${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex"
-                    )
+                    )*/
+                    navController.navigate("${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex") {
+                        popUpTo("${NavigationRoutes.BabyPatternRecordScreen.route}/$selectedIndex") {
+                            inclusive = true
+                        }
+                    }
                 }
             }
         }
