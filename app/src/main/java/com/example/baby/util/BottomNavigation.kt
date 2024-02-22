@@ -50,19 +50,18 @@ fun CustomBottomNavigation(navController: NavController) {
 
             BottomNavigationItem(
                 icon = { Icon(painter = painterResource(id = R.drawable.diary_icon), contentDescription = null) },
-                selected = navController.currentDestination?.route == NavigationRoutes.GuideScreen.route || navController.currentDestination?.route == NavigationRoutes.BabyPatternScreen.route,
+                selected = navController.currentDestination?.route == NavigationRoutes.BabyPatternScreen.route,
                 onClick = {
-                    showDiaryDialog.value = true
-                    showDialog.value = false
+                    navController.navigate(NavigationRoutes.BabyPatternScreen.route)
                 },
                 selectedContentColor = colorResource(id = R.color.brand_color),
                 unselectedContentColor = colorResource(id = R.color.gray1)
             )
             BottomNavigationItem(
                 icon = { Icon(painter = painterResource(id = R.drawable.guide_icon), contentDescription = null) },
-                selected = navController.currentDestination?.route == "registerScreen",
+                selected = navController.currentDestination?.route == "guideScreen",
                 onClick = {
-                    navController.navigate(NavigationRoutes.RegisterScreen.route)
+                    navController.navigate(NavigationRoutes.GuideScreen.route)
                 },
                 selectedContentColor = colorResource(id = R.color.brand_color),
                 unselectedContentColor = colorResource(id = R.color.gray1)

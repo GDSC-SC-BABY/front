@@ -12,13 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.baby.data.BabyFood
 import com.example.baby.data.NavigationRoutes
-import com.example.baby.network.AuthRepository
-import com.example.baby.network.BabyFoodRepository
-import com.example.baby.network.BabyPatternRepository
-import com.example.baby.network.BabyRepository
-import com.example.baby.network.BabySnackRepository
-import com.example.baby.network.ImageRepository
-import com.example.baby.network.UserRepository
+import com.example.baby.network.*
 import com.example.baby.screen.*
 import com.example.baby.ui.theme.BabyTheme
 import com.example.baby.util.SharedPreferenceUtil
@@ -40,6 +34,9 @@ class MainActivity : ComponentActivity() {
 
     private val loadingViewModel by viewModels<LoadingViewModel>()
 
+    private val guideViewModel by viewModels<GuideViewModel>(){
+        GuideViewModelFactory(GuideRepository())
+    }
 
     private val babyFoodViewModel by viewModels<BabyFoodViewModel> {
         BabyFoodViewModelFactory(BabyFoodRepository())
@@ -87,7 +84,7 @@ class MainActivity : ComponentActivity() {
                         MainScreen(viewModel = calendarViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.GuideScreen.route) {
-                        GuideScreen(viewModel = loadingViewModel, navController = navController)
+                        GuideScreen(viewModel = guideViewModel, navController = navController)
                     }
                     composable(NavigationRoutes.PolicyScreen.route) {
                         PolicyScreen(viewModel = loadingViewModel, navController = navController)

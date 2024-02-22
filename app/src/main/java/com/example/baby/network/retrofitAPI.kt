@@ -114,7 +114,7 @@ interface ApiService {
     suspend fun uploadImage(@Part image: MultipartBody.Part): Response<ResponseBody>
 
     @GET("guide")
-    suspend fun getGuide(@Path("babyId") babyId: Int): Response<List<CoParents>>
+    suspend fun getGuide(): Response<List<Guide>>
 
     @GET("baby/{babyId}/parents")
     suspend fun getCoParentByBabyId(@Path("babyId") babyId: Int): Response<List<CoParents>>
