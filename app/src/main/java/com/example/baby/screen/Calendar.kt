@@ -93,19 +93,20 @@ fun CustomCalendarView(
             ) {
                 Column(
                     Modifier.background(color = colorResource(id = R.color.background_main))
-                ){
+                ) {
                     MonthWidget(viewModel = viewModel)
                     WeekDayHeaders()
                     CustomCalendarLayout(textHeight = textHeight) {
                         daysInMonth.forEach { calendarDay ->
                             DateCell(calendarDay, dateFormatter) {
-                                selectedDate.value = viewModel.convertDateToLocalDate(calendarDay.date)
+                                selectedDate.value =
+                                    viewModel.convertDateToLocalDate(calendarDay.date)
                                 showDialog.value = true
                             }
                         }
                     }
                 }
-                Box(Modifier.padding(horizontal = 15.dp, vertical = 15.dp)){
+                Box(Modifier.padding(horizontal = 15.dp, vertical = 15.dp)) {
                     WriteMemo()
                 }
             }
@@ -197,14 +198,15 @@ fun MonthWidget(viewModel: CalendarViewModel) {
 
 @Composable
 fun DateCell(calendarDay: CalendarDate, dateFormatter: SimpleDateFormat, onClick: () -> Unit) {
-    val textColor = if (calendarDay.isCurrentMonth) Color.Black else Color.Gray
+    val textColor = if(calendarDay.isCurrentMonth) colorResource(id = R.color.gray4) else colorResource(id = R.color.gray2)
+
     Text(
         text = dateFormatter.format(calendarDay.date),
         color = textColor,
         modifier = Modifier
             .padding(4.dp)
-            .clickable(onClick = onClick)
-            .width(32.dp) // WeekDayHeaders에서 사용한 것과 동일한 너비 적용
+            .clickable(enabled = calendarDay.isCurrentMonth, onClick = onClick)
+            .width(32.dp)
             .padding(horizontal = 15.dp),
         fontSize = 14.sp
     )
@@ -258,7 +260,7 @@ fun WriteMemo() {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Text(
                     "Memo",
                     color = colorResource(id = R.color.secondary_color),

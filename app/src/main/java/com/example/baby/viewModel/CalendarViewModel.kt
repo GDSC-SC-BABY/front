@@ -60,20 +60,25 @@ class CalendarViewModel : ViewModel() {
             dates.add(CalendarDate(calendar.time, isCurrentMonth = true))
         }
 
-//        // 다음 달 날짜를 계산합니다.
-//        calendar.set(year, month + 1, 1)
-//        val daysToAddFromNextMonth = 7 - calendar.get(Calendar.DAY_OF_WEEK) + Calendar.SUNDAY
-//        for (i in 1..daysToAddFromNextMonth) {
-//            calendar.set(Calendar.DAY_OF_MONTH, i)
-//            dates.add(CalendarDate(calendar.time, isCurrentMonth = false))
-//        }
+        val daysInWeek = 7
+        val daysNeededToCompleteWeek = daysInWeek - dates.size % daysInWeek
+        if (daysNeededToCompleteWeek < daysInWeek) {
+            calendar.add(Calendar.MONTH, 1) // 다음 달로 설정
+            for (i in 1..daysNeededToCompleteWeek) {
+                calendar.set(Calendar.DAY_OF_MONTH, i)
+                dates.add(CalendarDate(calendar.time, isCurrentMonth = false))
+            }
+        }
+
+        // 다음 달의 날짜를 추가한 후 다시 현재 월로 돌아가기
+        calendar.add(Calendar.MONTH, -1)
 
         return dates
     }
 
     fun getCurrentYearAndMonth(): String {
         val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
+        val month = calendar.get(Calendar.MONTH) + 1
         if(month==0) return String.format(Locale.getDefault(), "%d년 12월", year)
         return String.format(Locale.getDefault(), "%d년 %02d월", year, month)
     }

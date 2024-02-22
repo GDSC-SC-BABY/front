@@ -33,7 +33,7 @@ import com.example.baby.ui.theme.StartFontStyle
 import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.viewModel.UserRegisterViewModel
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserRegisterScreen(
