@@ -46,9 +46,6 @@ class MainActivity : ComponentActivity() {
         BabyRegisterViewModelFactory(BabyRepository())
     }
 
-    private val babyPatternRecordViewModel by viewModels<BabyPatternRecordViewModel> {
-        BabyPatternRecordViewModelFactory(BabyPatternRepository())
-    }
     private val babyPatternViewModel by viewModels<BabyPatternViewModel> {
         BabyPatternViewModelFactory(BabyPatternRepository())
     }
@@ -162,7 +159,6 @@ class MainActivity : ComponentActivity() {
                             backStackEntry.arguments?.getInt("selectedTabIndex") ?: 0
 
                         BabyPatternRecordPage(
-                            viewModel = babyPatternRecordViewModel,
                             navController = navController,
                             selectedIndex = selectedIndex,
                             babyId = SharedPreferenceUtil(applicationContext).getString("babyId", "1")?.toInt()?:1

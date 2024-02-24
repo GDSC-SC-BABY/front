@@ -1,6 +1,7 @@
 package com.example.baby.screen
 
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,10 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.baby.R
 import com.example.baby.data.*
+import com.example.baby.network.BabyPatternRepository
 import com.example.baby.network.Resource
 import com.example.baby.ui.theme.MainFontStyle
 import com.example.baby.ui.theme.StartFontStyle
@@ -49,6 +52,7 @@ import com.example.baby.ui.theme.nanumSquare
 import com.example.baby.util.SharedPreferenceUtil
 import com.example.baby.util.baseMealList
 import com.example.baby.viewModel.BabyPatternRecordViewModel
+import com.example.baby.viewModel.BabyPatternRecordViewModelFactory
 import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -57,11 +61,13 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BabyPatternRecordPage(
-    viewModel: BabyPatternRecordViewModel,
     navController: NavController,
     selectedIndex: Int,
     babyId: Int
 ) {
+    val viewModel: BabyPatternRecordViewModel = viewModel(
+        factory = BabyPatternRecordViewModelFactory(BabyPatternRepository())
+    )
     // 현재 선택된 탭의 인덱스를 저장하는 상태 변수
     var selectedTab by remember { mutableStateOf(TabType.values()[selectedIndex]) }
 
@@ -105,6 +111,8 @@ fun BabyPatternRecordPage(
         ) {
             CustomTabRow(selectedTabIndex = selectedTab.ordinal) { index ->
                 selectedTab = TabType.values()[index]
+                viewModel.memo.value = ""
+                viewModel.startTime.value = LocalDateTime.now()
             }
             Divider(
                 thickness = 2.dp,
@@ -236,6 +244,7 @@ fun RegisterInfo(
     val selectedMedicine by viewModel.medicineType.collectAsState()
     val startTime by viewModel.startTime.collectAsState()
     val endTime by viewModel.endTime.collectAsState()
+
 
 
 
